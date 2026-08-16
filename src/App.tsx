@@ -1,13 +1,18 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-
-const PHONE_TEL = "+541161370040";
-const PHONE_LABEL = "11 6137 0040";
-const MAP_QUERY =
-  "Av.+Senador+Moron+858,+Bella+Vista,+Buenos+Aires,+Argentina";
-const THEME_KEY = "odontonutri-theme";
-
-type ThemeMode = "light" | "dark" | "auto";
+import {
+  INSTAGRAM_HANDLE,
+  INSTAGRAM_URL,
+  MAP_QUERY,
+  PHONE_LABEL,
+  PHONE_TEL,
+  SITE_NAME,
+  STREET_ADDRESS,
+  THEME_KEY,
+  WHATSAPP_URL,
+  type ThemeMode,
+} from "./site";
+import { applyTheme, readTheme } from "./theme";
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -94,29 +99,15 @@ function AutoIcon() {
   );
 }
 
-function readTheme(): ThemeMode {
-  try {
-    const stored = localStorage.getItem(THEME_KEY);
-    if (stored === "light" || stored === "dark" || stored === "auto") {
-      return stored;
-    }
-  } catch {
-    /* ignore */
-  }
-  return "auto";
-}
-
-function resolvedTheme(mode: ThemeMode) {
-  if (mode === "auto") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  }
-  return mode;
-}
-
-function applyTheme(mode: ThemeMode) {
-  document.documentElement.dataset.theme = resolvedTheme(mode);
+function InstagramIcon() {
+  return (
+    <Icon>
+      <path
+        fill="currentColor"
+        d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
+      />
+    </Icon>
+  );
 }
 
 const THEME_OPTIONS: { id: ThemeMode; label: string; icon: ReactNode }[] = [
@@ -164,7 +155,16 @@ export default function App() {
   return (
     <>
       <header>
-        <div className="brand">Odontologia y nutricion</div>
+        <div className="brand">
+          <img
+            className="brand-logo"
+            src="/logo.png"
+            alt={SITE_NAME}
+            width={40}
+            height={40}
+          />
+          <span>{SITE_NAME}</span>
+        </div>
         <a className="nav-phone" href={`tel:${PHONE_TEL}`}>
           <WhatsAppIcon />
           Llamar {PHONE_LABEL}
@@ -174,23 +174,25 @@ export default function App() {
       <main>
         <section className="hero">
           <div>
-            <p className="eyebrow">Bella Vista · Buenos Aires</p>
-            <h1>Clínica odontológica y nutricionista</h1>
+            <p className="eyebrow">Bella Vista · San Miguel</p>
+            <h1>{SITE_NAME}</h1>
             <p className="lead">
-              Cuidamos tu sonrisa y tu alimentación en un mismo espacio, con un
-              enfoque cercano y profesional.
+              Implantes dentales, rehabilitación y estética. Nutrición clínica y
+              deportiva, en un mismo espacio.
             </p>
           </div>
 
           <aside className="hero-card">
             <h2>Visítanos</h2>
             <div className="meta">
-              <p>
+              <div>
                 <strong>Dirección</strong>
-                Av. Senador Morón 858
-                <br />
-                Bella Vista, Buenos Aires, Argentina
-              </p>
+                <address>
+                  {STREET_ADDRESS}
+                  <br />
+                  Bella Vista, San Miguel, Buenos Aires
+                </address>
+              </div>
               <p>
                 <strong>Teléfono</strong>
                 <a href={`tel:${PHONE_TEL}`}>{PHONE_LABEL}</a>
@@ -199,6 +201,24 @@ export default function App() {
             <div className="actions">
               <a
                 className="btn primary"
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <WhatsAppIcon />
+                WhatsApp
+              </a>
+              <a
+                className="btn"
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <InstagramIcon />
+                Instagram
+              </a>
+              <a
+                className="btn"
                 href={`https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`}
                 target="_blank"
                 rel="noopener"
@@ -227,22 +247,22 @@ export default function App() {
           <article className="service">
             <h3>Odontología</h3>
             <p>
-              Atención odontológica para el cuidado, la prevención y el
-              tratamiento de tu salud bucal.
+              Implantes dentales, rehabilitación oral, endodoncia y estética.
+              Atención a cargo del Dr. Kaminsky.
             </p>
           </article>
           <article className="service">
             <h3>Nutrición</h3>
             <p>
-              Consultas con nutricionista para acompañar hábitos alimentarios y
-              bienestar cotidiano.
+              Nutrición clínica y deportiva, con planes para una alimentación
+              saludable. Atención a cargo de la Lic. González.
             </p>
           </article>
         </section>
 
         <section className="map-wrap" aria-label="Mapa de la clínica">
           <iframe
-            title="Odontonutri en Google Maps"
+            title={`${SITE_NAME} en Google Maps`}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             src={`https://maps.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`}
@@ -251,7 +271,18 @@ export default function App() {
       </main>
 
       <footer>
-        <p>Odontonutri · Av. Senador Morón 858, Bella Vista</p>
+        <p>
+          {SITE_NAME} · {STREET_ADDRESS}, Bella Vista
+        </p>
+        <a
+          className="footer-ig"
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <InstagramIcon />
+          {INSTAGRAM_HANDLE}
+        </a>
         <ThemeSwitch />
       </footer>
     </>

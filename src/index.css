@@ -59,6 +59,7 @@ header {
   z-index: 2;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   padding: 1.25rem 6vw;
   display: flex;
   position: sticky;
@@ -67,8 +68,19 @@ header {
 
 .brand {
   letter-spacing: -0.03em;
+  align-items: center;
+  gap: 0.7rem;
   font-family: Fraunces, Georgia, serif;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
+  line-height: 1.15;
+  display: flex;
+}
+
+.brand-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .nav-phone {
@@ -85,7 +97,8 @@ header {
 }
 
 .nav-phone svg,
-.btn svg {
+.btn svg,
+.footer-ig svg {
   flex-shrink: 0;
   width: 1.15em;
   height: 1.15em;
@@ -152,8 +165,14 @@ h1 {
   display: grid;
 }
 
-.meta p {
+.meta p,
+.meta div {
   color: var(--muted);
+  margin: 0;
+}
+
+.meta address {
+  font-style: normal;
   margin: 0;
 }
 
@@ -245,6 +264,19 @@ footer p {
   margin: 0;
 }
 
+.footer-ig {
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+}
+
+.footer-ig:hover {
+  color: var(--accent);
+}
+
 .theme-switch {
   background: var(--bg-2);
   border: 1px solid var(--line);
@@ -298,5 +330,9 @@ footer p {
   .hero {
     gap: 1.5rem;
     padding-top: 2.5rem;
+  }
+
+  .brand {
+    font-size: 1rem;
   }
 }
