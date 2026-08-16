@@ -97,8 +97,7 @@ header {
 }
 
 .nav-phone svg,
-.btn svg,
-.footer-ig svg {
+.btn svg {
   flex-shrink: 0;
   width: 1.15em;
   height: 1.15em;
@@ -262,19 +261,6 @@ footer {
 
 footer p {
   margin: 0;
-}
-
-.footer-ig {
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--ink);
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-}
-
-.footer-ig:hover {
-  color: var(--accent);
 }
 
 .theme-switch {

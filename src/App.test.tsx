@@ -3,10 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import App from "./App";
 import {
-  INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
-  PHONE_LABEL,
-  PHONE_TEL,
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
@@ -38,15 +35,16 @@ describe("App", () => {
     expect(screen.getByText(/Lic\. González/)).toBeInTheDocument();
   });
 
-  it("links the header call button to the clinic phone", () => {
+  it("links the header button to WhatsApp to book an appointment", () => {
     render(<App />);
 
-    expect(
-      screen.getByRole("link", { name: `Llamar ${PHONE_LABEL}` }),
-    ).toHaveAttribute("href", `tel:${PHONE_TEL}`);
+    expect(screen.getByRole("link", { name: "Sacar turno" })).toHaveAttribute(
+      "href",
+      WHATSAPP_URL,
+    );
   });
 
-  it("keeps Instagram out of the header and available in the page", () => {
+  it("keeps Instagram out of the header and footer", () => {
     render(<App />);
 
     const header = document.querySelector("header");
@@ -56,10 +54,7 @@ describe("App", () => {
     const instagram = screen.getAllByRole("link", { name: /instagram/i });
     expect(instagram.length).toBeGreaterThan(0);
     expect(instagram[0]).toHaveAttribute("href", INSTAGRAM_URL);
-    expect(screen.getByRole("link", { name: INSTAGRAM_HANDLE })).toHaveAttribute(
-      "href",
-      INSTAGRAM_URL,
-    );
+    expect(document.querySelector("footer")?.querySelector(`a[href="${INSTAGRAM_URL}"]`)).toBeNull();
   });
 
   it("exposes WhatsApp and map actions", () => {

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import {
-  INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
   MAP_QUERY,
   PHONE_LABEL,
@@ -165,9 +164,14 @@ export default function App() {
           />
           <span>{SITE_NAME}</span>
         </div>
-        <a className="nav-phone" href={`tel:${PHONE_TEL}`}>
+        <a
+          className="nav-phone"
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <WhatsAppIcon />
-          Llamar {PHONE_LABEL}
+          Sacar turno
         </a>
       </header>
 
@@ -272,17 +276,8 @@ export default function App() {
 
       <footer>
         <p>
-          {SITE_NAME} · {STREET_ADDRESS}, Bella Vista
+          {STREET_ADDRESS}, Bella Vista
         </p>
-        <a
-          className="footer-ig"
-          href={INSTAGRAM_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <InstagramIcon />
-          {INSTAGRAM_HANDLE}
-        </a>
         <ThemeSwitch />
       </footer>
     </>

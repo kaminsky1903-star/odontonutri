@@ -19,7 +19,7 @@ Do not invent hours, prices, ratings, or extra locations. Keep Spanish copy with
 - WhatsApp: https://wa.link/g6wqj3
 - People named on the site: Dr. Kaminsky (odontología), Lic. González (nutrición)
 
-Instagram belongs in the visit card / footer, not the header next to Llamar.
+Instagram belongs in the visit card, not the header or footer.
 
 ## Commands
 
