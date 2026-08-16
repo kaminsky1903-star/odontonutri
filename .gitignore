@@ -1,6 +1,7 @@
 node_modules/
+dist/
 .wrangler/
-.dev.vars
+.dev.vars*
 worker-content.bin
 scripts/cf-domains.json
 _site_probe/
