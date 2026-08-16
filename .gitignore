@@ -1,0 +1,8 @@
+node_modules/
+.wrangler/
+.dev.vars
+worker-content.bin
+scripts/cf-domains.json
+_site_probe/
+*.log
+.DS_Store

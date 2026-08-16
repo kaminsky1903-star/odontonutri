@@ -1,0 +1,13 @@
+{
+  "name": "odontonutri",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "mirror": "node scripts/mirror-site.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.123.0"
+  }
+}
