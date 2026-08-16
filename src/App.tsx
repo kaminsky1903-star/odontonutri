@@ -164,7 +164,7 @@ export default function App() {
   return (
     <>
       <header>
-        <div className="brand">Odontonutri</div>
+        <div className="brand">Odontologia y nutricion</div>
         <a className="nav-phone" href={`tel:${PHONE_TEL}`}>
           <WhatsAppIcon />
           Llamar {PHONE_LABEL}
