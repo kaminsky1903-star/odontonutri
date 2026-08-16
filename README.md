@@ -21,5 +21,5 @@ npm run deploy
 Cloudflare Workers Builds:
 
 - **Branch:** `main` → production (`www.odontonutri.com`)
-- **Build command:** `npm ci && npm run build`
+- **Build command:** `npm run build` (preferred; CI also builds via `postinstall` when `WORKERS_CI=1`)
 - **Deploy command:** `npx wrangler deploy`

@@ -33,7 +33,7 @@ const triggers = await cf(
 for (const t of triggers.result || []) {
   const isProd = (t.branch_includes || []).includes("main");
   const body = {
-    build_command: "npm ci",
+    build_command: "npm run build",
     deploy_command: "npx wrangler deploy",
     root_directory: "/",
   };
