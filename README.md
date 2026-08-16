@@ -11,17 +11,14 @@ npm run dev
 
 ## Deploy
 
-Pushes to `main` deploy via GitHub Actions (`.github/workflows/deploy.yml`).
+Cloudflare Workers Builds is connected to this repo.
 
-Manual:
+- **Branch:** `main` → production (`www.odontonutri.com`)
+- **Build command:** `npm ci`
+- **Deploy command:** `npx wrangler deploy`
+
+Push to `main` to deploy. Manual:
 
 ```bash
 npm run deploy
 ```
-
-## Secrets (GitHub Actions)
-
-Repo secrets required:
-
-- `CLOUDFLARE_API_TOKEN` — Workers Edit token
-- `CLOUDFLARE_ACCOUNT_ID` — `455ddfcb7b812fc7bf48ba620b65f1d9`
