@@ -14,6 +14,15 @@ describe("worker", () => {
     );
   });
 
+  it("redirects the apex favicon to the canonical www URL", async () => {
+    const response = await fetchWorker("https://odontonutri.com/favicon.ico");
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("Location")).toBe(
+      "https://www.odontonutri.com/favicon.ico",
+    );
+  });
+
   it("returns the clinic name from /api/", async () => {
     const response = await fetchWorker("https://www.odontonutri.com/api/");
 
