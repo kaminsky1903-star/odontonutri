@@ -35,13 +35,27 @@ describe("App", () => {
     expect(screen.getByText(/Lic\. González/)).toBeInTheDocument();
   });
 
-  it("links the header button to WhatsApp to book an appointment", () => {
+  it("replaces the header appointment button with a floating WhatsApp control", () => {
     render(<App />);
 
-    expect(screen.getByRole("link", { name: "Sacar turno" })).toHaveAttribute(
-      "href",
-      WHATSAPP_URL,
-    );
+    expect(
+      screen.queryByRole("link", { name: "Sacar turno" }),
+    ).not.toBeInTheDocument();
+    expect(
+      document.querySelector("header")?.querySelector(`a[href="${WHATSAPP_URL}"]`),
+    ).toBeNull();
+
+    const floating = screen.getByRole("link", {
+      name: "Contactar por WhatsApp",
+    });
+    expect(floating).toHaveAttribute("href", WHATSAPP_URL);
+    expect(floating).toHaveAttribute("target", "_blank");
+    expect(floating).toHaveAttribute("rel", "noopener noreferrer");
+    expect(floating).toHaveAttribute("title", "Contactar por WhatsApp");
+    expect(document.querySelectorAll("header a")).toHaveLength(0);
+    expect(floating).toHaveClass("whatsapp-float");
+    expect(floating.querySelector("svg")).toBeTruthy();
+    expect(floating.textContent?.replace(/\s+/g, "")).toBe("");
   });
 
   it("keeps Instagram out of the header and footer", () => {
