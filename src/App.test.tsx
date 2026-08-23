@@ -17,7 +17,7 @@ describe("App", () => {
     delete document.documentElement.dataset.theme;
   });
 
-  it("renders the clinic name, address, and services", () => {
+  it("renders the clinic name, address, and specialty actions", () => {
     render(<App />);
 
     expect(
@@ -29,13 +29,39 @@ describe("App", () => {
     expect(document.querySelector("address")).toHaveTextContent(
       STREET_ADDRESS,
     );
-    expect(screen.getByText("Odontología")).toBeInTheDocument();
-    expect(screen.getByText("Nutrición")).toBeInTheDocument();
-    expect(screen.getByText(/Dr\. Kaminsky/)).toBeInTheDocument();
-    expect(screen.getByText(/Lic\. González/)).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", { name: "Odontología" }).some(
+        (link) => link.getAttribute("href") === "/odontologia",
+      ),
+    ).toBe(true);
+    expect(
+      screen.getAllByRole("link", { name: "Nutrición" }).some(
+        (link) => link.getAttribute("href") === "/nutricion",
+      ),
+    ).toBe(true);
+    expect(
+      screen.getByAltText("Dr. Kaminsky y Lic. González"),
+    ).toBeInTheDocument();
   });
 
-  it("replaces the header appointment button with a floating WhatsApp control", () => {
+  it("shows the patient process between the hero photo and visit card", () => {
+    render(<App />);
+
+    const process = screen.getByRole("heading", {
+      name: /Una atención clara/,
+    });
+    const visit = screen.getByRole("heading", { name: "Visítanos" });
+    const photo = screen.getByAltText("Dr. Kaminsky y Lic. González");
+
+    expect(process.compareDocumentPosition(visit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(photo.compareDocumentPosition(process) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText("Consulta y diagnóstico")).toBeInTheDocument();
+    expect(screen.getByText("Plan personalizado")).toBeInTheDocument();
+    expect(screen.getByText("Tratamiento")).toBeInTheDocument();
+    expect(screen.getByText("Seguimiento y controles")).toBeInTheDocument();
+  });
+
+  it("keeps WhatsApp out of the header and uses a floating control", () => {
     render(<App />);
 
     expect(
@@ -52,18 +78,27 @@ describe("App", () => {
     expect(floating).toHaveAttribute("target", "_blank");
     expect(floating).toHaveAttribute("rel", "noopener noreferrer");
     expect(floating).toHaveAttribute("title", "Contactar por WhatsApp");
-    expect(document.querySelectorAll("header a")).toHaveLength(0);
     expect(floating).toHaveClass("whatsapp-float");
     expect(floating.querySelector("svg")).toBeTruthy();
     expect(floating.textContent?.replace(/\s+/g, "")).toBe("");
   });
 
-  it("keeps Instagram out of the header and footer", () => {
+  it("shows header navigation without Instagram", () => {
     render(<App />);
 
     const header = document.querySelector("header");
     expect(header).toBeTruthy();
     expect(header?.querySelector(`a[href="${INSTAGRAM_URL}"]`)).toBeNull();
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+    expect(screen.getByRole("link", { name: "Contacto" })).toHaveAttribute(
+      "href",
+      "#contacto",
+    );
+    expect(document.getElementById("contacto")).toHaveTextContent("Visítanos");
+    expect(screen.getByRole("navigation", { name: "Principal" })).toBeTruthy();
 
     const instagram = screen.getAllByRole("link", { name: /instagram/i });
     expect(instagram.length).toBeGreaterThan(0);

@@ -21,6 +21,23 @@ function Icon({ children }: { children: ReactNode }) {
   );
 }
 
+function LineIcon({ children }: { children: ReactNode }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {children}
+    </svg>
+  );
+}
+
 function WhatsAppIcon() {
   return (
     <Icon>
@@ -40,6 +57,57 @@ function PinIcon() {
         d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"
       />
     </Icon>
+  );
+}
+
+function ToothLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M7.1 4.9c1.5-.8 3.2-.4 4.9.5 1.7-.9 3.4-1.3 4.9-.5 2.5 1.3 2.9 4.4 1.6 7.2-.7 1.5-.9 3.1-1.1 4.7-.2 2.1-.8 3.2-1.8 3.2s-1.4-1.1-1.8-2.7l-.5-2.1c-.2-.8-.6-1.2-1.3-1.2s-1.1.4-1.3 1.2l-.5 2.1c-.4 1.6-.8 2.7-1.8 2.7s-1.6-1.1-1.8-3.2c-.2-1.6-.4-3.2-1.1-4.7-1.3-2.8-.9-5.9 1.6-7.2Z" />
+      <path d="M9 7.5c.9.6 1.9.9 3 .9s2.1-.3 3-.9" />
+    </LineIcon>
+  );
+}
+
+function AppleLineIcon() {
+  return (
+    <LineIcon>
+      <path
+        strokeWidth="1.9"
+        d="M12 8.9c-1.8-2-5-2.7-7.3-.9-2.8 2.2-2 7.1.1 10.4 1.8 2.9 4.6 4.2 7.2 2.8 2.6 1.4 5.4.1 7.2-2.8 2.1-3.3 2.9-8.2.1-10.4-2.3-1.8-5.5-1.1-7.3.9Z"
+      />
+      <path strokeWidth="1.9" d="M12 8.9c0-2.7.8-4.8 2.2-6.1" />
+      <path
+        strokeWidth="1.9"
+        d="M11.8 6.5C10.2 3.8 7.8 2.7 5.2 3.2c.8 2.6 3.1 4 6.6 3.3Z"
+      />
+      <path strokeWidth="1.9" d="M6.8 11c-1.2 2.4-.6 5.5 1.8 8" />
+    </LineIcon>
+  );
+}
+
+function ArrowLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M5 12h14" />
+      <path d="M13 6l6 6-6 6" />
+    </LineIcon>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <LineIcon>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </LineIcon>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <LineIcon>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </LineIcon>
   );
 }
 
@@ -150,128 +218,339 @@ function ThemeSwitch() {
   );
 }
 
-export default function App() {
+function currentPath() {
+  return window.location.pathname.replace(/\/+$/, "") || "/";
+}
+
+function scrollToContacto(behavior: ScrollBehavior = "smooth") {
+  const target = document.getElementById("contacto");
+  const header = document.querySelector("header");
+  if (!target) return;
+  const headerHeight = header instanceof HTMLElement ? header.offsetHeight : 0;
+  const top = window.scrollY + target.getBoundingClientRect().top - headerHeight;
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
+
+function SiteHeader() {
+  const [open, setOpen] = useState(false);
+  const path = currentPath();
+  const hash = window.location.hash;
+  const home = path === "/" && hash !== "#contacto";
+
   return (
-    <>
-      <header>
-        <div className="brand">
+    <header>
+      <div className="page-container header-bar">
+        <a className="brand" href="/">
           <img
             className="brand-logo"
             src="/logo.png"
-            alt={SITE_NAME}
+            alt=""
             width={40}
             height={40}
           />
           <span>{SITE_NAME}</span>
+        </a>
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-expanded={open}
+          aria-controls="site-nav"
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          onClick={() => setOpen((value) => !value)}
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </button>
+        <nav
+          id="site-nav"
+          className={open ? "site-nav is-open" : "site-nav"}
+          aria-label="Principal"
+        >
+          <a href="/" aria-current={home ? "page" : undefined}>
+            Inicio
+          </a>
+          <a
+            href="/odontologia"
+            aria-current={path === "/odontologia" ? "page" : undefined}
+          >
+            Odontología
+          </a>
+          <a
+            href="/nutricion"
+            aria-current={path === "/nutricion" ? "page" : undefined}
+          >
+            Nutrición
+          </a>
+          <a
+            href={path === "/" ? "#contacto" : "/#contacto"}
+            aria-current={path === "/" && hash === "#contacto" ? "page" : undefined}
+            onClick={(event) => {
+              if (path !== "/") return;
+              if (!document.getElementById("contacto")) return;
+              event.preventDefault();
+              setOpen(false);
+              window.history.replaceState(null, "", "#contacto");
+              scrollToContacto("smooth");
+            }}
+          >
+            Contacto
+          </a>
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function VisitCard() {
+  useEffect(() => {
+    if (window.location.hash !== "#contacto") return;
+    const frame = window.requestAnimationFrame(() => {
+      scrollToContacto("auto");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  return (
+    <aside className="hero-card page-container" id="contacto">
+      <h2>Visítanos</h2>
+      <div className="meta">
+        <div>
+          <strong>Dirección</strong>
+          <address>
+            {STREET_ADDRESS}
+            <br />
+            Bella Vista, San Miguel, Buenos Aires
+          </address>
         </div>
-      </header>
+        <p>
+          <strong>Teléfono</strong>
+          <a href={`tel:${PHONE_TEL}`}>{PHONE_LABEL}</a>
+        </p>
+      </div>
+      <div className="actions">
+        <a
+          className="btn primary"
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <WhatsAppIcon />
+          WhatsApp
+        </a>
+        <a
+          className="btn"
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <InstagramIcon />
+          Instagram
+        </a>
+        <a
+          className="btn"
+          href={`https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <PinIcon />
+          Google Maps
+        </a>
+        <a
+          className="btn"
+          href={`https://maps.apple.com/?q=${MAP_QUERY}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <AppleMapsIcon />
+          Apple Maps
+        </a>
+        <a className="btn" href={`tel:${PHONE_TEL}`}>
+          <PhoneIcon />
+          Llamar
+        </a>
+      </div>
+    </aside>
+  );
+}
 
-      <main>
-        <section className="hero">
-          <div>
-            <p className="eyebrow">Bella Vista · San Miguel</p>
-            <h1>{SITE_NAME}</h1>
-            <p className="lead">
-              Implantes dentales, rehabilitación y estética. Nutrición clínica y
-              deportiva, en un mismo espacio.
-            </p>
-          </div>
-
-          <aside className="hero-card">
-            <h2>Visítanos</h2>
-            <div className="meta">
-              <div>
-                <strong>Dirección</strong>
-                <address>
-                  {STREET_ADDRESS}
-                  <br />
-                  Bella Vista, San Miguel, Buenos Aires
-                </address>
-              </div>
-              <p>
-                <strong>Teléfono</strong>
-                <a href={`tel:${PHONE_TEL}`}>{PHONE_LABEL}</a>
+function HomePage() {
+  return (
+    <main>
+      <section className="hero page-container">
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <div className="hero-intro">
+              <p className="eyebrow">Bella Vista · San Miguel</p>
+              <h1>
+                Odontología{" "}
+                <br />
+                y Nutrición
+              </h1>
+              <p className="hero-tagline">
+                Cuidamos tu sonrisa. Acompañamos tu
+                <br />
+                <span className="hero-tagline-last-line">bienestar.</span>
+              </p>
+              <p className="lead">
+                Atención profesional y personalizada, con una mirada integral
+                que contempla tus necesidades, tus objetivos y tu bienestar.
               </p>
             </div>
-            <div className="actions">
+            <div className="hero-actions">
+              <div className="hero-ctas">
+                <a className="hero-btn hero-btn-odonto" href="/odontologia">
+                  <ToothLineIcon />
+                  Odontología
+                  <ArrowLineIcon />
+                </a>
+                <a className="hero-btn hero-btn-nutri" href="/nutricion">
+                  <AppleLineIcon />
+                  Nutrición
+                  <ArrowLineIcon />
+                </a>
+              </div>
               <a
-                className="btn primary"
+                className="hero-whatsapp"
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <WhatsAppIcon />
-                WhatsApp
-              </a>
-              <a
-                className="btn"
-                href={INSTAGRAM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <InstagramIcon />
-                Instagram
-              </a>
-              <a
-                className="btn"
-                href={`https://www.google.com/maps/search/?api=1&query=${MAP_QUERY}`}
-                target="_blank"
-                rel="noopener"
-              >
-                <PinIcon />
-                Google Maps
-              </a>
-              <a
-                className="btn"
-                href={`https://maps.apple.com/?q=${MAP_QUERY}`}
-                target="_blank"
-                rel="noopener"
-              >
-                <AppleMapsIcon />
-                Apple Maps
-              </a>
-              <a className="btn" href={`tel:${PHONE_TEL}`}>
-                <PhoneIcon />
-                Llamar
+                Sacá tu turno por WhatsApp
               </a>
             </div>
-          </aside>
-        </section>
+          </div>
 
-        <section className="services">
-          <article className="service">
-            <h3>Odontología</h3>
-            <p>
-              Implantes dentales, rehabilitación oral, endodoncia y estética.
-              Atención a cargo del Dr. Kaminsky.
-            </p>
-          </article>
-          <article className="service">
-            <h3>Nutrición</h3>
-            <p>
-              Nutrición clínica y deportiva, con planes para una alimentación
-              saludable. Atención a cargo de la Lic. González.
-            </p>
-          </article>
-        </section>
+          <div className="hero-visual">
+            <div className="hero-stage">
+              <img
+                className="hero-bg"
+                src="/odontonutri-hero-background.svg"
+                alt=""
+                width={1000}
+                height={1000}
+              />
+              <img
+                className="hero-photo"
+                src="/nosotros-hero.png"
+                alt="Dr. Kaminsky y Lic. González"
+                width={851}
+                height={916}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-        <section className="map-wrap" aria-label="Mapa de la clínica">
+      <section className="process page-container" aria-labelledby="process-title">
+        <div className="process-inner">
+          <h2 id="process-title">
+            Una atención clara
+            <br />
+            desde la primera visita
+          </h2>
+          <ol className="process-steps">
+            <li className="process-step" tabIndex={0}>
+              <span className="process-num" aria-hidden="true">
+                01
+              </span>
+              <h3>Consulta y diagnóstico</h3>
+              <p>Evaluamos tu caso y realizamos los estudios necesarios.</p>
+            </li>
+            <li className="process-step" tabIndex={0}>
+              <span className="process-num" aria-hidden="true">
+                02
+              </span>
+              <h3>Plan personalizado</h3>
+              <p>Te explicamos las alternativas, etapas, tiempos y presupuesto.</p>
+            </li>
+            <li className="process-step" tabIndex={0}>
+              <span className="process-num" aria-hidden="true">
+                03
+              </span>
+              <h3>Tratamiento</h3>
+              <p>Realizamos cada procedimiento de manera planificada y cuidada.</p>
+            </li>
+            <li className="process-step" tabIndex={0}>
+              <span className="process-num" aria-hidden="true">
+                04
+              </span>
+              <h3>Seguimiento y controles</h3>
+              <p>Controlamos los resultados y acompañamos tu evolución.</p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <VisitCard />
+
+      <section className="map-block page-container" aria-label="Mapa de la clínica">
+        <div className="map-panel">
+          <p className="map-panel-label">Visítanos</p>
+          <h2>Estamos cerca para acompañarte</h2>
+          <p className="map-panel-lead">
+            Un espacio cálido y profesional, preparado para cuidar tu sonrisa y
+            acompañar tus objetivos de salud.
+          </p>
+          <address className="map-panel-address">
+            {STREET_ADDRESS}
+            <br />
+            Bella Vista, Buenos Aires
+          </address>
+        </div>
+        <div className="map-wrap">
           <iframe
             title={`${SITE_NAME} en Google Maps`}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             src={`https://maps.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`}
           />
-        </section>
-      </main>
+        </div>
+      </section>
+    </main>
+  );
+}
 
+export default function App() {
+  const path = currentPath();
+
+  return (
+    <>
+      <SiteHeader />
+      {path === "/odontologia" ? (
+        <main>
+          <section className="specialty page-container">
+            <p className="eyebrow">Odontología</p>
+            <h1>Odontología</h1>
+            <p className="lead">
+              Implantes dentales, rehabilitación oral, endodoncia y estética.
+              Atención a cargo del Dr. Kaminsky.
+            </p>
+          </section>
+          <VisitCard />
+        </main>
+      ) : path === "/nutricion" ? (
+        <main>
+          <section className="specialty page-container">
+            <p className="eyebrow">Nutrición</p>
+            <h1>Nutrición</h1>
+            <p className="lead">
+              Nutrición clínica y deportiva, con planes para una alimentación
+              saludable. Atención a cargo de la Lic. González.
+            </p>
+          </section>
+          <VisitCard />
+        </main>
+      ) : (
+        <HomePage />
+      )}
       <footer>
-        <p>
-          {STREET_ADDRESS}, Bella Vista
-        </p>
-        <ThemeSwitch />
+        <div className="page-container footer-bar">
+          <p>
+            {STREET_ADDRESS}, Bella Vista
+          </p>
+          <ThemeSwitch />
+        </div>
       </footer>
-
       <a
         className="whatsapp-float"
         href={WHATSAPP_URL}
