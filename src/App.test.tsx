@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import App from "./App";
 import {
+  GOOGLE_REVIEWS,
   INSTAGRAM_URL,
   NUTRITION_SERVICES,
   SITE_NAME,
@@ -50,7 +51,7 @@ describe("App", () => {
     ).toBe(true);
     expect(
       screen.getByAltText("Dr. Kaminsky y Lic. González"),
-    ).toBeInTheDocument();
+    ).toHaveAttribute("src", "/nosotros-hero.webp");
   });
 
   it("shows the patient process between the hero photo and visit card", () => {
@@ -173,7 +174,8 @@ describe("App", () => {
     ).toBeInTheDocument();
 
     const photo = screen.getByAltText("Orientación nutricional personalizada");
-    expect(photo).toHaveAttribute("src", "/nutricion-hero.png");
+    expect(photo).toHaveAttribute("src", "/nutricion-hero.webp");
+    expect(photo).toHaveAttribute("fetchpriority", "high");
 
     expect(
       screen.getByRole("link", { name: "Agendá tu consulta" }),
@@ -225,6 +227,10 @@ describe("App", () => {
         "src",
         service.image,
       );
+      expect(screen.getByAltText(service.title)).toHaveAttribute(
+        "loading",
+        "lazy",
+      );
       expect(
         screen.getByRole("link", {
           name: `Consultar ${service.title} por WhatsApp`,
@@ -237,6 +243,121 @@ describe("App", () => {
       "utf8",
     );
     expect(css).toMatch(/\.nutri-service-visual img[\s\S]*?object-fit:\s*contain/);
+    expect(css).toMatch(
+      /\.nutri-service-grid[\s\S]*?grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/,
+    );
+    expect(screen.getByAltText("Bajar de peso")).toHaveAttribute(
+      "src",
+      "/bajar-peso.webp",
+    );
+  });
+
+  it("places Google reviews between Nutrición services and Visítanos", () => {
+    window.history.replaceState(null, "", "/nutricion");
+    render(<App />);
+
+    const services = document.getElementById("servicios-nutricion");
+    const reviews = document.getElementById("resenas-title");
+    const visit = screen.getByRole("heading", { name: "Visítanos" });
+    expect(services).toBeTruthy();
+    expect(reviews).toBeTruthy();
+    expect(
+      services!.compareDocumentPosition(reviews!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      reviews!.compareDocumentPosition(visit) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    const map = screen.getByRole("region", { name: "Mapa de la clínica" });
+    expect(
+      visit.compareDocumentPosition(map) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      screen.getByTitle(`${SITE_NAME} en Google Maps`),
+    ).toHaveAttribute("src", expect.stringContaining("maps.google.com/maps"));
+    expect(
+      screen.getByRole("heading", { name: "Estamos cerca para acompañarte" }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Experiencias de pacientes")).toBeInTheDocument();
+    expect(screen.getByText("Historias reales.")).toBeInTheDocument();
+    expect(screen.getByText("Confianza real.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Historias reales.Confianza real.",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Atención que se/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Reseñas de Google"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Una atención clara, cercana/),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /reseñas/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("NUEVO")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ver más reseñas")).not.toBeInTheDocument();
+
+    const section = reviews?.closest("section");
+    expect(section).toHaveClass("google-reviews");
+    expect(section?.querySelectorAll("a")).toHaveLength(0);
+
+    for (const review of GOOGLE_REVIEWS) {
+      const photo = screen.getByAltText(review.name);
+      expect(photo).toHaveAttribute("src", review.image);
+      expect(photo).toHaveAttribute("width", review.featured ? "40" : "32");
+      expect(photo).toHaveAttribute("height", review.featured ? "40" : "32");
+      expect(photo).toHaveAttribute("loading", "lazy");
+      expect(photo).toHaveAttribute("decoding", "async");
+      expect(screen.getByText(review.quote)).toBeInTheDocument();
+      expect(screen.getByText(review.meta)).toBeInTheDocument();
+    }
+
+    const cards = section?.querySelectorAll(".review-card") ?? [];
+    expect(cards).toHaveLength(3);
+    expect(section?.querySelector("footer")).toBeNull();
+    expect(section?.querySelectorAll(".review-author")).toHaveLength(3);
+    for (const card of cards) {
+      expect(card.querySelectorAll(".review-stars svg")).toHaveLength(5);
+    }
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/\.google-reviews[\s\S]*?background:\s*var\(--bg\)/);
+    expect(css).toMatch(/font-family:\s*"Montserrat"/);
+    expect(css).toMatch(/1\.21fr 1\.2fr 1\.21fr/);
+    expect(css).toMatch(/\.reviews-cards[\s\S]*?width:\s*83%/);
+    expect(css).toMatch(/height:\s*210px/);
+    expect(css).toMatch(/height:\s*252px/);
+    expect(css).not.toMatch(/translateY\(-28px\)/);
+    expect(css).toMatch(/\.review-author[\s\S]*?margin-top:\s*auto/);
+    expect(css).toMatch(/\.review-author img[\s\S]*?object-fit:\s*cover/);
+    expect(css).toMatch(/\.review-item-featured[\s\S]*?order:\s*-1/);
+    expect(css).toMatch(/\.reviews-watermark[\s\S]*?Playfair Display/);
+    expect(section?.querySelector(".reviews-watermark")?.textContent?.trim()).toBe(
+      "RESEÑAS",
+    );
+    expect(section?.querySelector(".reviews-watermark")?.textContent).toContain(
+      "Ñ",
+    );
+    expect(section?.querySelector(".reviews-watermark")?.textContent).not.toContain(
+      "RESENAS",
+    );
+  });
+
+  it("keeps Google reviews off the home and Odontología pages", () => {
+    render(<App />);
+    expect(screen.queryByText("Reseñas de Google")).not.toBeInTheDocument();
+
+    cleanup();
+    window.history.replaceState(null, "", "/odontologia");
+    render(<App />);
+    expect(screen.queryByText("Reseñas de Google")).not.toBeInTheDocument();
   });
 
   it("persists the selected theme", async () => {

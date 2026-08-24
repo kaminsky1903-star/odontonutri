@@ -8,6 +8,7 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
+  GOOGLE_REVIEWS,
   NUTRITION_SERVICES,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
@@ -306,6 +307,10 @@ function ServiceFeatureIcon({ label }: { label: string }) {
       return <ClipboardLineIcon />;
     case "Seguimiento":
       return <CheckCircleLineIcon />;
+    case "Déficit saludable":
+      return <ScaleLineIcon />;
+    case "Hábitos sostenibles":
+      return <AppleLineIcon />;
     default:
       return <HeartHandsIcon />;
   }
@@ -526,6 +531,34 @@ function SiteHeader() {
   );
 }
 
+function ClinicMap() {
+  return (
+    <section className="map-block page-container" aria-label="Mapa de la clínica">
+      <div className="map-panel">
+        <p className="map-panel-label">Visítanos</p>
+        <h2>Estamos cerca para acompañarte</h2>
+        <p className="map-panel-lead">
+          Un espacio cálido y profesional, preparado para cuidar tu sonrisa y
+          acompañar tus objetivos de salud.
+        </p>
+        <address className="map-panel-address">
+          {STREET_ADDRESS}
+          <br />
+          Bella Vista, Buenos Aires
+        </address>
+      </div>
+      <div className="map-wrap">
+        <iframe
+          title={`${SITE_NAME} en Google Maps`}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          src={`https://maps.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`}
+        />
+      </div>
+    </section>
+  );
+}
+
 function VisitCard() {
   useEffect(() => {
     if (window.location.hash !== "#contacto") return;
@@ -657,7 +690,7 @@ function HomePage() {
               />
               <img
                 className="hero-photo"
-                src="/nosotros-hero.png"
+                src="/nosotros-hero.webp"
                 alt="Dr. Kaminsky y Lic. González"
                 width={851}
                 height={916}
@@ -708,30 +741,7 @@ function HomePage() {
       </section>
 
       <VisitCard />
-
-      <section className="map-block page-container" aria-label="Mapa de la clínica">
-        <div className="map-panel">
-          <p className="map-panel-label">Visítanos</p>
-          <h2>Estamos cerca para acompañarte</h2>
-          <p className="map-panel-lead">
-            Un espacio cálido y profesional, preparado para cuidar tu sonrisa y
-            acompañar tus objetivos de salud.
-          </p>
-          <address className="map-panel-address">
-            {STREET_ADDRESS}
-            <br />
-            Bella Vista, Buenos Aires
-          </address>
-        </div>
-        <div className="map-wrap">
-          <iframe
-            title={`${SITE_NAME} en Google Maps`}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            src={`https://maps.google.com/maps?q=${MAP_QUERY}&z=16&output=embed`}
-          />
-        </div>
-      </section>
+      <ClinicMap />
     </main>
   );
 }
@@ -791,10 +801,11 @@ function NutritionHero() {
             <div className="nutri-hero-stage">
               <img
                 className="nutri-hero-photo"
-                src="/nutricion-hero.png"
+                src="/nutricion-hero.webp"
                 alt="Orientación nutricional personalizada"
                 width={1024}
                 height={1536}
+                fetchPriority="high"
               />
               <ul className="nutri-stat-cards">
                 <li className="nutri-stat nutri-stat-calories">
@@ -894,7 +905,14 @@ function NutritionServices() {
           <li key={service.title}>
             <article className="nutri-service-card">
               <div className="nutri-service-visual">
-                <img src={service.image} alt={service.title} />
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  width={480}
+                  height={480}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
               <div className="nutri-service-body">
                 <h4>{service.title}</h4>
@@ -927,6 +945,77 @@ function NutritionServices() {
   );
 }
 
+function ReviewStars() {
+  return (
+    <span className="review-stars" aria-label="5 estrellas">
+      <StarIcon />
+      <StarIcon />
+      <StarIcon />
+      <StarIcon />
+      <StarIcon />
+    </span>
+  );
+}
+
+function GoogleReviews() {
+  return (
+    <section className="google-reviews" aria-labelledby="resenas-title">
+      <p className="reviews-watermark" aria-hidden="true">
+        RESEÑAS
+      </p>
+      <div className="reviews-container">
+        <div className="reviews-header">
+          <p className="reviews-kicker">Experiencias de pacientes</p>
+          <h2 id="resenas-title" className="reviews-title">
+            <span>Historias reales.</span>
+            <span className="reviews-title-accent">Confianza real.</span>
+          </h2>
+        </div>
+        <ul className="reviews-cards">
+          {GOOGLE_REVIEWS.map((review) => (
+            <li
+              key={review.name}
+              className={
+                review.featured
+                  ? "review-item review-item-featured"
+                  : "review-item"
+              }
+            >
+              <article
+                className={
+                  review.featured
+                    ? "review-card review-card-featured"
+                    : "review-card"
+                }
+              >
+                <span className="review-mark" aria-hidden="true">
+                  “
+                </span>
+                <ReviewStars />
+                <p className="review-quote">{review.quote}</p>
+                <div className="review-author">
+                  <img
+                    src={review.image}
+                    alt={review.name}
+                    width={review.featured ? 40 : 32}
+                    height={review.featured ? 40 : 32}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div>
+                    <strong>{review.name}</strong>
+                    <span>{review.meta}</span>
+                  </div>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const path = currentPath();
 
@@ -949,12 +1038,14 @@ export default function App() {
         <main>
           <NutritionHero />
           <NutritionServices />
+          <GoogleReviews />
           <VisitCard />
+          <ClinicMap />
         </main>
       ) : (
         <HomePage />
       )}
-      <footer>
+      <footer className="site-footer">
         <div className="page-container footer-bar">
           <p>
             {STREET_ADDRESS}, Bella Vista

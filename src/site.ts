@@ -16,28 +16,64 @@ export function whatsappPageWithMessage(message: string) {
 
 export const NUTRITION_SERVICES = [
   {
-    title: "Alimentación saludable",
-    description: "Hábitos sostenibles para una vida más saludable.",
-    features: ["Hábitos", "Equilibrio"],
-    image: "/alimentacion-saludable-hd.png",
-    message: "Hola, quisiera consultar el servicio de Alimentación saludable.",
+    title: "Bajar de peso",
+    description:
+      "Plan personalizado para bajar de peso de forma saludable y sostenible.",
+    features: ["Déficit saludable", "Hábitos sostenibles"],
+    image: "/bajar-peso.webp",
+    message: "Hola, quisiera consultar el servicio de Bajar de peso.",
   },
   {
-    title: "Nutrición deportiva",
+    title: "Ganancia muscular",
     description:
       "Planes personalizados para mejorar tu rendimiento y composición corporal.",
     features: ["Rendimiento", "Composición corporal"],
-    image: "/nutricion-deportiva-hd.png",
-    message: "Hola, quisiera consultar el servicio de Nutrición deportiva.",
+    image: "/nutricion-deportiva-hd.webp",
+    message: "Hola, quisiera consultar el servicio de Ganancia muscular.",
+  },
+  {
+    title: "Alimentación saludable",
+    description: "Hábitos sostenibles para una vida más saludable.",
+    features: ["Hábitos", "Equilibrio"],
+    image: "/alimentacion-saludable-hd.webp",
+    message: "Hola, quisiera consultar el servicio de Alimentación saludable.",
   },
   {
     title: "Nutrición clínica",
     description: "Acompañamiento nutricional en distintas patologías.",
     features: ["Evaluación profesional", "Seguimiento"],
-    image: "/nutricion-clinica-hd.png",
+    image: "/nutricion-clinica-hd.webp",
     message: "Hola, quisiera consultar el servicio de Nutrición clínica.",
   },
 ] as const;
+
+export const GOOGLE_REVIEWS = [
+  {
+    name: "Martin Zudaire",
+    image: "/martin-zudaire.webp",
+    quote:
+      "Muy buena atención de la nutricionista. Me explicó todo súper claro y armamos un plan que realmente se adapta a mis horarios y a lo que como normalmente. Nada imposible de seguir. Muy recomendable.",
+    meta: "2 reseñas",
+    featured: false,
+  },
+  {
+    name: "Facundo Francisco Feltrin",
+    image: "/facundo-feltrin.webp",
+    quote:
+      "Estefanía me dio una dieta equilibrada para mejorar musculación con un presupuesto más al bolsillo del día a día. Genial!",
+    meta: "Local Guide · 30 reseñas · 17 fotos",
+    featured: true,
+  },
+  {
+    name: "Lucio Perez",
+    image: "/lucio-perez.webp",
+    quote:
+      "Excelente la nutri. Te explica todo bárbaro y te arma un plan realista, sin pedirte cosas raras como me pasó con otros. La re recomiendo.",
+    meta: "Local Guide · 12 reseñas · 19 fotos",
+    featured: false,
+  },
+] as const;
+
 export const MAP_QUERY =
   "Av.+Senador+Moron+858,+Bella+Vista,+Buenos+Aires,+Argentina";
 export const STREET_ADDRESS = "Av. Senador Morón 858";

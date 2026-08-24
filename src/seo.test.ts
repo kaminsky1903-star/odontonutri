@@ -53,6 +53,10 @@ describe("search appearance", () => {
       url: SITE_URL,
     });
     expect(JSON.stringify(business)).toContain(STREET_ADDRESS.replace("Av.", "Avenida"));
+    expect(JSON.stringify(business)).toContain("Bajar de peso");
+    expect(JSON.stringify(business)).toContain("Ganancia muscular");
+    expect(JSON.stringify(business)).toContain("Alimentación saludable");
+    expect(JSON.stringify(business)).toContain("Nutrición clínica");
     expect(html).toContain(PHONE_LABEL);
   });
 
@@ -64,6 +68,8 @@ describe("search appearance", () => {
     expect(robots).not.toMatch(/disallow:\s*\/favicon/i);
     expect(robots).toContain(`${SITE_URL}sitemap.xml`);
     expect(sitemap).toContain(`<loc>${SITE_URL}</loc>`);
+    expect(sitemap).toContain("<loc>https://www.odontonutri.com/odontologia</loc>");
+    expect(sitemap).toContain("<loc>https://www.odontonutri.com/nutricion</loc>");
   });
 
   it("publishes a real WhatsApp handoff page for conversion tracking", () => {

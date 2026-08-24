@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  GOOGLE_REVIEWS,
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
   NUTRITION_SERVICES,
@@ -40,11 +41,20 @@ describe("site constants", () => {
     expect(whatsappPageWithMessage("Hola, prueba")).toBe(
       `${WHATSAPP_PAGE}?text=${encodeURIComponent("Hola, prueba")}`,
     );
-    expect(NUTRITION_SERVICES).toHaveLength(3);
+    expect(NUTRITION_SERVICES).toHaveLength(4);
     expect(NUTRITION_SERVICES.map((service) => service.image)).toEqual([
-      "/alimentacion-saludable-hd.png",
-      "/nutricion-deportiva-hd.png",
-      "/nutricion-clinica-hd.png",
+      "/bajar-peso.webp",
+      "/nutricion-deportiva-hd.webp",
+      "/alimentacion-saludable-hd.webp",
+      "/nutricion-clinica-hd.webp",
     ]);
+    expect(GOOGLE_REVIEWS.map((review) => review.image)).toEqual([
+      "/martin-zudaire.webp",
+      "/facundo-feltrin.webp",
+      "/lucio-perez.webp",
+    ]);
+    expect(GOOGLE_REVIEWS.every((review) => review.image.endsWith(".webp"))).toBe(
+      true,
+    );
   });
 });
