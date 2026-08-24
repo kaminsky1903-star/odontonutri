@@ -8,6 +8,7 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
+  WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   type ThemeMode,
 } from "./site";
@@ -91,6 +92,15 @@ function ArrowLineIcon() {
     <LineIcon>
       <path d="M5 12h14" />
       <path d="M13 6l6 6-6 6" />
+    </LineIcon>
+  );
+}
+
+function ArrowDownLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M12 5v14" />
+      <path d="M6 13l6 6 6-6" />
     </LineIcon>
   );
 }
@@ -216,15 +226,6 @@ function WaterGlassIcon() {
       />
       <ellipse cx="16" cy="16.4" rx="6.85" ry="1.55" fill="#2b9fd0" />
     </svg>
-  );
-}
-
-function LeafLineIcon() {
-  return (
-    <LineIcon>
-      <path d="M5 15.5c6.5 1.2 11.2-3 13-10.5C10.8 4.2 5.2 8.8 5 15.5Z" />
-      <path d="M9 14c1.4-2.4 3.4-4.2 6.4-5.4" />
-    </LineIcon>
   );
 }
 
@@ -679,8 +680,9 @@ function NutritionHero() {
           <div className="nutri-hero-copy">
             <h1>
               Comé mejor.
-              <br />
-              Viví <span>más saludable.</span>
+              <span className="nutri-hero-title-line">
+                Viví <span>más saludable.</span>
+              </span>
             </h1>
             <p className="nutri-hero-lead">
               Orientación nutricional personalizada, adaptada a tus necesidades,
@@ -689,18 +691,16 @@ function NutritionHero() {
             <div className="nutri-hero-actions">
               <a
                 className="nutri-hero-primary"
-                href={WHATSAPP_PAGE}
+                href={WHATSAPP_NUTRITION_PAGE}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Sacá tu turno
+                Agendá tu consulta
                 <ArrowLineIcon />
               </a>
-              <a className="nutri-hero-secondary" href="#enfoque">
-                <span className="nutri-hero-leaf" aria-hidden="true">
-                  <LeafLineIcon />
-                </span>
-                Conocé el enfoque
+              <a className="nutri-hero-secondary" href="#servicios-nutricion">
+                Ver servicios
+                <ArrowDownLineIcon />
               </a>
             </div>
             <p className="nutri-hero-proof">
@@ -762,7 +762,7 @@ function NutritionHero() {
           </div>
         </div>
 
-        <ul className="nutri-benefits" id="enfoque">
+        <ul className="nutri-benefits" id="servicios-nutricion">
           <li>
             <span className="nutri-benefit-icon" aria-hidden="true">
               <PersonLineIcon />

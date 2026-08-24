@@ -181,8 +181,26 @@
     </main>
     <script>
       window.setTimeout(function () {
+        var text = new URLSearchParams(window.location.search).get("text");
+        if (text) {
+          window.location.replace(
+            "https://wa.me/541161370040?text=" + encodeURIComponent(text),
+          );
+          return;
+        }
         window.location.replace("https://wa.link/g6wqj3");
       }, 1000);
+
+      (function () {
+        var text = new URLSearchParams(window.location.search).get("text");
+        if (!text) return;
+        var dest =
+          "https://wa.me/541161370040?text=" + encodeURIComponent(text);
+        var fallback = document.querySelector(".fallback a");
+        if (fallback) fallback.setAttribute("href", dest);
+        var refresh = document.querySelector('meta[http-equiv="refresh"]');
+        if (refresh) refresh.remove();
+      })();
     </script>
   </body>
 </html>

@@ -73,6 +73,8 @@ describe("search appearance", () => {
     expect(page).toContain(`href="${SITE_URL}whatsapp.html"`);
     expect(page).toContain(`content="1;url=${WHATSAPP_URL}"`);
     expect(page).toContain(`window.location.replace("${WHATSAPP_URL}")`);
+    expect(page).toContain("URLSearchParams(window.location.search).get(\"text\")");
+    expect(page).toContain("https://wa.me/541161370040?text=");
     expect(page).toMatch(/setTimeout\([\s\S]*?,\s*1000\)/);
     expect(page).not.toMatch(/AW-\d+/);
     expect(page).not.toContain("send_to");

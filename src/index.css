@@ -40,6 +40,12 @@ html {
   scroll-padding-top: 5.5rem;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 html,
 body,
 #root {
@@ -1067,14 +1073,19 @@ footer p {
 .nutri-hero h1 {
   margin: 0;
   font-family: "DM Sans", Segoe UI, sans-serif;
-  font-size: clamp(2.35rem, 4.4vw, 3.85rem);
+  font-size: clamp(2.35rem, 4.4vw, 3.4rem);
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1.05;
   color: var(--ink);
 }
 
-.nutri-hero h1 span {
+.nutri-hero-title-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.nutri-hero h1 span:not(.nutri-hero-title-line) {
   color: var(--accent);
 }
 
@@ -1090,7 +1101,7 @@ footer p {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.8rem;
+  gap: 12px;
   margin-top: 1.5rem;
 }
 
@@ -1098,43 +1109,44 @@ footer p {
 .nutri-hero-secondary {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.45rem;
+  height: 54px;
+  padding: 0 1.35rem;
   border-radius: 999px;
-  padding: 0.82rem 1.2rem;
   font-size: 0.95rem;
   font-weight: 700;
   text-decoration: none;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
 }
 
 .nutri-hero-primary {
   background: var(--accent);
+  border: 2px solid var(--accent);
   color: #fff;
 }
 
-.nutri-hero-primary svg {
+.nutri-hero-primary svg,
+.nutri-hero-secondary svg {
   width: 1.05em;
   height: 1.05em;
+  stroke-width: 1.45;
 }
 
 .nutri-hero-secondary {
   color: var(--accent);
-  border: 1.5px solid var(--accent);
-  background: transparent;
+  border: 2px solid var(--accent);
+  background: var(--bg-2);
 }
 
-.nutri-hero-leaf {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.55rem;
-  height: 1.55rem;
-  border: 1.5px solid var(--accent);
-  border-radius: 50%;
-}
-
-.nutri-hero-leaf svg {
-  width: 0.9rem;
-  height: 0.9rem;
+@media (hover: hover) and (pointer: fine) {
+  .nutri-hero-primary:hover,
+  .nutri-hero-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgb(28 36 32 / 16%);
+  }
 }
 
 .nutri-hero-proof {
@@ -1502,7 +1514,7 @@ footer p {
   }
 
   .nutri-hero h1 {
-    font-size: clamp(2rem, 9vw, 2.55rem);
+    font-size: clamp(1.7rem, 8.5vw, 2.55rem);
   }
 
   .nutri-hero-actions {

@@ -7,6 +7,8 @@ import {
   SITE_NAME,
   SITE_URL,
   STREET_ADDRESS,
+  WHATSAPP_NUTRITION_MESSAGE,
+  WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   WHATSAPP_URL,
 } from "./site";
@@ -27,5 +29,11 @@ describe("site constants", () => {
     );
     expect(WHATSAPP_PAGE).toBe("/whatsapp.html");
     expect(WHATSAPP_URL).toMatch(/^https:\/\/wa\.link\//);
+    expect(WHATSAPP_NUTRITION_MESSAGE).toBe(
+      "Hola, quisiera agendar una consulta de nutrición.",
+    );
+    expect(WHATSAPP_NUTRITION_PAGE).toBe(
+      `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`,
+    );
   });
 });

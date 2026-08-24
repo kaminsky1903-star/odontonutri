@@ -10,6 +10,8 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
+  WHATSAPP_NUTRITION_MESSAGE,
+  WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   WHATSAPP_URL,
 } from "./site";
@@ -171,15 +173,16 @@ describe("App", () => {
     const photo = screen.getByAltText("Orientación nutricional personalizada");
     expect(photo).toHaveAttribute("src", "/nutricion-hero.png");
 
-    expect(screen.getByRole("link", { name: "Sacá tu turno" })).toHaveAttribute(
-      "href",
-      WHATSAPP_PAGE,
+    expect(
+      screen.getByRole("link", { name: "Agendá tu consulta" }),
+    ).toHaveAttribute("href", WHATSAPP_NUTRITION_PAGE);
+    expect(WHATSAPP_NUTRITION_PAGE).toContain(
+      encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE),
     );
-    expect(screen.getByRole("link", { name: "Conocé el enfoque" })).toHaveAttribute(
-      "href",
-      "#enfoque",
-    );
-    expect(document.getElementById("enfoque")).toBeTruthy();
+    expect(
+      screen.getByRole("link", { name: "Ver servicios" }),
+    ).toHaveAttribute("href", "#servicios-nutricion");
+    expect(document.getElementById("servicios-nutricion")).toBeTruthy();
     expect(screen.getByText("Calorías diarias")).toBeInTheDocument();
     expect(screen.getByText("1,620 kcal")).toBeInTheDocument();
     expect(screen.getByText("Progreso del objetivo")).toBeInTheDocument();
@@ -191,6 +194,7 @@ describe("App", () => {
       "utf8",
     );
     expect(css).toMatch(/\.nutri-hero-photo[\s\S]*?object-fit:\s*contain/);
+    expect(css).toMatch(/\.nutri-hero-title-line[\s\S]*?white-space:\s*nowrap/);
   });
 
   it("persists the selected theme", async () => {

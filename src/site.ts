@@ -6,6 +6,9 @@ export const INSTAGRAM_URL = "https://www.instagram.com/odontologia.nutricion/";
 export const INSTAGRAM_HANDLE = "@odontologia.nutricion";
 export const WHATSAPP_URL = "https://wa.link/g6wqj3";
 export const WHATSAPP_PAGE = "/whatsapp.html";
+export const WHATSAPP_NUTRITION_MESSAGE =
+  "Hola, quisiera agendar una consulta de nutrición.";
+export const WHATSAPP_NUTRITION_PAGE = `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`;
 export const MAP_QUERY =
   "Av.+Senador+Moron+858,+Bella+Vista,+Buenos+Aires,+Argentina";
 export const STREET_ADDRESS = "Av. Senador Morón 858";
