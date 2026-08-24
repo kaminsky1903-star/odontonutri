@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
@@ -81,6 +84,12 @@ describe("App", () => {
     expect(floating).toHaveClass("whatsapp-float");
     expect(floating.querySelector("svg")).toBeTruthy();
     expect(floating.textContent?.replace(/\s+/g, "")).toBe("");
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).not.toMatch(/\.whatsapp-float\s*\{\s*display:\s*none/);
   });
 
   it("shows header navigation without Instagram", () => {

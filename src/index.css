@@ -168,7 +168,7 @@ header {
 .whatsapp-float {
   --wa-green: #25d366;
   position: fixed;
-  z-index: 40;
+  z-index: 80;
   isolation: isolate;
   overflow: visible;
   right: max(20px, env(safe-area-inset-right));
@@ -928,7 +928,8 @@ footer p {
   }
 
   .whatsapp-float {
-    display: none;
+    width: 56px;
+    height: 56px;
   }
 
   footer {
