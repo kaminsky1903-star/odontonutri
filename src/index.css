@@ -1163,18 +1163,26 @@ footer p {
   display: flex;
   justify-content: center;
   min-width: 0;
+  overflow: visible;
+}
+
+.nutri-hero-stage {
+  position: relative;
+  width: 100%;
+  max-width: 30rem;
+  overflow: visible;
+  container-type: inline-size;
 }
 
 .nutri-hero-photo {
   display: block;
   width: 100%;
-  max-width: 30rem;
   height: auto;
   object-fit: contain;
   object-position: center;
 }
 
-.nutri-float-cards {
+.nutri-stat-cards {
   position: absolute;
   inset: 0;
   margin: 0;
@@ -1183,60 +1191,195 @@ footer p {
   pointer-events: none;
 }
 
-.nutri-float {
+.nutri-stat {
+  --stat-size: 0.7;
   position: absolute;
   z-index: 2;
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  min-width: 10.4rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 1rem;
-  background: var(--bg-2);
-  box-shadow: 0 10px 28px rgb(28 36 32 / 8%);
-  pointer-events: auto;
-}
-
-.nutri-float svg {
-  width: 1.45rem;
-  height: 1.45rem;
-  flex-shrink: 0;
-  color: var(--accent);
-}
-
-.nutri-float span {
-  display: flex;
   flex-direction: column;
-  gap: 0.1rem;
-  color: var(--muted);
-  font-size: 0.78rem;
+  align-items: flex-start;
+  width: clamp(
+    calc(8.2rem * var(--stat-size)),
+    calc(30cqi * var(--stat-size)),
+    calc(10.5rem * var(--stat-size))
+  );
+  padding: clamp(
+    calc(0.7rem * var(--stat-size)),
+    calc(3.1cqi * var(--stat-size)),
+    calc(0.95rem * var(--stat-size))
+  );
+  border-radius: calc(16px * var(--stat-size));
+  background: #fff;
+  box-shadow: 0 10px 28px rgb(28 36 32 / 10%);
+  pointer-events: auto;
+  color: #1c2420;
+}
+
+.nutri-stat-label,
+.nutri-stat-note,
+.nutri-stat-trend,
+.nutri-stat-percent {
+  margin: 0;
+}
+
+.nutri-stat-label {
+  color: #5b675f;
+  font-size: clamp(
+    calc(0.68rem * var(--stat-size)),
+    calc(2.55cqi * var(--stat-size)),
+    calc(0.78rem * var(--stat-size))
+  );
+  font-weight: 600;
   line-height: 1.25;
 }
 
-.nutri-float strong {
-  color: var(--ink);
-  font-size: 0.88rem;
+.nutri-stat-value {
+  margin: calc(0.18rem * var(--stat-size)) 0 0;
+  color: #1c2420;
+  font-size: clamp(
+    calc(1rem * var(--stat-size)),
+    calc(4.1cqi * var(--stat-size)),
+    calc(1.22rem * var(--stat-size))
+  );
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.nutri-stat-spark {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: calc(0.35rem * var(--stat-size));
+  color: #188e2c;
+}
+
+.nutri-stat-trend {
+  margin-top: calc(0.28rem * var(--stat-size));
+  color: #5b675f;
+  font-size: clamp(
+    calc(0.64rem * var(--stat-size)),
+    calc(2.35cqi * var(--stat-size)),
+    calc(0.74rem * var(--stat-size))
+  );
+  font-weight: 600;
+}
+
+.nutri-stat-trend span {
+  color: #188e2c;
+}
+
+.nutri-stat-note {
+  margin-top: calc(0.2rem * var(--stat-size));
+  color: #5b675f;
+  font-size: clamp(
+    calc(0.66rem * var(--stat-size)),
+    calc(2.45cqi * var(--stat-size)),
+    calc(0.76rem * var(--stat-size))
+  );
+  line-height: 1.3;
+}
+
+.nutri-stat-bar {
+  display: block;
+  width: 100%;
+  height: calc(0.38rem * var(--stat-size));
+  margin-top: calc(0.5rem * var(--stat-size));
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7efe9;
+}
+
+.nutri-stat-bar span {
+  display: block;
+  width: 75%;
+  height: 100%;
+  border-radius: inherit;
+  background: #188e2c;
+}
+
+.nutri-stat-protein-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.nutri-stat-protein-row .nutri-stat-value {
+  margin-top: 0.12rem;
+}
+
+.nutri-stat-gauge {
+  width: clamp(
+    calc(2.6rem * var(--stat-size)),
+    calc(12cqi * var(--stat-size)),
+    calc(3.4rem * var(--stat-size))
+  );
+  height: auto;
+  flex-shrink: 0;
+  color: #188e2c;
+}
+
+.nutri-stat-gauge-track {
+  stroke: #e7efe9;
+}
+
+.nutri-stat-percent {
+  margin-top: calc(0.12rem * var(--stat-size));
+  color: var(--accent);
+  font-size: clamp(
+    calc(0.78rem * var(--stat-size)),
+    calc(3cqi * var(--stat-size)),
+    calc(0.92rem * var(--stat-size))
+  );
   font-weight: 700;
 }
 
-.nutri-float-tl {
-  top: 9%;
-  left: 0;
+.nutri-stat-water-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  width: 100%;
+  color: #188e2c;
+  font-size: clamp(0.5rem, 2.4cqi, 0.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
-.nutri-float-tr {
-  top: 5%;
-  right: 0;
+.nutri-stat-glass {
+  width: auto;
+  height: 2.56em;
+  flex-shrink: 0;
 }
 
-.nutri-float-bl {
-  bottom: 24%;
-  left: 0;
+.nutri-stat-calories {
+  top: 16%;
+  left: -4%;
 }
 
-.nutri-float-br {
-  bottom: 16%;
-  right: 0;
+.nutri-stat-goal {
+  top: 28%;
+  right: -4%;
+  aspect-ratio: 1;
+}
+
+.nutri-stat-protein {
+  bottom: 28%;
+  left: -6%;
+}
+
+.nutri-stat-water {
+  bottom: 20%;
+  right: -4%;
+  aspect-ratio: 1;
+}
+
+.nutri-stat-goal .nutri-stat-bar,
+.nutri-stat-water .nutri-stat-water-note {
+  margin-top: auto;
 }
 
 .nutri-benefits {
@@ -1291,6 +1434,27 @@ footer p {
   line-height: 1.4;
 }
 
+@media (width > 840px) {
+  .nutri-hero-top {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nutri-stat-goal .nutri-stat-bar {
+    margin-bottom: 0.45rem;
+  }
+
+  .nutri-stat-water .nutri-stat-water-note {
+    margin-bottom: 0.28rem;
+  }
+
+  .nutri-benefits {
+    position: relative;
+    z-index: 4;
+    margin-top: -5.1rem;
+  }
+}
+
 @media (width <= 840px) {
   .nutri-hero {
     padding-top: 1.4rem;
@@ -1328,24 +1492,14 @@ footer p {
     align-items: center;
   }
 
-  .nutri-hero-photo {
+  .nutri-hero-stage {
     max-width: 22rem;
     margin-inline: auto;
   }
 
-  .nutri-float-cards {
-    position: static;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.7rem;
-    width: 100%;
-    margin-top: 0.9rem;
-  }
-
-  .nutri-float {
-    position: static;
-    min-width: 0;
-    width: 100%;
+  .nutri-hero-photo {
+    max-width: none;
+    margin-inline: auto;
   }
 
   .nutri-benefits {

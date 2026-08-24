@@ -183,7 +183,10 @@ describe("App", () => {
     expect(
       screen.getByText("Atención personalizada y seguimiento profesional"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Adaptado a vos")).toBeInTheDocument();
+    expect(screen.getByText("Calorías diarias")).toBeInTheDocument();
+    expect(screen.getByText("1,620 kcal")).toBeInTheDocument();
+    expect(screen.getByText("Progreso del objetivo")).toBeInTheDocument();
+    expect(screen.getByText("6/8 vasos")).toBeInTheDocument();
     expect(screen.getByText("Alimentación práctica")).toBeInTheDocument();
 
     const css = readFileSync(

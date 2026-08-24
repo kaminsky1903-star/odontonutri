@@ -115,23 +115,107 @@ function PersonLineIcon() {
   );
 }
 
-function TargetLineIcon() {
+function CalorieSparkline() {
+  const points = [
+    [8, 22],
+    [26, 26],
+    [44, 10],
+    [62, 24],
+    [80, 14],
+    [98, 18],
+    [114, 8],
+  ] as const;
+  const line =
+    "M8 22 C11 22.7, 20 28, 26 26 C32 24, 38 10.3, 44 10 C50 9.7, 56 23.3, 62 24 C68 24.7, 74 15, 80 14 C86 13, 92.3 19, 98 18 C103.7 17, 111.3 9.7, 114 8";
+
   return (
-    <LineIcon>
-      <circle cx="12" cy="12" r="8" />
-      <circle cx="12" cy="12" r="4.2" />
-      <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
-    </LineIcon>
+    <svg
+      className="nutri-stat-spark"
+      viewBox="0 0 120 36"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <linearGradient id="nutri-spark-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.38" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={`${line} L114 36 L8 36 Z`} fill="url(#nutri-spark-fill)" />
+      <path
+        d={line}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {points.map(([cx, cy]) => (
+        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="2.15" fill="currentColor" />
+      ))}
+    </svg>
   );
 }
 
-function ClipboardLineIcon() {
+function ProteinGauge() {
   return (
-    <LineIcon>
-      <rect x="6" y="5" width="12" height="15" rx="2" />
-      <path d="M9 5.2V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2v1" />
-      <path d="M9 11h6M9 14.5h4" />
-    </LineIcon>
+    <svg
+      className="nutri-stat-gauge"
+      viewBox="0 0 72 42"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        className="nutri-stat-gauge-track"
+        d="M8 36 A 28 28 0 0 1 64 36"
+        fill="none"
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+      <path
+        className="nutri-stat-gauge-value"
+        d="M8 36 A 28 28 0 0 1 64 36"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="round"
+        pathLength="100"
+        strokeDasharray="90 100"
+      />
+    </svg>
+  );
+}
+
+function WaterGlassIcon() {
+  return (
+    <svg
+      className="nutri-stat-glass"
+      viewBox="0 0 32 40"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M6.4 7.2h19.2l-3.15 24.6c-.35 2.7-2.4 4.7-5.15 4.7h-2.6c-2.75 0-4.8-2-5.15-4.7Z"
+        fill="#eaf7fd"
+        stroke="#4aa3d4"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <ellipse
+        cx="16"
+        cy="7.2"
+        rx="9.6"
+        ry="2.35"
+        fill="#f7fcfe"
+        stroke="#4aa3d4"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M9.15 16.4h13.7l-1.55 14.1c-.22 1.7-1.55 2.9-3.25 2.9h-4.1c-1.7 0-3.03-1.2-3.25-2.9Z"
+        fill="#3db4e6"
+      />
+      <ellipse cx="16" cy="16.4" rx="6.85" ry="1.55" fill="#2b9fd0" />
+    </svg>
   );
 }
 
@@ -632,43 +716,50 @@ function NutritionHero() {
           </div>
 
           <div className="nutri-hero-visual">
-            <img
-              className="nutri-hero-photo"
-              src="/nutricion-hero.png"
-              alt="Orientación nutricional personalizada"
-              width={1024}
-              height={1536}
-            />
-            <ul className="nutri-float-cards">
-              <li className="nutri-float nutri-float-tl">
-                <PersonLineIcon />
-                <span>
-                  <strong>Plan personalizado</strong>
-                  Adaptado a vos
-                </span>
-              </li>
-              <li className="nutri-float nutri-float-tr">
-                <TargetLineIcon />
-                <span>
-                  <strong>Objetivos</strong>
-                  Paso a paso
-                </span>
-              </li>
-              <li className="nutri-float nutri-float-bl">
-                <ClipboardLineIcon />
-                <span>
-                  <strong>Seguimiento</strong>
-                  Progreso continuo
-                </span>
-              </li>
-              <li className="nutri-float nutri-float-br">
-                <LeafLineIcon />
-                <span>
-                  <strong>Hábitos</strong>
-                  Resultados sostenibles
-                </span>
-              </li>
-            </ul>
+            <div className="nutri-hero-stage">
+              <img
+                className="nutri-hero-photo"
+                src="/nutricion-hero.png"
+                alt="Orientación nutricional personalizada"
+                width={1024}
+                height={1536}
+              />
+              <ul className="nutri-stat-cards">
+                <li className="nutri-stat nutri-stat-calories">
+                  <p className="nutri-stat-label">Calorías diarias</p>
+                  <p className="nutri-stat-value">1,620 kcal</p>
+                  <CalorieSparkline />
+                  <p className="nutri-stat-trend">
+                    <span>↑ 12%</span> respecto de ayer
+                  </p>
+                </li>
+                <li className="nutri-stat nutri-stat-goal">
+                  <p className="nutri-stat-label">Progreso del objetivo</p>
+                  <p className="nutri-stat-value">75%</p>
+                  <p className="nutri-stat-note">¡Seguí así! 💪</p>
+                  <span className="nutri-stat-bar" aria-hidden="true">
+                    <span />
+                  </span>
+                </li>
+                <li className="nutri-stat nutri-stat-protein">
+                  <p className="nutri-stat-label">Proteínas</p>
+                  <div className="nutri-stat-protein-row">
+                    <p className="nutri-stat-value">150 g</p>
+                    <ProteinGauge />
+                  </div>
+                  <p className="nutri-stat-percent">90%</p>
+                  <p className="nutri-stat-note">del objetivo diario</p>
+                </li>
+                <li className="nutri-stat nutri-stat-water">
+                  <p className="nutri-stat-label">Hidratación</p>
+                  <p className="nutri-stat-value">6/8 vasos</p>
+                  <p className="nutri-stat-note nutri-stat-water-note">
+                    ¡Muy bien!
+                    <WaterGlassIcon />
+                  </p>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
