@@ -1050,9 +1050,7 @@ footer p {
 }
 
 .nutri-hero-shell {
-  width: calc(100% - (var(--desktop-gutter) * 2));
-  max-width: 1200px;
-  margin-inline: auto;
+  width: 100%;
 }
 
 .nutri-hero-top {
@@ -1296,10 +1294,6 @@ footer p {
 @media (width <= 840px) {
   .nutri-hero {
     padding-top: 1.4rem;
-  }
-
-  .nutri-hero-shell {
-    width: calc(100% - (var(--mobile-gutter) * 2));
   }
 
   .nutri-hero-top {

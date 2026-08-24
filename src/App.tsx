@@ -589,7 +589,7 @@ function HomePage() {
 
 function NutritionHero() {
   return (
-    <section className="nutri-hero">
+    <section className="nutri-hero page-container">
       <div className="nutri-hero-shell">
         <div className="nutri-hero-top">
           <div className="nutri-hero-copy">
