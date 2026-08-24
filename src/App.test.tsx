@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import App from "./App";
 import {
   INSTAGRAM_URL,
+  NUTRITION_SERVICES,
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
@@ -14,6 +15,7 @@ import {
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   WHATSAPP_URL,
+  whatsappPageWithMessage,
 } from "./site";
 
 describe("App", () => {
@@ -195,6 +197,45 @@ describe("App", () => {
     );
     expect(css).toMatch(/\.nutri-hero-photo[\s\S]*?object-fit:\s*contain/);
     expect(css).toMatch(/\.nutri-hero-title-line[\s\S]*?white-space:\s*nowrap/);
+  });
+
+  it("renders the Nutrición services section with WhatsApp handoff", () => {
+    window.history.replaceState(null, "", "/nutricion");
+    render(<App />);
+
+    const section = document.getElementById("servicios-nutricion");
+    expect(section?.tagName).toBe("SECTION");
+    expect(section).toHaveClass("nutri-services");
+    expect(
+      screen.getByRole("heading", { name: "Nutrición pensada para vos" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("para vos")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Acompañamiento personalizado para cuidar tu salud y alcanzar tus objetivos.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Servicios de nutrición" }),
+    ).toBeInTheDocument();
+
+    for (const service of NUTRITION_SERVICES) {
+      expect(screen.getByAltText(service.title)).toHaveAttribute(
+        "src",
+        service.image,
+      );
+      expect(
+        screen.getByRole("link", {
+          name: `Consultar ${service.title} por WhatsApp`,
+        }),
+      ).toHaveAttribute("href", whatsappPageWithMessage(service.message));
+    }
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/\.nutri-service-visual img[\s\S]*?object-fit:\s*contain/);
   });
 
   it("persists the selected theme", async () => {

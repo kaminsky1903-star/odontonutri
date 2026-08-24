@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
+  NUTRITION_SERVICES,
   PHONE_LABEL,
   PHONE_TEL,
   SITE_NAME,
@@ -11,6 +12,7 @@ import {
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   WHATSAPP_URL,
+  whatsappPageWithMessage,
 } from "./site";
 
 describe("site constants", () => {
@@ -35,5 +37,14 @@ describe("site constants", () => {
     expect(WHATSAPP_NUTRITION_PAGE).toBe(
       `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`,
     );
+    expect(whatsappPageWithMessage("Hola, prueba")).toBe(
+      `${WHATSAPP_PAGE}?text=${encodeURIComponent("Hola, prueba")}`,
+    );
+    expect(NUTRITION_SERVICES).toHaveLength(3);
+    expect(NUTRITION_SERVICES.map((service) => service.image)).toEqual([
+      "/alimentacion-saludable-hd.png",
+      "/nutricion-deportiva-hd.png",
+      "/nutricion-clinica-hd.png",
+    ]);
   });
 });

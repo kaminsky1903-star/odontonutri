@@ -1566,3 +1566,172 @@ footer p {
     border-left: 1px solid rgb(255 255 255 / 22%);
   }
 }
+
+.nutri-services {
+  padding: 2.6rem 0 0.4rem;
+  scroll-margin-top: 5.5rem;
+}
+
+.nutri-services-title {
+  margin: 0;
+  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-size: clamp(2rem, 4vw, 2.85rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  text-align: center;
+  color: var(--ink);
+}
+
+.nutri-services-title span {
+  color: var(--accent);
+}
+
+.nutri-services-lead {
+  margin: 0.85rem auto 0;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.nutri-services-kicker {
+  margin: 2rem 0 1.15rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  font-weight: 600;
+  text-align: center;
+  color: var(--ink);
+}
+
+.nutri-service-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nutri-service-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  padding: 1.1rem 1.1rem 3.6rem;
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 22px;
+  box-shadow: 0 10px 28px rgb(28 36 32 / 7%);
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.nutri-service-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 14.5rem;
+  background: transparent;
+}
+
+.nutri-service-visual img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 14.5rem;
+  object-fit: contain;
+  object-position: center;
+}
+
+.nutri-service-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.nutri-service-body h4 {
+  margin: 0;
+  color: #0e4937;
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.nutri-service-body > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.nutri-service-body ul {
+  display: grid;
+  gap: 0.38rem;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nutri-service-body li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nutri-service-body li span {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.nutri-service-body li svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 1.45;
+}
+
+.nutri-service-go {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #0e4937;
+  color: #fff;
+}
+
+.nutri-service-go svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 1.45;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nutri-service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 36px rgb(28 36 32 / 14%);
+  }
+}
+
+@media (width <= 840px) {
+  .nutri-service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nutri-service-visual,
+  .nutri-service-visual img {
+    height: 13.5rem;
+    min-height: 13.5rem;
+  }
+}

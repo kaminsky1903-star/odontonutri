@@ -9,6 +9,35 @@ export const WHATSAPP_PAGE = "/whatsapp.html";
 export const WHATSAPP_NUTRITION_MESSAGE =
   "Hola, quisiera agendar una consulta de nutrición.";
 export const WHATSAPP_NUTRITION_PAGE = `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`;
+
+export function whatsappPageWithMessage(message: string) {
+  return `${WHATSAPP_PAGE}?text=${encodeURIComponent(message)}`;
+}
+
+export const NUTRITION_SERVICES = [
+  {
+    title: "Alimentación saludable",
+    description: "Hábitos sostenibles para una vida más saludable.",
+    features: ["Hábitos", "Equilibrio"],
+    image: "/alimentacion-saludable-hd.png",
+    message: "Hola, quisiera consultar el servicio de Alimentación saludable.",
+  },
+  {
+    title: "Nutrición deportiva",
+    description:
+      "Planes personalizados para mejorar tu rendimiento y composición corporal.",
+    features: ["Rendimiento", "Composición corporal"],
+    image: "/nutricion-deportiva-hd.png",
+    message: "Hola, quisiera consultar el servicio de Nutrición deportiva.",
+  },
+  {
+    title: "Nutrición clínica",
+    description: "Acompañamiento nutricional en distintas patologías.",
+    features: ["Evaluación profesional", "Seguimiento"],
+    image: "/nutricion-clinica-hd.png",
+    message: "Hola, quisiera consultar el servicio de Nutrición clínica.",
+  },
+] as const;
 export const MAP_QUERY =
   "Av.+Senador+Moron+858,+Bella+Vista,+Buenos+Aires,+Argentina";
 export const STREET_ADDRESS = "Av. Senador Morón 858";

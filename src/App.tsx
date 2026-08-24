@@ -8,8 +8,10 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
+  NUTRITION_SERVICES,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
+  whatsappPageWithMessage,
   type ThemeMode,
 } from "./site";
 import { applyTheme, readTheme } from "./theme";
@@ -255,6 +257,58 @@ function HeartHandsIcon() {
       <path d="M12 18s-6.2-3.8-6.2-8.1A3.4 3.4 0 0 1 12 7.6a3.4 3.4 0 0 1 6.2 2.3C18.2 14.2 12 18 12 18Z" />
     </LineIcon>
   );
+}
+
+function ScaleLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M12 4v3" />
+      <path d="M5 9h14" />
+      <path d="M5 9 3 16h4L5 9Z" />
+      <path d="M19 9l-2 7h4l-2-7Z" />
+      <path d="M8 20h8" />
+      <path d="M12 7v13" />
+    </LineIcon>
+  );
+}
+
+function ClipboardLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M8.5 5.5h7v14h-7z" />
+      <path d="M10 5.5V4.2A1.2 1.2 0 0 1 11.2 3h1.6A1.2 1.2 0 0 1 14 4.2v1.3" />
+      <path d="M10.5 10.5h3" />
+      <path d="M10.5 14h3" />
+    </LineIcon>
+  );
+}
+
+function CheckCircleLineIcon() {
+  return (
+    <LineIcon>
+      <circle cx="12" cy="12" r="8" />
+      <path d="M8.8 12.2 11 14.4l4.4-5.2" />
+    </LineIcon>
+  );
+}
+
+function ServiceFeatureIcon({ label }: { label: string }) {
+  switch (label) {
+    case "Hábitos":
+      return <AppleLineIcon />;
+    case "Equilibrio":
+      return <ScaleLineIcon />;
+    case "Rendimiento":
+      return <ChartLineIcon />;
+    case "Composición corporal":
+      return <PersonLineIcon />;
+    case "Evaluación profesional":
+      return <ClipboardLineIcon />;
+    case "Seguimiento":
+      return <CheckCircleLineIcon />;
+    default:
+      return <HeartHandsIcon />;
+  }
 }
 
 function MenuIcon() {
@@ -762,7 +816,7 @@ function NutritionHero() {
           </div>
         </div>
 
-        <ul className="nutri-benefits" id="servicios-nutricion">
+        <ul className="nutri-benefits">
           <li>
             <span className="nutri-benefit-icon" aria-hidden="true">
               <PersonLineIcon />
@@ -797,6 +851,55 @@ function NutritionHero() {
   );
 }
 
+function NutritionServices() {
+  return (
+    <section className="nutri-services page-container" id="servicios-nutricion">
+      <h2 className="nutri-services-title">
+        Nutrición pensada <span>para vos</span>
+      </h2>
+      <p className="nutri-services-lead">
+        Acompañamiento personalizado para cuidar tu salud y alcanzar tus
+        objetivos.
+      </p>
+      <h3 className="nutri-services-kicker">Servicios de nutrición</h3>
+      <ul className="nutri-service-grid">
+        {NUTRITION_SERVICES.map((service) => (
+          <li key={service.title}>
+            <article className="nutri-service-card">
+              <div className="nutri-service-visual">
+                <img src={service.image} alt={service.title} />
+              </div>
+              <div className="nutri-service-body">
+                <h4>{service.title}</h4>
+                <p>{service.description}</p>
+                <ul>
+                  {service.features.map((feature) => (
+                    <li key={feature}>
+                      <span aria-hidden="true">
+                        <ServiceFeatureIcon label={feature} />
+                      </span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <a
+                className="nutri-service-go"
+                href={whatsappPageWithMessage(service.message)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Consultar ${service.title} por WhatsApp`}
+              >
+                <ArrowLineIcon />
+              </a>
+            </article>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function App() {
   const path = currentPath();
 
@@ -818,6 +921,7 @@ export default function App() {
       ) : path === "/nutricion" ? (
         <main>
           <NutritionHero />
+          <NutritionServices />
           <VisitCard />
         </main>
       ) : (
