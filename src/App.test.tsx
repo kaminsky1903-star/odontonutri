@@ -180,9 +180,6 @@ describe("App", () => {
       "#enfoque",
     );
     expect(document.getElementById("enfoque")).toBeTruthy();
-    expect(
-      screen.getByText("Atención personalizada y seguimiento profesional"),
-    ).toBeInTheDocument();
     expect(screen.getByText("Calorías diarias")).toBeInTheDocument();
     expect(screen.getByText("1,620 kcal")).toBeInTheDocument();
     expect(screen.getByText("Progreso del objetivo")).toBeInTheDocument();

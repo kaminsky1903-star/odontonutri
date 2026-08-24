@@ -711,7 +711,6 @@ function NutritionHero() {
                 <StarIcon />
                 <StarIcon />
               </span>
-              Atención personalizada y seguimiento profesional
             </p>
           </div>
 

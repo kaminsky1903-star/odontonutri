@@ -1143,8 +1143,6 @@ footer p {
   align-items: center;
   gap: 0.55rem 0.75rem;
   margin: 1.15rem 0 0;
-  color: var(--muted);
-  font-size: 0.92rem;
 }
 
 .nutri-hero-stars {
@@ -1383,39 +1381,50 @@ footer p {
 }
 
 .nutri-benefits {
+  --process-bg: #0e4937;
+  --process-mint: #d9eee5;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
   margin: 1.6rem 0 0;
   padding: 1.35rem 0.4rem;
   list-style: none;
-  background: var(--bg-2);
+  background: var(--process-bg);
+  color: #fff;
   border-radius: 1.35rem;
-  box-shadow: 0 12px 32px rgb(28 36 32 / 6%);
+  box-shadow: 0 12px 32px rgb(14 73 55 / 28%);
 }
 
 .nutri-benefits li {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 1.15rem;
+  text-align: center;
 }
 
 .nutri-benefits li + li {
-  border-left: 1px solid var(--line);
+  border-left: 1px solid rgb(255 255 255 / 22%);
 }
 
 .nutri-benefit-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.4rem;
-  height: 2.4rem;
+  align-self: center;
+  width: 41px;
+  height: 41px;
   margin-bottom: 0.2rem;
+  border: 1px solid rgb(255 255 255 / 32%);
   border-radius: 50%;
-  background: var(--chip);
-  color: var(--accent);
+  background: var(--process-bg);
+  color: #fff;
+  transition:
+    background 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease,
+    transform 250ms ease;
 }
 
 .nutri-benefit-icon svg {
@@ -1425,16 +1434,38 @@ footer p {
 
 .nutri-benefits strong {
   font-size: 0.98rem;
+  color: #fff;
 }
 
 .nutri-benefits p {
   margin: 0;
-  color: var(--muted);
+  color: rgb(255 255 255 / 78%);
   font-size: 0.86rem;
   line-height: 1.4;
 }
 
+.nutri-benefits li:focus-visible .nutri-benefit-icon {
+  background: var(--process-mint);
+  border-color: var(--process-mint);
+  color: var(--process-bg);
+  transform: translateY(-3px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nutri-benefits li:hover .nutri-benefit-icon {
+    background: var(--process-mint);
+    border-color: var(--process-mint);
+    color: var(--process-bg);
+    transform: translateY(-3px);
+  }
+}
+
 @media (width > 840px) {
+  .nutri-hero {
+    padding-top: 0;
+    margin-top: -3.6rem;
+  }
+
   .nutri-hero-top {
     position: relative;
     z-index: 1;
@@ -1451,7 +1482,7 @@ footer p {
   .nutri-benefits {
     position: relative;
     z-index: 4;
-    margin-top: -5.1rem;
+    margin-top: -7.5rem;
   }
 }
 
@@ -1503,9 +1534,11 @@ footer p {
   }
 
   .nutri-benefits {
+    position: relative;
+    z-index: 4;
     grid-template-columns: 1fr 1fr;
     gap: 0.85rem 0;
-    margin-top: 1.2rem;
+    margin-top: -5.5rem;
     padding: 0.9rem 0.25rem;
   }
 
@@ -1518,6 +1551,6 @@ footer p {
   }
 
   .nutri-benefits li:nth-child(even) {
-    border-left: 1px solid var(--line);
+    border-left: 1px solid rgb(255 255 255 / 22%);
   }
 }
