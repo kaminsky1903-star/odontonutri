@@ -204,8 +204,9 @@ describe("App", () => {
     render(<App />);
 
     const section = document.getElementById("servicios-nutricion");
-    expect(section?.tagName).toBe("SECTION");
-    expect(section).toHaveClass("nutri-services");
+    expect(section?.tagName).toBe("H2");
+    expect(section).toHaveClass("nutri-services-title");
+    expect(section?.closest("section")).toHaveClass("nutri-services");
     expect(
       screen.getByRole("heading", { name: "Nutrición pensada para vos" }),
     ).toBeInTheDocument();

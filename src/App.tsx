@@ -447,6 +447,16 @@ function scrollToContacto(behavior: ScrollBehavior = "smooth") {
   window.scrollTo({ top: Math.max(0, top), behavior });
 }
 
+function scrollToServiciosNutricion(behavior: ScrollBehavior = "smooth") {
+  const target = document.getElementById("servicios-nutricion");
+  const header = document.querySelector("header");
+  if (!target) return;
+  const headerHeight = header instanceof HTMLElement ? header.offsetHeight : 0;
+  const top =
+    window.scrollY + target.getBoundingClientRect().top - headerHeight - 12;
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
+
 function SiteHeader() {
   const [open, setOpen] = useState(false);
   const path = currentPath();
@@ -752,7 +762,16 @@ function NutritionHero() {
                 Agendá tu consulta
                 <ArrowLineIcon />
               </a>
-              <a className="nutri-hero-secondary" href="#servicios-nutricion">
+              <a
+                className="nutri-hero-secondary"
+                href="#servicios-nutricion"
+                onClick={(event) => {
+                  if (!document.getElementById("servicios-nutricion")) return;
+                  event.preventDefault();
+                  window.history.replaceState(null, "", "#servicios-nutricion");
+                  scrollToServiciosNutricion("smooth");
+                }}
+              >
                 Ver servicios
                 <ArrowDownLineIcon />
               </a>
@@ -852,9 +871,17 @@ function NutritionHero() {
 }
 
 function NutritionServices() {
+  useEffect(() => {
+    if (window.location.hash !== "#servicios-nutricion") return;
+    const frame = window.requestAnimationFrame(() => {
+      scrollToServiciosNutricion("auto");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   return (
-    <section className="nutri-services page-container" id="servicios-nutricion">
-      <h2 className="nutri-services-title">
+    <section className="nutri-services page-container">
+      <h2 className="nutri-services-title" id="servicios-nutricion">
         Nutrición pensada <span>para vos</span>
       </h2>
       <p className="nutri-services-lead">
