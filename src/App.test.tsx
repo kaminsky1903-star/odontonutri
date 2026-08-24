@@ -154,6 +154,45 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Visítanos" })).toBeInTheDocument();
   });
 
+  it("renders the Nutrición hero with the local photo and WhatsApp handoff", () => {
+    window.history.replaceState(null, "", "/nutricion");
+    render(<App />);
+
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Comé mejor.Viví más saludable.",
+    );
+    expect(screen.getByText("más saludable.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Orientación nutricional personalizada, adaptada a tus necesidades, hábitos y objetivos.",
+      ),
+    ).toBeInTheDocument();
+
+    const photo = screen.getByAltText("Orientación nutricional personalizada");
+    expect(photo).toHaveAttribute("src", "/nutricion-hero.png");
+
+    expect(screen.getByRole("link", { name: "Sacá tu turno" })).toHaveAttribute(
+      "href",
+      WHATSAPP_PAGE,
+    );
+    expect(screen.getByRole("link", { name: "Conocé el enfoque" })).toHaveAttribute(
+      "href",
+      "#enfoque",
+    );
+    expect(document.getElementById("enfoque")).toBeTruthy();
+    expect(
+      screen.getByText("Atención personalizada y seguimiento profesional"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Adaptado a vos")).toBeInTheDocument();
+    expect(screen.getByText("Alimentación práctica")).toBeInTheDocument();
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/\.nutri-hero-photo[\s\S]*?object-fit:\s*contain/);
+  });
+
   it("persists the selected theme", async () => {
     const user = userEvent.setup();
     render(<App />);

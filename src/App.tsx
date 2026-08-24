@@ -95,6 +95,83 @@ function ArrowLineIcon() {
   );
 }
 
+function StarIcon() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+      <path
+        fill="currentColor"
+        d="M10 1.6 12.4 6.5l5.4.8-3.9 3.8.9 5.4L10 14.1 5.2 16.5l.9-5.4-3.9-3.8 5.4-.8z"
+      />
+    </svg>
+  );
+}
+
+function PersonLineIcon() {
+  return (
+    <LineIcon>
+      <circle cx="12" cy="8" r="3.1" />
+      <path d="M5.5 19c.8-3.2 3.2-5 6.5-5s5.7 1.8 6.5 5" />
+    </LineIcon>
+  );
+}
+
+function TargetLineIcon() {
+  return (
+    <LineIcon>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
+    </LineIcon>
+  );
+}
+
+function ClipboardLineIcon() {
+  return (
+    <LineIcon>
+      <rect x="6" y="5" width="12" height="15" rx="2" />
+      <path d="M9 5.2V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2v1" />
+      <path d="M9 11h6M9 14.5h4" />
+    </LineIcon>
+  );
+}
+
+function LeafLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M5 15.5c6.5 1.2 11.2-3 13-10.5C10.8 4.2 5.2 8.8 5 15.5Z" />
+      <path d="M9 14c1.4-2.4 3.4-4.2 6.4-5.4" />
+    </LineIcon>
+  );
+}
+
+function BowlLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M4 11h16c-.4 5-4.2 8-8 8s-7.6-3-8-8Z" />
+      <path d="M8 8.5c.8-1.6 1.6-2.5 4-2.5s3.2.9 4 2.5" />
+    </LineIcon>
+  );
+}
+
+function ChartLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M4 18h16" />
+      <path d="M7 18v-5" />
+      <path d="M12 18V8" />
+      <path d="M17 18V5" />
+    </LineIcon>
+  );
+}
+
+function HeartHandsIcon() {
+  return (
+    <LineIcon>
+      <path d="M12 18s-6.2-3.8-6.2-8.1A3.4 3.4 0 0 1 12 7.6a3.4 3.4 0 0 1 6.2 2.3C18.2 14.2 12 18 12 18Z" />
+    </LineIcon>
+  );
+}
+
 function MenuIcon() {
   return (
     <LineIcon>
@@ -510,6 +587,126 @@ function HomePage() {
   );
 }
 
+function NutritionHero() {
+  return (
+    <section className="nutri-hero">
+      <div className="nutri-hero-shell">
+        <div className="nutri-hero-top">
+          <div className="nutri-hero-copy">
+            <h1>
+              Comé mejor.
+              <br />
+              Viví <span>más saludable.</span>
+            </h1>
+            <p className="nutri-hero-lead">
+              Orientación nutricional personalizada, adaptada a tus necesidades,
+              hábitos y objetivos.
+            </p>
+            <div className="nutri-hero-actions">
+              <a
+                className="nutri-hero-primary"
+                href={WHATSAPP_PAGE}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Sacá tu turno
+                <ArrowLineIcon />
+              </a>
+              <a className="nutri-hero-secondary" href="#enfoque">
+                <span className="nutri-hero-leaf" aria-hidden="true">
+                  <LeafLineIcon />
+                </span>
+                Conocé el enfoque
+              </a>
+            </div>
+            <p className="nutri-hero-proof">
+              <span className="nutri-hero-stars" aria-hidden="true">
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+                <StarIcon />
+              </span>
+              Atención personalizada y seguimiento profesional
+            </p>
+          </div>
+
+          <div className="nutri-hero-visual">
+            <img
+              className="nutri-hero-photo"
+              src="/nutricion-hero.png"
+              alt="Orientación nutricional personalizada"
+              width={1024}
+              height={1536}
+            />
+            <ul className="nutri-float-cards">
+              <li className="nutri-float nutri-float-tl">
+                <PersonLineIcon />
+                <span>
+                  <strong>Plan personalizado</strong>
+                  Adaptado a vos
+                </span>
+              </li>
+              <li className="nutri-float nutri-float-tr">
+                <TargetLineIcon />
+                <span>
+                  <strong>Objetivos</strong>
+                  Paso a paso
+                </span>
+              </li>
+              <li className="nutri-float nutri-float-bl">
+                <ClipboardLineIcon />
+                <span>
+                  <strong>Seguimiento</strong>
+                  Progreso continuo
+                </span>
+              </li>
+              <li className="nutri-float nutri-float-br">
+                <LeafLineIcon />
+                <span>
+                  <strong>Hábitos</strong>
+                  Resultados sostenibles
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <ul className="nutri-benefits" id="enfoque">
+          <li>
+            <span className="nutri-benefit-icon" aria-hidden="true">
+              <PersonLineIcon />
+            </span>
+            <strong>Plan personalizado</strong>
+            <p>Según tus necesidades y objetivos.</p>
+          </li>
+          <li>
+            <span className="nutri-benefit-icon" aria-hidden="true">
+              <BowlLineIcon />
+            </span>
+            <strong>Alimentación práctica</strong>
+            <p>Propuestas simples para tu rutina.</p>
+          </li>
+          <li>
+            <span className="nutri-benefit-icon" aria-hidden="true">
+              <ChartLineIcon />
+            </span>
+            <strong>Seguimiento profesional</strong>
+            <p>Evaluación y ajustes durante el proceso.</p>
+          </li>
+          <li>
+            <span className="nutri-benefit-icon" aria-hidden="true">
+              <HeartHandsIcon />
+            </span>
+            <strong>Acompañamiento cercano</strong>
+            <p>Orientación clara en cada etapa.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const path = currentPath();
 
@@ -530,6 +727,7 @@ export default function App() {
         </main>
       ) : path === "/nutricion" ? (
         <main>
+          <NutritionHero />
           <VisitCard />
         </main>
       ) : (
