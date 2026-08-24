@@ -7,6 +7,7 @@ import {
   SITE_NAME,
   SITE_URL,
   STREET_ADDRESS,
+  WHATSAPP_PAGE,
   WHATSAPP_URL,
 } from "./site";
 
@@ -24,6 +25,7 @@ describe("site constants", () => {
     expect(INSTAGRAM_URL).toBe(
       "https://www.instagram.com/odontologia.nutricion/",
     );
+    expect(WHATSAPP_PAGE).toBe("/whatsapp.html");
     expect(WHATSAPP_URL).toMatch(/^https:\/\/wa\.link\//);
   });
 });

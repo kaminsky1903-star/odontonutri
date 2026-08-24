@@ -8,6 +8,8 @@ import {
   SITE_NAME,
   SITE_URL,
   STREET_ADDRESS,
+  WHATSAPP_PAGE,
+  WHATSAPP_URL,
 } from "./site";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -62,6 +64,19 @@ describe("search appearance", () => {
     expect(robots).not.toMatch(/disallow:\s*\/favicon/i);
     expect(robots).toContain(`${SITE_URL}sitemap.xml`);
     expect(sitemap).toContain(`<loc>${SITE_URL}</loc>`);
+  });
+
+  it("publishes a real WhatsApp handoff page for conversion tracking", () => {
+    const page = readPublic("whatsapp.html");
+
+    expect(page).toContain("<h1>Abriendo WhatsApp…</h1>");
+    expect(page).toContain(`href="${SITE_URL}whatsapp.html"`);
+    expect(page).toContain(`content="1;url=${WHATSAPP_URL}"`);
+    expect(page).toContain(`window.location.replace("${WHATSAPP_URL}")`);
+    expect(page).toMatch(/setTimeout\([\s\S]*?,\s*1000\)/);
+    expect(page).not.toMatch(/AW-\d+/);
+    expect(page).not.toContain("send_to");
+    expect(WHATSAPP_PAGE).toBe("/whatsapp.html");
   });
 
   it("declares square favicon files Google Search can crawl", () => {

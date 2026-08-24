@@ -10,6 +10,7 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
+  WHATSAPP_PAGE,
   WHATSAPP_URL,
 } from "./site";
 
@@ -73,11 +74,14 @@ describe("App", () => {
     expect(
       document.querySelector("header")?.querySelector(`a[href="${WHATSAPP_URL}"]`),
     ).toBeNull();
+    expect(
+      document.querySelector("header")?.querySelector(`a[href="${WHATSAPP_PAGE}"]`),
+    ).toBeNull();
 
     const floating = screen.getByRole("link", {
       name: "Contactar por WhatsApp",
     });
-    expect(floating).toHaveAttribute("href", WHATSAPP_URL);
+    expect(floating).toHaveAttribute("href", WHATSAPP_PAGE);
     expect(floating).toHaveAttribute("target", "_blank");
     expect(floating).toHaveAttribute("rel", "noopener noreferrer");
     expect(floating).toHaveAttribute("title", "Contactar por WhatsApp");
@@ -120,8 +124,11 @@ describe("App", () => {
 
     expect(screen.getByRole("link", { name: "WhatsApp" })).toHaveAttribute(
       "href",
-      WHATSAPP_URL,
+      WHATSAPP_PAGE,
     );
+    expect(
+      screen.getByRole("link", { name: "Sacá tu turno por WhatsApp" }),
+    ).toHaveAttribute("href", WHATSAPP_PAGE);
     expect(screen.getByRole("link", { name: "Google Maps" })).toHaveAttribute(
       "href",
       expect.stringContaining("google.com/maps"),

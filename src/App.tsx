@@ -8,7 +8,7 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   THEME_KEY,
-  WHATSAPP_URL,
+  WHATSAPP_PAGE,
   type ThemeMode,
 } from "./site";
 import { applyTheme, readTheme } from "./theme";
@@ -329,7 +329,7 @@ function VisitCard() {
       <div className="actions">
         <a
           className="btn primary"
-          href={WHATSAPP_URL}
+          href={WHATSAPP_PAGE}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -410,7 +410,7 @@ function HomePage() {
               </div>
               <a
                 className="hero-whatsapp"
-                href={WHATSAPP_URL}
+                href={WHATSAPP_PAGE}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -553,7 +553,7 @@ export default function App() {
       </footer>
       <a
         className="whatsapp-float"
-        href={WHATSAPP_URL}
+        href={WHATSAPP_PAGE}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contactar por WhatsApp"
