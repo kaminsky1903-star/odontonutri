@@ -530,14 +530,6 @@ export default function App() {
         </main>
       ) : path === "/nutricion" ? (
         <main>
-          <section className="specialty page-container">
-            <p className="eyebrow">Nutrición</p>
-            <h1>Nutrición</h1>
-            <p className="lead">
-              Nutrición clínica y deportiva, con planes para una alimentación
-              saludable. Atención a cargo de la Lic. González.
-            </p>
-          </section>
           <VisitCard />
         </main>
       ) : (

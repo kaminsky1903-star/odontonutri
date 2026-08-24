@@ -19,6 +19,7 @@ describe("App", () => {
     cleanup();
     localStorage.clear();
     delete document.documentElement.dataset.theme;
+    window.history.replaceState(null, "", "/");
   });
 
   it("renders the clinic name, address, and specialty actions", () => {
@@ -137,6 +138,20 @@ describe("App", () => {
       "href",
       expect.stringContaining("maps.apple.com"),
     );
+  });
+
+  it("omits the Nutrición specialty intro copy", () => {
+    window.history.replaceState(null, "", "/nutricion");
+    render(<App />);
+
+    expect(screen.queryByText("NUTRICIÓN")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { level: 1, name: "Nutrición" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Nutrición clínica y deportiva/),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Visítanos" })).toBeInTheDocument();
   });
 
   it("persists the selected theme", async () => {
