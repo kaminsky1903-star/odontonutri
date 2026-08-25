@@ -11,7 +11,6 @@ import {
   NUTRITION_SERVICES,
   SITE_NAME,
   STREET_ADDRESS,
-  THEME_KEY,
   WHATSAPP_NUTRITION_MESSAGE,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
@@ -23,7 +22,6 @@ describe("App", () => {
   afterEach(() => {
     cleanup();
     localStorage.clear();
-    delete document.documentElement.dataset.theme;
     window.history.replaceState(null, "", "/");
   });
 
@@ -102,7 +100,8 @@ describe("App", () => {
     expect(css).not.toMatch(/\.whatsapp-float\s*\{\s*display:\s*none/);
   });
 
-  it("shows header navigation without Instagram", () => {
+  it("shows header navigation without Instagram", async () => {
+    const user = userEvent.setup();
     render(<App />);
 
     const header = document.querySelector("header");
@@ -118,11 +117,63 @@ describe("App", () => {
     );
     expect(document.getElementById("contacto")).toHaveTextContent("Visítanos");
     expect(screen.getByRole("navigation", { name: "Principal" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: "Contacto" })).not.toHaveAttribute(
+      "aria-current",
+    );
+
+    await user.click(screen.getByRole("link", { name: "Contacto" }));
+    expect(window.location.hash).toBe("#contacto");
+    expect(screen.getByRole("link", { name: "Contacto" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: "Inicio" })).not.toHaveAttribute(
+      "aria-current",
+    );
 
     const instagram = screen.getAllByRole("link", { name: /instagram/i });
     expect(instagram.length).toBeGreaterThan(0);
     expect(instagram[0]).toHaveAttribute("href", INSTAGRAM_URL);
     expect(document.querySelector("footer")?.querySelector(`a[href="${INSTAGRAM_URL}"]`)).toBeNull();
+  });
+
+  it("keeps the consult CTA out of the header and closes the menu with Escape", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const header = document.querySelector("header");
+    expect(header).not.toHaveTextContent("Agendá tu consulta");
+    expect(
+      screen.getByRole("navigation", { name: "Principal" }).querySelectorAll("a"),
+    ).toHaveLength(4);
+
+    const toggle = screen.getByRole("button", { name: "Abrir menú" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(toggle).toHaveAttribute("aria-controls", "site-nav");
+
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "Cerrar menú" })).toBeInTheDocument();
+    expect(header).toHaveClass("is-nav-open");
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "Abrir menú" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    expect(header).not.toHaveClass("is-nav-open");
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).toMatch(/@media \(width <= 767px\)/);
+    expect(css).toMatch(/\.nav-arrow\s*\{\s*display:\s*none/);
+    expect(css).toMatch(/\.hero-tagline[\s\S]*?color:\s*var\(--muted\)/);
   });
 
   it("exposes WhatsApp and map actions", () => {
@@ -246,6 +297,12 @@ describe("App", () => {
     expect(css).toMatch(
       /\.nutri-service-grid[\s\S]*?grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/,
     );
+    expect(css).toMatch(
+      /@media \(width <= 900px\)[\s\S]*?\.nutri-service-grid[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 640px\)[\s\S]*?\.nutri-service-grid[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/,
+    );
     expect(screen.getByAltText("Bajar de peso")).toHaveAttribute(
       "src",
       "/bajar-peso.webp",
@@ -360,17 +417,13 @@ describe("App", () => {
     expect(screen.queryByText("Reseñas de Google")).not.toBeInTheDocument();
   });
 
-  it("persists the selected theme", async () => {
-    const user = userEvent.setup();
+  it("does not offer a theme switch", () => {
     render(<App />);
 
-    await user.click(screen.getByRole("button", { name: "Noche" }));
-
-    expect(localStorage.getItem(THEME_KEY)).toBe("dark");
-    expect(document.documentElement.dataset.theme).toBe("dark");
-    expect(screen.getByRole("button", { name: "Noche" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(screen.queryByRole("group", { name: "Tema" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Día" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Noche" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Auto" })).toBeNull();
+    expect(document.documentElement.dataset.theme).toBeUndefined();
   });
 });

@@ -7,15 +7,12 @@ import {
   PHONE_TEL,
   SITE_NAME,
   STREET_ADDRESS,
-  THEME_KEY,
   GOOGLE_REVIEWS,
   NUTRITION_SERVICES,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   whatsappPageWithMessage,
-  type ThemeMode,
 } from "./site";
-import { applyTheme, readTheme } from "./theme";
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -354,39 +351,6 @@ function PhoneIcon() {
   );
 }
 
-function SunIcon() {
-  return (
-    <Icon>
-      <path
-        fill="currentColor"
-        d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5.25a1 1 0 0 1 1 1V4.5a1 1 0 1 1-2 0V2.75a1 1 0 0 1 1-1zm0 16.5a1 1 0 0 1 1 1v1.75a1 1 0 1 1-2 0V19.25a1 1 0 0 1 1-1zM2.75 11a1 1 0 0 1 1-1H5.5a1 1 0 1 1 0 2H3.75a1 1 0 0 1-1-1zm16.5 0a1 1 0 0 1 1-1h1.75a1 1 0 1 1 0 2H20.25a1 1 0 0 1-1-1zM5.05 5.05a1 1 0 0 1 1.41 0l1.24 1.24a1 1 0 0 1-1.41 1.41L5.05 6.46a1 1 0 0 1 0-1.41zm11.25 11.25a1 1 0 0 1 1.41 0l1.24 1.24a1 1 0 1 1-1.41 1.41l-1.24-1.24a1 1 0 0 1 0-1.41zM18.95 5.05a1 1 0 0 1 0 1.41l-1.24 1.24a1 1 0 1 1-1.41-1.41l1.24-1.24a1 1 0 0 1 1.41 0zM7.7 16.3a1 1 0 0 1 0 1.41L6.46 18.95a1 1 0 1 1-1.41-1.41l1.24-1.24a1 1 0 0 1 1.41 0z"
-      />
-    </Icon>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <Icon>
-      <path
-        fill="currentColor"
-        d="M12.4 2.1a1 1 0 0 1 .98 1.28A8 8 0 1 0 20.62 10.6a1 1 0 0 1 1.9.36A10 10 0 1 1 11.1 2.02a1 1 0 0 1 1.3.08z"
-      />
-    </Icon>
-  );
-}
-
-function AutoIcon() {
-  return (
-    <Icon>
-      <path
-        fill="currentColor"
-        d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2v16a8 8 0 0 0 0-16z"
-      />
-    </Icon>
-  );
-}
-
 function InstagramIcon() {
   return (
     <Icon>
@@ -395,47 +359,6 @@ function InstagramIcon() {
         d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"
       />
     </Icon>
-  );
-}
-
-const THEME_OPTIONS: { id: ThemeMode; label: string; icon: ReactNode }[] = [
-  { id: "light", label: "Día", icon: <SunIcon /> },
-  { id: "dark", label: "Noche", icon: <MoonIcon /> },
-  { id: "auto", label: "Auto", icon: <AutoIcon /> },
-];
-
-function ThemeSwitch() {
-  const [mode, setMode] = useState<ThemeMode>(readTheme);
-
-  useEffect(() => {
-    applyTheme(mode);
-    try {
-      localStorage.setItem(THEME_KEY, mode);
-    } catch {
-      /* ignore */
-    }
-    if (mode !== "auto") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => applyTheme("auto");
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, [mode]);
-
-  return (
-    <div className="theme-switch" role="group" aria-label="Tema">
-      {THEME_OPTIONS.map((option) => (
-        <button
-          key={option.id}
-          type="button"
-          aria-label={option.label}
-          title={option.label}
-          aria-pressed={mode === option.id}
-          onClick={() => setMode(option.id)}
-        >
-          {option.icon}
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -462,16 +385,54 @@ function scrollToServiciosNutricion(behavior: ScrollBehavior = "smooth") {
   window.scrollTo({ top: Math.max(0, top), behavior });
 }
 
+function NavArrow() {
+  return (
+    <span className="nav-arrow" aria-hidden="true">
+      →
+    </span>
+  );
+}
+
 function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [hash, setHash] = useState(() => window.location.hash);
   const path = currentPath();
-  const hash = window.location.hash;
   const home = path === "/" && hash !== "#contacto";
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(width <= 767px)");
+    const onChange = () => {
+      if (!media.matches) setOpen(false);
+    };
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", syncHash);
+    window.addEventListener("popstate", syncHash);
+    return () => {
+      window.removeEventListener("hashchange", syncHash);
+      window.removeEventListener("popstate", syncHash);
+    };
+  }, []);
+
+  const closeMenu = () => setOpen(false);
+
   return (
-    <header>
+    <header className={open ? "is-nav-open" : undefined}>
       <div className="page-container header-bar">
-        <a className="brand" href="/">
+        <a className="brand" href="/" onClick={closeMenu}>
           <img
             className="brand-logo"
             src="/logo.png"
@@ -496,34 +457,41 @@ function SiteHeader() {
           className={open ? "site-nav is-open" : "site-nav"}
           aria-label="Principal"
         >
-          <a href="/" aria-current={home ? "page" : undefined}>
+          <a href="/" aria-current={home ? "page" : undefined} onClick={closeMenu}>
             Inicio
+            <NavArrow />
           </a>
           <a
             href="/odontologia"
             aria-current={path === "/odontologia" ? "page" : undefined}
+            onClick={closeMenu}
           >
             Odontología
+            <NavArrow />
           </a>
           <a
             href="/nutricion"
             aria-current={path === "/nutricion" ? "page" : undefined}
+            onClick={closeMenu}
           >
             Nutrición
+            <NavArrow />
           </a>
           <a
             href={path === "/" ? "#contacto" : "/#contacto"}
             aria-current={path === "/" && hash === "#contacto" ? "page" : undefined}
             onClick={(event) => {
+              closeMenu();
               if (path !== "/") return;
               if (!document.getElementById("contacto")) return;
               event.preventDefault();
-              setOpen(false);
               window.history.replaceState(null, "", "#contacto");
+              setHash("#contacto");
               scrollToContacto("smooth");
             }}
           >
             Contacto
+            <NavArrow />
           </a>
         </nav>
       </div>
@@ -708,28 +676,28 @@ function HomePage() {
             desde la primera visita
           </h2>
           <ol className="process-steps">
-            <li className="process-step" tabIndex={0}>
+            <li className="process-step">
               <span className="process-num" aria-hidden="true">
                 01
               </span>
               <h3>Consulta y diagnóstico</h3>
               <p>Evaluamos tu caso y realizamos los estudios necesarios.</p>
             </li>
-            <li className="process-step" tabIndex={0}>
+            <li className="process-step">
               <span className="process-num" aria-hidden="true">
                 02
               </span>
               <h3>Plan personalizado</h3>
               <p>Te explicamos las alternativas, etapas, tiempos y presupuesto.</p>
             </li>
-            <li className="process-step" tabIndex={0}>
+            <li className="process-step">
               <span className="process-num" aria-hidden="true">
                 03
               </span>
               <h3>Tratamiento</h3>
               <p>Realizamos cada procedimiento de manera planificada y cuidada.</p>
             </li>
-            <li className="process-step" tabIndex={0}>
+            <li className="process-step">
               <span className="process-num" aria-hidden="true">
                 04
               </span>
@@ -1050,7 +1018,6 @@ export default function App() {
           <p>
             {STREET_ADDRESS}, Bella Vista
           </p>
-          <ThemeSwitch />
         </div>
       </footer>
       <a

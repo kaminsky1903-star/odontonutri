@@ -10,7 +10,7 @@
     <meta name="description" content="Abriendo WhatsApp…" />
     <meta name="robots" content="noindex, follow" />
     <meta name="theme-color" content="#2f6a5a" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link
       rel="canonical"
       href="https://www.odontonutri.com/whatsapp.html"
@@ -42,38 +42,14 @@
       gtag("js", new Date());
       gtag("config", "G-SFZ22LKWP4");
     </script>
-    <script>
-      (function () {
-        try {
-          var mode = localStorage.getItem("odontonutri-theme") || "auto";
-          var dark =
-            mode === "dark" ||
-            (mode !== "light" &&
-              matchMedia("(prefers-color-scheme: dark)").matches);
-          document.documentElement.dataset.theme = dark ? "dark" : "light";
-        } catch (e) {
-          document.documentElement.dataset.theme = "light";
-        }
-      })();
-    </script>
     <style>
-      :root,
-      html[data-theme="light"] {
+      :root {
         --bg: #fbf8f2;
         --ink: #1c2420;
         --muted: #5b675f;
         --line: #e4ddd2;
         --accent: #2f4a3c;
         color-scheme: light;
-      }
-
-      html[data-theme="dark"] {
-        --bg: #141a17;
-        --ink: #f4f1eb;
-        --muted: #a8b3ac;
-        --line: #33403a;
-        --accent: #4d9a84;
-        color-scheme: dark;
       }
 
       * {

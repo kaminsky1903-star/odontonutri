@@ -77,5 +77,3 @@ export const GOOGLE_REVIEWS = [
 export const MAP_QUERY =
   "Av.+Senador+Moron+858,+Bella+Vista,+Buenos+Aires,+Argentina";
 export const STREET_ADDRESS = "Av. Senador Morón 858";
-export const THEME_KEY = "odontonutri-theme";
-export type ThemeMode = "light" | "dark" | "auto";

@@ -13,7 +13,7 @@
     />
     <meta name="author" content="Odontología y Nutrición" />
     <meta name="theme-color" content="#2f6a5a" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-SFZ22LKWP4"
@@ -221,20 +221,6 @@
           }
         ]
       }
-    </script>
-    <script>
-      (function () {
-        try {
-          var mode = localStorage.getItem("odontonutri-theme") || "auto";
-          var dark =
-            mode === "dark" ||
-            (mode !== "light" &&
-              matchMedia("(prefers-color-scheme: dark)").matches);
-          document.documentElement.dataset.theme = dark ? "dark" : "light";
-        } catch (e) {
-          document.documentElement.dataset.theme = "light";
-        }
-      })();
     </script>
   </head>
   <body>
