@@ -172,6 +172,13 @@ describe("App", () => {
       "utf8",
     );
     expect(css).toMatch(/@media \(width <= 767px\)/);
+    expect(css).toMatch(
+      /@media \(width <= 767px\)[\s\S]*?header[\s\S]*?position:\s*fixed/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 767px\)[\s\S]*?\.site-nav[\s\S]*?overflow-y:\s*auto/,
+    );
+    expect(css).not.toMatch(/html:has\(header\.is-nav-open\)/);
     expect(css).toMatch(/\.nav-arrow\s*\{\s*display:\s*none/);
     expect(css).toMatch(/\.hero-tagline[\s\S]*?color:\s*var\(--muted\)/);
   });

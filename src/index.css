@@ -908,15 +908,19 @@ h1 {
 }
 
 @media (width <= 767px) {
-  html:has(header.is-nav-open),
-  html:has(header.is-nav-open) body {
-    overflow: hidden;
+  body {
+    padding-top: 72px;
   }
 
   header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 72px;
     min-height: 72px;
     padding: 0;
+    overflow: visible;
     background: #fbf8f2;
     color: #1c2420;
     -webkit-backdrop-filter: none;
@@ -928,11 +932,14 @@ h1 {
     width: 100%;
     max-width: none;
     padding-inline: 24px;
+    overflow: visible;
   }
 
   .header-bar {
+    position: relative;
     height: 72px;
     gap: 0.75rem;
+    overflow: visible;
   }
 
   .brand {
@@ -985,6 +992,11 @@ h1 {
     background: #fbf8f2;
     border-bottom: 1px solid color-mix(in srgb, #2f4a3c 10%, transparent);
     box-shadow: none;
+    max-height: calc(100vh - 72px);
+    max-height: calc(100dvh - 72px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
