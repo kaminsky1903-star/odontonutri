@@ -424,6 +424,34 @@ describe("App", () => {
     expect(screen.queryByText("Reseñas de Google")).not.toBeInTheDocument();
   });
 
+  it("renders a focused Odontología landing page with direct contact actions", () => {
+    window.history.replaceState(null, "", "/odontologia");
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Implantes y rehabilitación para volver a sonreír",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Atención particular")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Consultá por WhatsApp" }),
+    ).toHaveAttribute("href", WHATSAPP_PAGE);
+    expect(
+      screen.getByRole("link", { name: "Llamar al consultorio" }),
+    ).toHaveAttribute("href", "tel:+541161370040");
+
+    for (const service of [
+      "Implantes dentales",
+      "Prótesis y rehabilitación oral",
+      "Tratamiento de conducto",
+      "Odontología integral",
+    ]) {
+      expect(screen.getByRole("heading", { name: service })).toBeInTheDocument();
+    }
+  });
+
   it("does not offer a theme switch", () => {
     render(<App />);
 
