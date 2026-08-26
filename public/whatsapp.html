@@ -15,7 +15,6 @@
       rel="canonical"
       href="https://www.odontonutri.com/whatsapp.html"
     />
-    <meta http-equiv="refresh" content="1;url=https://wa.link/g6wqj3" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link
@@ -40,7 +39,7 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-      gtag("config", "G-SFZ22LKWP4");
+      gtag("config", "G-SFZ22LKWP4", { send_page_view: false });
     </script>
     <style>
       :root {
@@ -156,26 +155,34 @@
       </div>
     </main>
     <script>
-      window.setTimeout(function () {
-        var text = new URLSearchParams(window.location.search).get("text");
-        if (text) {
-          window.location.replace(
-            "https://wa.me/541161370040?text=" + encodeURIComponent(text),
-          );
-          return;
-        }
-        window.location.replace("https://wa.link/g6wqj3");
-      }, 1000);
-
       (function () {
         var text = new URLSearchParams(window.location.search).get("text");
-        if (!text) return;
-        var dest =
-          "https://wa.me/541161370040?text=" + encodeURIComponent(text);
+        var destination = text
+          ? "https://wa.me/541161370040?text=" + encodeURIComponent(text)
+          : "https://wa.link/g6wqj3";
+        var redirected = false;
         var fallback = document.querySelector(".fallback a");
-        if (fallback) fallback.setAttribute("href", dest);
-        var refresh = document.querySelector('meta[http-equiv="refresh"]');
-        if (refresh) refresh.remove();
+
+        if (fallback) fallback.setAttribute("href", destination);
+
+        function redirectToWhatsApp() {
+          if (redirected) return;
+          redirected = true;
+          window.location.replace(destination);
+        }
+
+        var redirectTimer = window.setTimeout(redirectToWhatsApp, 2500);
+
+        gtag("event", "ads_conversion_Whastapp_1", {
+          send_to: "G-SFZ22LKWP4",
+          page_location: window.location.href,
+          page_title: document.title,
+          transport_type: "beacon",
+          event_callback: function () {
+            window.clearTimeout(redirectTimer);
+            redirectToWhatsApp();
+          },
+        });
       })();
     </script>
   </body>
