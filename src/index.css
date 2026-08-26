@@ -1498,3 +1498,784 @@ h1 {
 }
 
 .nutri-stat-bar {
+  display: block;
+  width: 100%;
+  height: calc(0.38rem * var(--stat-size));
+  margin-top: calc(0.5rem * var(--stat-size));
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7efe9;
+}
+
+.nutri-stat-bar span {
+  display: block;
+  width: 75%;
+  height: 100%;
+  border-radius: inherit;
+  background: #188e2c;
+}
+
+.nutri-stat-protein-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.nutri-stat-protein-row .nutri-stat-value {
+  margin-top: 0.12rem;
+}
+
+.nutri-stat-gauge {
+  width: clamp(
+    calc(2.6rem * var(--stat-size)),
+    calc(12cqi * var(--stat-size)),
+    calc(3.4rem * var(--stat-size))
+  );
+  height: auto;
+  flex-shrink: 0;
+  color: #188e2c;
+}
+
+.nutri-stat-gauge-track {
+  stroke: #e7efe9;
+}
+
+.nutri-stat-percent {
+  margin-top: calc(0.12rem * var(--stat-size));
+  color: var(--accent);
+  font-size: clamp(
+    calc(0.78rem * var(--stat-size)),
+    calc(3cqi * var(--stat-size)),
+    calc(0.92rem * var(--stat-size))
+  );
+  font-weight: 700;
+}
+
+.nutri-stat-water-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem;
+  width: 100%;
+  color: #188e2c;
+  font-size: clamp(0.5rem, 2.4cqi, 0.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.nutri-stat-glass {
+  width: auto;
+  height: 2.56em;
+  flex-shrink: 0;
+}
+
+.nutri-stat-calories {
+  top: 16%;
+  left: -4%;
+}
+
+.nutri-stat-goal {
+  top: 28%;
+  right: -4%;
+  aspect-ratio: 1;
+}
+
+.nutri-stat-protein {
+  bottom: 28%;
+  left: -6%;
+}
+
+.nutri-stat-water {
+  bottom: 20%;
+  right: -4%;
+  aspect-ratio: 1;
+}
+
+.nutri-stat-goal .nutri-stat-bar,
+.nutri-stat-water .nutri-stat-water-note {
+  margin-top: auto;
+}
+
+.nutri-benefits {
+  --process-bg: #0e4937;
+  --process-mint: #d9eee5;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 1.6rem 0 0;
+  padding: 1.35rem 0.4rem;
+  list-style: none;
+  background: var(--process-bg);
+  color: #fff;
+  border-radius: 1.35rem;
+  box-shadow: 0 12px 32px rgb(14 73 55 / 28%);
+}
+
+.nutri-benefits li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 1.15rem;
+  text-align: center;
+}
+
+.nutri-benefits li + li {
+  border-left: 1px solid rgb(255 255 255 / 22%);
+}
+
+.nutri-benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 41px;
+  height: 41px;
+  margin-bottom: 0.2rem;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-radius: 50%;
+  background: var(--process-bg);
+  color: #fff;
+  transition:
+    background 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease,
+    transform 250ms ease;
+}
+
+.nutri-benefit-icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.nutri-benefits strong {
+  font-size: 0.98rem;
+  color: #fff;
+}
+
+.nutri-benefits p {
+  margin: 0;
+  color: rgb(255 255 255 / 78%);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.nutri-benefits li:focus-visible .nutri-benefit-icon {
+  background: var(--process-mint);
+  border-color: var(--process-mint);
+  color: var(--process-bg);
+  transform: translateY(-3px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nutri-benefits li:hover .nutri-benefit-icon {
+    background: var(--process-mint);
+    border-color: var(--process-mint);
+    color: var(--process-bg);
+    transform: translateY(-3px);
+  }
+}
+
+@media (width > 840px) {
+  .nutri-hero {
+    padding-top: 0;
+    margin-top: -3.6rem;
+  }
+
+  .nutri-hero-top {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nutri-stat-goal .nutri-stat-bar {
+    margin-bottom: 0.45rem;
+  }
+
+  .nutri-stat-water .nutri-stat-water-note {
+    margin-bottom: 0.28rem;
+  }
+
+  .nutri-benefits {
+    position: relative;
+    z-index: 4;
+    margin-top: -7.5rem;
+  }
+}
+
+@media (width <= 840px) {
+  .nutri-hero {
+    padding-top: 1.4rem;
+  }
+
+  .nutri-hero-top {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+
+  .nutri-hero-copy {
+    max-width: none;
+  }
+
+  .nutri-hero h1 {
+    font-size: clamp(1.7rem, 8.5vw, 2.55rem);
+  }
+
+  .nutri-hero-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nutri-hero-primary,
+  .nutri-hero-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .nutri-hero-visual {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nutri-hero-stage {
+    max-width: 22rem;
+    margin-inline: auto;
+  }
+
+  .nutri-hero-photo {
+    max-width: none;
+    margin-inline: auto;
+  }
+
+  .nutri-benefits {
+    position: relative;
+    z-index: 4;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem 0;
+    margin-top: -5.5rem;
+    padding: 0.9rem 0.25rem;
+  }
+
+  .nutri-benefits li {
+    padding: 0.45rem 0.9rem;
+  }
+
+  .nutri-benefits li + li {
+    border-left: 0;
+  }
+
+  .nutri-benefits li:nth-child(even) {
+    border-left: 1px solid rgb(255 255 255 / 22%);
+  }
+}
+
+.nutri-services {
+  padding: 2.6rem 0 0.4rem;
+}
+
+.nutri-services-title {
+  margin: 0;
+  scroll-margin-top: 5.5rem;
+  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-size: clamp(2rem, 4vw, 2.85rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  text-align: center;
+  color: var(--ink);
+}
+
+.nutri-services-title span {
+  color: var(--accent);
+}
+
+.nutri-services-lead {
+  margin: 0.85rem auto 0;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.nutri-services-kicker {
+  margin: 2rem 0 1.15rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  font-weight: 600;
+  text-align: center;
+  color: var(--ink);
+}
+
+.nutri-service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nutri-service-grid > li {
+  min-width: 0;
+  height: 100%;
+}
+
+.nutri-service-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  padding: 1.1rem;
+  background: #e7efe9;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 22px;
+  box-shadow: 0 10px 28px rgb(28 36 32 / 7%);
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.nutri-service-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.nutri-service-visual img {
+  display: block;
+  width: min(100%, 240px);
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  margin: 0 auto 20px;
+}
+
+.nutri-service-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.nutri-service-body h4 {
+  margin: 0;
+  min-height: calc(1.12rem * 1.25 * 2);
+  color: #0e4937;
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.nutri-service-body > p {
+  margin: 0;
+  min-height: calc(0.94rem * 1.45 * 3);
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+.nutri-service-body ul {
+  display: grid;
+  gap: 0.38rem;
+  margin: 1.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nutri-service-body li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.nutri-service-body li span {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.nutri-service-body li svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 1.45;
+}
+
+.nutri-service-go {
+  margin-top: auto;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #0e4937;
+  color: #fff;
+}
+
+.nutri-service-go svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  stroke-width: 1.45;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nutri-service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 36px rgb(28 36 32 / 14%);
+  }
+}
+
+@media (width <= 1120px) {
+  .nutri-service-grid {
+    gap: 14px;
+  }
+
+  .nutri-service-visual img {
+    width: min(100%, 200px);
+    margin-bottom: 12px;
+  }
+}
+
+@media (width <= 900px) {
+  .nutri-service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 34rem;
+    margin-inline: auto;
+    gap: 12px;
+  }
+
+  .nutri-service-card {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .nutri-service-visual img {
+    width: min(100%, 168px);
+    margin-bottom: 10px;
+  }
+
+  .nutri-service-body h4,
+  .nutri-service-body > p {
+    min-height: 0;
+  }
+
+  .nutri-service-body h4 {
+    font-size: 1rem;
+  }
+
+  .nutri-service-body > p {
+    font-size: 0.86rem;
+  }
+
+  .nutri-service-body ul {
+    margin-top: 0.75rem;
+  }
+
+  .nutri-service-go {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (width <= 640px) {
+  .nutri-service-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: none;
+    gap: 10px;
+  }
+
+  .nutri-service-card {
+    padding: 0.7rem;
+    border-radius: 16px;
+  }
+
+  .nutri-service-visual img {
+    width: min(100%, 132px);
+    margin-bottom: 8px;
+  }
+
+  .nutri-service-body {
+    gap: 0.28rem;
+  }
+
+  .nutri-service-body h4 {
+    font-size: 0.9rem;
+  }
+
+  .nutri-service-body > p {
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+
+  .nutri-service-body ul {
+    margin-top: 0.55rem;
+    gap: 0.22rem;
+  }
+
+  .nutri-service-body li {
+    font-size: 0.72rem;
+    gap: 0.32rem;
+  }
+
+  .nutri-service-body li svg {
+    width: 0.92rem;
+    height: 0.92rem;
+  }
+
+  .nutri-service-go {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.google-reviews {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--bg);
+  background-image: none;
+  padding: 52px 0 48px;
+  min-height: 0;
+  font-family: "Montserrat", Arial, sans-serif;
+}
+
+.reviews-watermark {
+  position: absolute;
+  z-index: -1;
+  top: 28px;
+  left: 62%;
+  width: max-content;
+  transform: translateX(-50%);
+  margin: 0;
+  padding-top: 0.2em;
+  box-sizing: content-box;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(98px, 11.2vw, 161px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  color: #dce4de;
+  opacity: 0.55;
+}
+
+.reviews-container,
+.reviews-header {
+  position: relative;
+  z-index: 1;
+}
+
+.reviews-container {
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.reviews-kicker {
+  margin: 0 0 0.7rem;
+  color: #17704f;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.reviews-title {
+  margin: 0;
+  max-width: 560px;
+  font-family: "Montserrat", Arial, sans-serif;
+  font-size: clamp(46px, 4.2vw, 62px);
+  font-weight: 600;
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  color: #173f32;
+}
+
+.reviews-title span {
+  display: block;
+}
+
+.reviews-title-accent {
+  color: #17704f;
+}
+
+.reviews-cards {
+  display: grid;
+  grid-template-columns: 1.21fr 1.2fr 1.21fr;
+  align-items: end;
+  width: 83%;
+  max-width: 979px;
+  gap: 14px;
+  margin: 34px auto 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-item {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.review-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 210px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 18px;
+  border-radius: 13px;
+  border: 1px solid rgba(79, 111, 95, 0.2);
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(31, 66, 51, 0.08);
+}
+
+.review-card-featured {
+  height: 252px;
+  padding: 22px 22px 18px;
+}
+
+.review-stars {
+  display: inline-flex;
+  gap: 0.1rem;
+  color: #e2b93b;
+}
+
+.review-stars svg {
+  width: 10px;
+  height: 10px;
+}
+
+.review-card-featured .review-stars svg {
+  width: 12px;
+  height: 12px;
+}
+
+.review-mark {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  color: rgba(23, 112, 79, 0.18);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 30px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.review-quote {
+  margin: 0.5rem 0 0.7rem;
+  color: #173f32;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.42;
+}
+
+.review-card-featured .review-quote {
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.review-author {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: auto;
+  width: auto;
+  min-height: 40px;
+  padding: 0;
+  flex-shrink: 0;
+  font-size: inherit;
+}
+
+.review-author img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.review-card-featured .review-author img {
+  width: 40px;
+  height: 40px;
+}
+
+.review-author strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #173f32;
+}
+
+.review-author span {
+  display: block;
+  margin-top: 0.1rem;
+  color: #5b675f;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.review-card-featured .review-author strong {
+  font-size: 13px;
+}
+
+.review-card-featured .review-author span {
+  font-size: 11px;
+}
+
+@media (width <= 768px) {
+  .google-reviews {
+    padding: 44px 20px;
+  }
+
+  .reviews-watermark {
+    top: 24px;
+    font-size: clamp(50px, 15.4vw, 84px);
+  }
+
+  .reviews-container {
+    width: 100%;
+  }
+
+  .reviews-title {
+    font-size: clamp(34px, 9vw, 46px);
+  }
+
+  .reviews-cards {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .review-item-featured {
+    order: -1;
+  }
+
+  .review-card,
+  .review-card-featured {
+    height: auto;
+    padding: 22px;
+  }
+}
