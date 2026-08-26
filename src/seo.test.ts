@@ -9,7 +9,6 @@ import {
   SITE_URL,
   STREET_ADDRESS,
   WHATSAPP_PAGE,
-  WHATSAPP_URL,
 } from "./site";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -77,13 +76,20 @@ describe("search appearance", () => {
 
     expect(page).toContain("<h1>Abriendo WhatsApp…</h1>");
     expect(page).toContain(`href="${SITE_URL}whatsapp.html"`);
-    expect(page).toContain(`content="1;url=${WHATSAPP_URL}"`);
-    expect(page).toContain(`window.location.replace("${WHATSAPP_URL}")`);
     expect(page).toContain("URLSearchParams(window.location.search).get(\"text\")");
     expect(page).toContain("https://wa.me/541161370040?text=");
-    expect(page).toMatch(/setTimeout\([\s\S]*?,\s*1000\)/);
+    expect(page).toContain(
+      'gtag("config", "G-SFZ22LKWP4", { send_page_view: false })',
+    );
+    expect(page).toContain(
+      'gtag("event", "ads_conversion_Whastapp_1"',
+    );
+    expect(page).toContain('send_to: "G-SFZ22LKWP4"');
+    expect(page).toContain("event_callback");
+    expect(page).toContain("window.location.replace(destination)");
+    expect(page).toMatch(/setTimeout\(redirectToWhatsApp,\s*2500\)/);
+    expect(page).not.toMatch(/http-equiv=["']refresh["']/i);
     expect(page).not.toMatch(/AW-\d+/);
-    expect(page).not.toContain("send_to");
     expect(WHATSAPP_PAGE).toBe("/whatsapp.html");
   });
 

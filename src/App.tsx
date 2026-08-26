@@ -984,6 +984,92 @@ function GoogleReviews() {
   );
 }
 
+function DentistryPage() {
+  const services = [
+    {
+      title: "Implantes dentales",
+      text: "Evaluación y planificación para reemplazar piezas ausentes.",
+    },
+    {
+      title: "Prótesis y rehabilitación oral",
+      text: "Tratamientos orientados a recuperar función, comodidad y estética.",
+    },
+    {
+      title: "Tratamiento de conducto",
+      text: "Atención para conservar la pieza dental y tratar el origen del dolor.",
+    },
+    {
+      title: "Odontología integral",
+      text: "Controles, prevención y tratamientos adaptados a cada paciente.",
+    },
+  ];
+
+  return (
+    <main>
+      <section className="dentistry-hero page-container">
+        <div className="dentistry-copy">
+          <p className="eyebrow">Odontología en Bella Vista</p>
+          <h1>Implantes y rehabilitación para volver a sonreír</h1>
+          <p className="lead">
+            Atención particular a cargo del Dr. Kaminsky, con un plan claro y
+            personalizado para cada tratamiento.
+          </p>
+          <div className="dentistry-actions">
+            <a
+              className="hero-btn hero-btn-odonto"
+              href={WHATSAPP_PAGE}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <WhatsAppIcon />
+              Consultá por WhatsApp
+            </a>
+            <a className="hero-whatsapp" href={`tel:${PHONE_TEL}`}>
+              <PhoneIcon />
+              Llamar al consultorio
+            </a>
+          </div>
+          <ul className="dentistry-badges" aria-label="Información del consultorio">
+            <li>Atención particular</li>
+            <li>Bella Vista · San Miguel</li>
+            <li>Turnos por WhatsApp o teléfono</li>
+          </ul>
+        </div>
+      </section>
+
+      <section
+        className="dentistry-services page-container"
+        aria-labelledby="dentistry-services-title"
+      >
+        <p className="eyebrow">Tratamientos</p>
+        <h2 id="dentistry-services-title">Cuidado odontológico para cada etapa</h2>
+        <div className="dentistry-grid">
+          {services.map((service) => (
+            <article className="dentistry-card" key={service.title}>
+              <h3>{service.title}</h3>
+              <p>{service.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="dentistry-plan page-container">
+        <div>
+          <p className="eyebrow">Tu consulta</p>
+          <h2>Un plan pensado para tu caso</h2>
+        </div>
+        <p>
+          Evaluamos tu salud bucal, conversamos sobre tus necesidades y
+          definimos los próximos pasos antes de comenzar el tratamiento.
+        </p>
+      </section>
+
+      <VisitCard />
+      <ClinicMap />
+    </main>
+  );
+}
+
 export default function App() {
   const path = currentPath();
 
@@ -991,17 +1077,7 @@ export default function App() {
     <>
       <SiteHeader />
       {path === "/odontologia" ? (
-        <main>
-          <section className="specialty page-container">
-            <p className="eyebrow">Odontología</p>
-            <h1>Odontología</h1>
-            <p className="lead">
-              Implantes dentales, rehabilitación oral, endodoncia y estética.
-              Atención a cargo del Dr. Kaminsky.
-            </p>
-          </section>
-          <VisitCard />
-        </main>
+        <DentistryPage />
       ) : path === "/nutricion" ? (
         <main>
           <NutritionHero />
