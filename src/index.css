@@ -603,48 +603,6 @@ main {
   color: #555d59;
 }
 
-.dentistry-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 1.75rem;
-}
-
-.dentistry-hero-primary,
-.dentistry-hero-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 34px;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition:
-    transform 200ms ease,
-    box-shadow 200ms ease;
-}
-
-.dentistry-hero-primary {
-  background: #12563f;
-  border: 2px solid #12563f;
-  color: #fff;
-}
-
-.dentistry-hero-secondary {
-  background: rgb(251 248 242 / 72%);
-  border: 2px solid #12563f;
-  color: #12563f;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .dentistry-hero-primary:hover,
-  .dentistry-hero-secondary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 22px rgb(18 86 63 / 18%);
-  }
-}
-
 .dentistry-hero-stars {
   display: flex;
   align-items: center;
@@ -677,9 +635,9 @@ main {
   padding: 0;
   list-style: none;
   color: #fff;
-  background: linear-gradient(180deg, #155e45 0%, #0e4a36 100%);
+  background: var(--accent);
   border-radius: 0;
-  box-shadow: 0 -10px 28px rgb(14 75 57 / 12%);
+  box-shadow: 0 -10px 28px rgb(47 74 60 / 12%);
 }
 
 .dentistry-hero-band li {
@@ -742,17 +700,6 @@ main {
 
   .dentistry-hero-lead {
     font-size: 1.08rem;
-  }
-
-  .dentistry-hero-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .dentistry-hero-primary,
-  .dentistry-hero-secondary {
-    width: 100%;
-    padding: 16px 22px;
   }
 
   .dentistry-hero-photo {

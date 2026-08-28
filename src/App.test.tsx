@@ -445,7 +445,7 @@ describe("App", () => {
       screen.getByRole("link", { name: "Agendá tu consulta" }),
     ).toHaveAttribute("href", WHATSAPP_PAGE);
     expect(
-      screen.getByRole("link", { name: "Ver tratamientos" }),
+      screen.getByRole("link", { name: "Ver servicios" }),
     ).toHaveAttribute("href", "#tratamientos-odontologia");
     expect(document.getElementById("tratamientos-odontologia")).toBeTruthy();
     expect(
@@ -492,6 +492,9 @@ describe("App", () => {
     );
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);
     expect(css).toMatch(/clamp\(680px,\s*78vh,\s*790px\)/);
+    expect(css).toMatch(
+      /\.dentistry-hero-band[\s\S]*?background:\s*var\(--accent\)/,
+    );
 
     for (const service of [
       "Implantes dentales",

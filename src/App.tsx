@@ -1073,17 +1073,19 @@ function DentistryPage() {
               recuperar función, estética y seguridad.
             </span>
           </p>
-          <div className="dentistry-hero-actions">
+          <div className="nutri-hero-actions">
             <a
-              className="dentistry-hero-primary"
+              className="nutri-hero-primary"
               href={WHATSAPP_PAGE}
               target="_blank"
               rel="noopener noreferrer"
             >
               Agendá tu consulta
+              <ArrowLineIcon />
             </a>
-            <a className="dentistry-hero-secondary" href="#tratamientos-odontologia">
-              Ver tratamientos
+            <a className="nutri-hero-secondary" href="#tratamientos-odontologia">
+              Ver servicios
+              <ArrowDownLineIcon />
             </a>
           </div>
           <p className="dentistry-hero-stars" aria-hidden="true">
