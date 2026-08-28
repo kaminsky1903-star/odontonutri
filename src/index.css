@@ -22,6 +22,8 @@
 
 html {
   scroll-padding-top: 5.5rem;
+  overflow-x: clip;
+  scrollbar-gutter: stable;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -38,6 +40,7 @@ body,
 }
 
 body {
+  overflow-x: clip;
   background: var(--bg);
   color: var(--ink);
   font-family: "DM Sans", Segoe UI, sans-serif;
@@ -526,45 +529,263 @@ main {
 }
 
 .dentistry-hero {
-  padding-block: clamp(4rem, 9vw, 7.5rem) clamp(3rem, 6vw, 5rem);
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: clamp(680px, 78vh, 790px);
+  height: clamp(680px, 78vh, 790px);
+  padding: 0 0 100px;
+  overflow: hidden;
+  border-radius: 1.4rem;
+  box-shadow: var(--shadow);
+  background: url("/hero-odonto.png") center right / cover no-repeat;
 }
 
-.dentistry-copy {
-  max-width: 52rem;
+.dentistry-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    #f7f3ec 0%,
+    rgba(247, 243, 236, 0.99) 23%,
+    rgba(247, 243, 236, 0.94) 31%,
+    rgba(247, 243, 236, 0.76) 39%,
+    rgba(247, 243, 236, 0.48) 47%,
+    rgba(247, 243, 236, 0.20) 55%,
+    rgba(247, 243, 236, 0) 64%
+  );
 }
 
-.dentistry-copy h1 {
-  max-width: 13ch;
+.dentistry-hero-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 590px;
+  width: 100%;
 }
 
-.dentistry-copy .lead {
-  max-width: 42rem;
+.dentistry-hero-kicker {
+  margin: 0 0 1.05rem;
+  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #12563f;
 }
 
-.dentistry-actions {
+.dentistry-hero h1 {
+  margin: 0;
+  max-width: none;
+  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-size: clamp(2.35rem, 4.4vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  color: #0e4b39;
+}
+
+.dentistry-hero-title-line,
+.dentistry-hero-lead-line {
+  display: block;
+}
+
+.dentistry-hero-lead {
+  margin: 1.15rem 0 0;
+  max-width: 28rem;
+  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-size: 1.08rem;
+  line-height: 1.5;
+  color: #555d59;
+}
+
+.dentistry-hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.85rem;
   margin-top: 1.75rem;
 }
 
-.dentistry-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  padding: 0;
-  margin: 1.5rem 0 0;
-  list-style: none;
+.dentistry-hero-primary,
+.dentistry-hero-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 34px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
 }
 
-.dentistry-badges li {
-  padding: 0.55rem 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  background: var(--bg-2);
-  font-size: 0.88rem;
+.dentistry-hero-primary {
+  background: #12563f;
+  border: 2px solid #12563f;
+  color: #fff;
+}
+
+.dentistry-hero-secondary {
+  background: rgb(251 248 242 / 72%);
+  border: 2px solid #12563f;
+  color: #12563f;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dentistry-hero-primary:hover,
+  .dentistry-hero-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgb(18 86 63 / 18%);
+  }
+}
+
+.dentistry-hero-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.12rem;
+  margin: 1.15rem 0 0;
+  color: #e5ad32;
+}
+
+.dentistry-hero-stars svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.dentistry-hero-photo {
+  display: none;
+}
+
+.dentistry-hero-band {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  width: 100%;
+  height: 100px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #fff;
+  background: linear-gradient(180deg, #155e45 0%, #0e4a36 100%);
+  border-radius: 0;
+  box-shadow: 0 -10px 28px rgb(14 75 57 / 12%);
+}
+
+.dentistry-hero-band li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 0;
+  font-size: 0.95rem;
   font-weight: 600;
+}
+
+.dentistry-hero-band li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 22%;
+  right: 0;
+  bottom: 22%;
+  width: 1px;
+  background: #d9bd73;
+}
+
+.dentistry-hero-band svg {
+  width: 28px;
+  height: 28px;
+  color: #d9bd73;
+}
+
+.dentistry-hero-band span {
+  color: #fff;
+}
+
+@media (width <= 840px) {
+  .dentistry-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    min-height: 0;
+    padding: 2rem 0 0;
+    overflow: hidden;
+    background-image: none;
+    background-color: #fbf8f2;
+  }
+
+  .dentistry-hero::before {
+    display: none;
+  }
+
+  .dentistry-hero-copy {
+    max-width: none;
+    padding: 0 0 1.5rem;
+  }
+
+  .dentistry-hero h1 {
+    font-size: clamp(1.7rem, 8.5vw, 2.55rem);
+  }
+
+  .dentistry-hero-lead {
+    font-size: 1.08rem;
+  }
+
+  .dentistry-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dentistry-hero-primary,
+  .dentistry-hero-secondary {
+    width: 100%;
+    padding: 16px 22px;
+  }
+
+  .dentistry-hero-photo {
+    display: block;
+    width: 100%;
+    height: min(58vh, 460px);
+    object-fit: cover;
+    object-position: 72% center;
+  }
+
+  .dentistry-hero-band {
+    position: relative;
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-radius: 0;
+  }
+
+  .dentistry-hero-band li {
+    min-height: 5.5rem;
+    padding: 0.85rem 0.4rem;
+  }
+
+  .dentistry-hero-band li:not(:last-child)::after {
+    display: none;
+  }
+
+  .dentistry-hero-band li:nth-child(odd) {
+    border-right: 1px solid #d9bd73;
+  }
+
+  .dentistry-hero-band li:nth-child(-n + 2) {
+    border-bottom: 1px solid #d9bd73;
+  }
 }
 
 .dentistry-services {
@@ -1044,19 +1265,6 @@ h1 {
     font-size: clamp(0.95rem, 4.6vw, 1.05rem);
     font-weight: 500;
     color: #1c2420;
-  }
-
-  .dentistry-hero {
-    padding-block: 3.25rem 2.5rem;
-  }
-
-  .dentistry-actions {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .dentistry-actions a {
-    justify-content: center;
   }
 
   .dentistry-grid,

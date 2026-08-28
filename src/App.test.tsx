@@ -431,16 +431,67 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Implantes y rehabilitación para volver a sonreír",
+        name: "Volvé a sonreír con confianza.",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Atención particular")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Consultá por WhatsApp" }),
+      screen.getByText("IMPLANTES · REHABILITACIÓN · ESTÉTICA"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Tratamientos personalizados para/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Atención particular")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Agendá tu consulta" }),
     ).toHaveAttribute("href", WHATSAPP_PAGE);
     expect(
-      screen.getByRole("link", { name: "Llamar al consultorio" }),
-    ).toHaveAttribute("href", "tel:+541161370040");
+      screen.getByRole("link", { name: "Ver tratamientos" }),
+    ).toHaveAttribute("href", "#tratamientos-odontologia");
+    expect(document.getElementById("tratamientos-odontologia")).toBeTruthy();
+    expect(
+      screen.getByRole("region", { name: "Volvé a sonreír con confianza." }),
+    ).toHaveClass("dentistry-hero", "page-container");
+    expect(
+      screen.getByAltText(
+        "Dr. Kaminsky con una paciente en el sillón odontológico",
+      ),
+    ).toHaveAttribute("src", "/hero-odonto.png");
+    expect(
+      screen.queryByRole("link", { name: "Consultá por WhatsApp" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Llamar al consultorio" }),
+    ).not.toBeInTheDocument();
+
+    const band = screen.getByRole("list", { name: "Tratamientos destacados" });
+    expect(band).toHaveClass("dentistry-hero-band");
+    expect(band.querySelectorAll("li")).toHaveLength(4);
+    expect(band).toHaveTextContent("Implantes");
+    expect(band).toHaveTextContent("Rehabilitación");
+    expect(band).toHaveTextContent("Endodoncia");
+    expect(band).toHaveTextContent("Estética");
+    expect(band.querySelectorAll("svg")).toHaveLength(4);
+
+    const stars = document.querySelector(".dentistry-hero-stars");
+    expect(stars?.querySelectorAll("svg")).toHaveLength(5);
+    expect(stars?.textContent?.replace(/\s/g, "")).toBe("");
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).toMatch(
+      /url\("\/hero-odonto\.png"\) center right \/ cover no-repeat/,
+    );
+    expect(css).toMatch(/\.dentistry-hero[\s\S]*?border-radius:\s*1\.4rem/);
+    expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?font-family:\s*"DM Sans"/);
+    expect(css).toMatch(/#f7f3ec 0%/);
+    expect(css).toMatch(/rgba\(247, 243, 236, 0\) 64%/);
+    expect(css).toMatch(
+      /\.dentistry-hero-photo[\s\S]*?object-fit:\s*cover[\s\S]*?object-position:\s*72% center/,
+    );
+    expect(css).toMatch(/scrollbar-gutter:\s*stable/);
+    expect(css).toMatch(/clamp\(680px,\s*78vh,\s*790px\)/);
 
     for (const service of [
       "Implantes dentales",

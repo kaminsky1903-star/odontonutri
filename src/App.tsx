@@ -70,6 +70,48 @@ function ToothLineIcon() {
   );
 }
 
+function ImplantLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M9.2 4.6c.9-.5 2.6-.5 3.6 0 1.2.6 1.6 1.6 1.6 2.6 0 1.2-.8 1.9-2.6 1.9h-1.6c-1.8 0-2.6-.7-2.6-1.9 0-1 .4-2 1.6-2.6Z" />
+      <path d="M12 9.1v9.4" />
+      <path d="M10.1 12h3.8" />
+      <path d="M10.1 14.4h3.8" />
+      <path d="M10.1 16.8h3.8" />
+      <path d="M10.4 18.8h3.2" />
+    </LineIcon>
+  );
+}
+
+function RehabLineIcon() {
+  return (
+    <LineIcon>
+      <circle cx="12" cy="12" r="8.2" />
+      <path d="M8.2 13.4s1.4 2.3 3.8 2.3 3.8-2.3 3.8-2.3" />
+      <path d="M9 9.4h.01" />
+      <path d="M15 9.4h.01" />
+    </LineIcon>
+  );
+}
+
+function EndoLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M7.1 4.9c1.5-.8 3.2-.4 4.9.5 1.7-.9 3.4-1.3 4.9-.5 2.5 1.3 2.9 4.4 1.6 7.2-.7 1.5-.9 3.1-1.1 4.7-.2 2.1-.8 3.2-1.8 3.2s-1.4-1.1-1.8-2.7l-.5-2.1c-.2-.8-.6-1.2-1.3-1.2s-1.1.4-1.3 1.2l-.5 2.1c-.4 1.6-.8 2.7-1.8 2.7s-1.6-1.1-1.8-3.2c-.2-1.6-.4-3.2-1.1-4.7-1.3-2.8-.9-5.9 1.6-7.2Z" />
+      <path d="M12 7.2v8.2" />
+    </LineIcon>
+  );
+}
+
+function SparkleLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M12 3.2 13.2 8.4 18.4 9.6 13.2 10.8 12 16 10.8 10.8 5.6 9.6 10.8 8.4Z" />
+      <path d="M18.2 14.2 18.8 16.4 21 17 18.8 17.6 18.2 19.8 17.6 17.6 15.4 17 17.6 16.4Z" />
+    </LineIcon>
+  );
+}
+
 function AppleLineIcon() {
   return (
     <LineIcon>
@@ -984,6 +1026,13 @@ function GoogleReviews() {
   );
 }
 
+const DENTISTRY_HERO_TREATMENTS = [
+  { title: "Implantes", icon: <ImplantLineIcon /> },
+  { title: "Rehabilitación", icon: <RehabLineIcon /> },
+  { title: "Endodoncia", icon: <EndoLineIcon /> },
+  { title: "Estética", icon: <SparkleLineIcon /> },
+] as const;
+
 function DentistryPage() {
   const services = [
     {
@@ -1006,38 +1055,65 @@ function DentistryPage() {
 
   return (
     <main>
-      <section className="dentistry-hero page-container">
-        <div className="dentistry-copy">
-          <p className="eyebrow">Odontología en Bella Vista</p>
-          <h1>Implantes y rehabilitación para volver a sonreír</h1>
-          <p className="lead">
-            Atención particular a cargo del Dr. Kaminsky, con un plan claro y
-            personalizado para cada tratamiento.
+      <section
+        className="dentistry-hero page-container"
+        aria-labelledby="dentistry-hero-title"
+      >
+        <div className="dentistry-hero-copy">
+          <p className="dentistry-hero-kicker">
+            IMPLANTES · REHABILITACIÓN · ESTÉTICA
           </p>
-          <div className="dentistry-actions">
+          <h1 id="dentistry-hero-title">
+            Volvé a sonreír{" "}
+            <span className="dentistry-hero-title-line">con confianza.</span>
+          </h1>
+          <p className="dentistry-hero-lead">
+            Tratamientos personalizados para{" "}
+            <span className="dentistry-hero-lead-line">
+              recuperar función, estética y seguridad.
+            </span>
+          </p>
+          <div className="dentistry-hero-actions">
             <a
-              className="hero-btn hero-btn-odonto"
+              className="dentistry-hero-primary"
               href={WHATSAPP_PAGE}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <WhatsAppIcon />
-              Consultá por WhatsApp
+              Agendá tu consulta
             </a>
-            <a className="hero-whatsapp" href={`tel:${PHONE_TEL}`}>
-              <PhoneIcon />
-              Llamar al consultorio
+            <a className="dentistry-hero-secondary" href="#tratamientos-odontologia">
+              Ver tratamientos
             </a>
           </div>
-          <ul className="dentistry-badges" aria-label="Información del consultorio">
-            <li>Atención particular</li>
-            <li>Bella Vista · San Miguel</li>
-            <li>Turnos por WhatsApp o teléfono</li>
-          </ul>
+          <p className="dentistry-hero-stars" aria-hidden="true">
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+            <StarIcon />
+          </p>
         </div>
+        <img
+          className="dentistry-hero-photo"
+          src="/hero-odonto.png"
+          alt="Dr. Kaminsky con una paciente en el sillón odontológico"
+          width={1672}
+          height={941}
+          fetchPriority="high"
+        />
+        <ul className="dentistry-hero-band" aria-label="Tratamientos destacados">
+          {DENTISTRY_HERO_TREATMENTS.map((treatment) => (
+            <li key={treatment.title}>
+              {treatment.icon}
+              <span>{treatment.title}</span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section
+        id="tratamientos-odontologia"
         className="dentistry-services page-container"
         aria-labelledby="dentistry-services-title"
       >
