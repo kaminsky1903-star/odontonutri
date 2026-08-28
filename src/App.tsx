@@ -809,14 +809,16 @@ function NutritionHero() {
 
           <div className="nutri-hero-visual">
             <div className="nutri-hero-stage">
-              <img
-                className="nutri-hero-photo"
-                src="/nutricion-hero.webp"
-                alt="Orientación nutricional personalizada"
-                width={1024}
-                height={1536}
-                fetchPriority="high"
-              />
+              <div className="nutri-hero-photo-clip">
+                <img
+                  className="nutri-hero-photo"
+                  src="/nutricion-hero.webp"
+                  alt="Orientación nutricional personalizada"
+                  width={1024}
+                  height={1536}
+                  fetchPriority="high"
+                />
+              </div>
               <ul className="nutri-stat-cards">
                 <li className="nutri-stat nutri-stat-calories">
                   <p className="nutri-stat-label">Calorías diarias</p>
@@ -1096,14 +1098,16 @@ function DentistryPage() {
             <StarIcon />
           </p>
         </div>
-        <img
-          className="dentistry-hero-photo"
-          src="/hero-odonto.png"
-          alt="Dr. Kaminsky con una paciente en el sillón odontológico"
-          width={1672}
-          height={941}
-          fetchPriority="high"
-        />
+        <div className="dentistry-hero-photo-wrap">
+          <img
+            className="dentistry-hero-photo"
+            src="/hero-odonto.png"
+            alt="Dr. Kaminsky con una paciente en el sillón odontológico"
+            width={1672}
+            height={941}
+            fetchPriority="high"
+          />
+        </div>
         <ul className="dentistry-hero-band" aria-label="Tratamientos destacados">
           {DENTISTRY_HERO_TREATMENTS.map((treatment) => (
             <li key={treatment.title}>

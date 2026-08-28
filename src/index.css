@@ -538,7 +538,7 @@ main {
   overflow: hidden;
   border-radius: 1.4rem;
   box-shadow: var(--shadow);
-  background: url("/hero-odonto.png") center right / cover no-repeat;
+  background: url("/hero-odonto.png") 42% center / cover no-repeat;
 }
 
 .dentistry-hero::before {
@@ -616,6 +616,10 @@ main {
   height: 1rem;
 }
 
+.dentistry-hero-photo-wrap {
+  display: contents;
+}
+
 .dentistry-hero-photo {
   display: none;
 }
@@ -683,6 +687,7 @@ main {
     overflow: hidden;
     background-image: none;
     background-color: #fbf8f2;
+    container-type: inline-size;
   }
 
   .dentistry-hero::before {
@@ -694,20 +699,59 @@ main {
     padding: 0 0 1.5rem;
   }
 
+  .dentistry-hero-kicker {
+    font-size: max(0.72rem, 2.8cqi);
+  }
+
   .dentistry-hero h1 {
-    font-size: clamp(1.7rem, 8.5vw, 2.55rem);
+    font-size: max(1.7rem, 8.5cqi);
   }
 
   .dentistry-hero-lead {
-    font-size: 1.08rem;
+    max-width: none;
+    font-size: max(1.08rem, 3.8cqi);
+  }
+
+  .dentistry-hero-stars svg {
+    width: max(1rem, 3.4cqi);
+    height: max(1rem, 3.4cqi);
+  }
+
+  .dentistry-hero .nutri-hero-primary,
+  .dentistry-hero .nutri-hero-secondary {
+    width: 100%;
+    height: auto;
+    min-height: 54px;
+    padding: 0.78em 1.2em;
+    font-size: max(0.95rem, 3.4cqi);
+  }
+
+  .dentistry-hero-band svg {
+    width: max(28px, 8cqi);
+    height: max(28px, 8cqi);
+  }
+
+  .dentistry-hero-band span {
+    font-size: max(0.9rem, 3.4cqi);
+  }
+
+  .dentistry-hero-photo-wrap {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1042 / 941;
+    overflow: hidden;
   }
 
   .dentistry-hero-photo {
+    position: absolute;
+    top: 0;
+    left: calc(-0.377 / 0.623 * 100%);
     display: block;
-    width: 100%;
-    height: min(58vh, 460px);
-    object-fit: cover;
-    object-position: 72% center;
+    height: 100%;
+    width: auto;
+    max-width: none;
   }
 
   .dentistry-hero-band {
@@ -1033,6 +1077,7 @@ h1 {
     gap: 1.6rem;
     padding-top: 2rem;
     overflow: hidden;
+    container-type: inline-size;
   }
 
   .hero-inner {
@@ -1048,23 +1093,45 @@ h1 {
     order: 1;
   }
 
+  .hero h1 {
+    font-size: max(2.4rem, 11cqi);
+  }
+
+  .hero .eyebrow {
+    font-size: max(0.72rem, 2.8cqi);
+  }
+
+  .hero-tagline {
+    font-size: max(1.15rem, 4.2cqi);
+  }
+
+  .hero .lead {
+    font-size: max(1.15rem, 3.8cqi);
+  }
+
   .hero-visual {
     order: 2;
+    position: relative;
     width: 100%;
-    max-width: 100%;
+    max-width: none;
+    aspect-ratio: auto;
     justify-content: center;
     overflow: hidden;
   }
 
   .hero-stage {
+    position: relative;
+    inset: auto;
     width: 100%;
-    max-width: 22.5rem;
+    height: auto;
+    max-width: none;
     aspect-ratio: 1 / 1;
     overflow: hidden;
   }
 
   .hero-bg {
     object-fit: contain;
+    transform: none;
   }
 
   .hero-photo {
@@ -1073,6 +1140,9 @@ h1 {
     bottom: 0;
     width: 100%;
     height: 100%;
+    max-height: none;
+    margin: 0;
+    transform: none;
     object-fit: contain;
     object-position: center bottom;
   }
@@ -1088,8 +1158,10 @@ h1 {
     min-width: 0;
     justify-content: center;
     gap: clamp(0.2rem, 1vw, 0.35rem);
-    padding: 0.7rem clamp(0.35rem, 2vw, 0.6rem);
-    font-size: clamp(0.72rem, 3.4vw, 0.84rem);
+    height: auto;
+    min-height: 2.6rem;
+    padding: 0.7em clamp(0.35rem, 2cqi, 0.6rem);
+    font-size: max(0.72rem, 3.4cqi);
     white-space: nowrap;
   }
 
@@ -1102,6 +1174,10 @@ h1 {
     order: 3;
     margin: 0;
     width: 100%;
+  }
+
+  .hero-whatsapp {
+    font-size: max(0.95rem, 3.4cqi);
   }
 
   .nav-toggle {
@@ -1329,7 +1405,7 @@ h1 {
   }
 }
 
-@media (min-width: 769px) {
+@media (width > 840px) {
   .hero {
     display: block;
     align-items: stretch;
@@ -1546,12 +1622,23 @@ h1 {
   container-type: inline-size;
 }
 
+.nutri-hero-photo-clip {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1024 / 1280;
+  overflow: hidden;
+}
+
 .nutri-hero-photo {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   width: 100%;
   height: auto;
+  max-width: none;
   object-fit: contain;
-  object-position: center;
+  object-position: top center;
 }
 
 .nutri-stat-cards {
@@ -1856,13 +1943,14 @@ h1 {
   .nutri-benefits {
     position: relative;
     z-index: 4;
-    margin-top: -7.5rem;
+    margin-top: 0;
   }
 }
 
 @media (width <= 840px) {
   .nutri-hero {
     padding-top: 1.4rem;
+    container-type: inline-size;
   }
 
   .nutri-hero-top {
@@ -1876,7 +1964,12 @@ h1 {
   }
 
   .nutri-hero h1 {
-    font-size: clamp(1.7rem, 8.5vw, 2.55rem);
+    font-size: max(1.7rem, 8.5cqi);
+  }
+
+  .nutri-hero-lead {
+    max-width: none;
+    font-size: max(1.08rem, 3.8cqi);
   }
 
   .nutri-hero-actions {
@@ -1885,10 +1978,14 @@ h1 {
     align-items: stretch;
   }
 
-  .nutri-hero-primary,
-  .nutri-hero-secondary {
+  .nutri-hero .nutri-hero-primary,
+  .nutri-hero .nutri-hero-secondary {
     width: 100%;
     justify-content: center;
+    height: auto;
+    min-height: 54px;
+    padding: 0.78em 1.2em;
+    font-size: max(0.95rem, 3.4cqi);
   }
 
   .nutri-hero-visual {
@@ -1898,7 +1995,8 @@ h1 {
   }
 
   .nutri-hero-stage {
-    max-width: 22rem;
+    width: 100%;
+    max-width: none;
     margin-inline: auto;
   }
 
@@ -1907,12 +2005,22 @@ h1 {
     margin-inline: auto;
   }
 
+  .nutri-stat-calories,
+  .nutri-stat-protein {
+    left: 2%;
+  }
+
+  .nutri-stat-goal,
+  .nutri-stat-water {
+    right: 2%;
+  }
+
   .nutri-benefits {
     position: relative;
     z-index: 4;
     grid-template-columns: 1fr 1fr;
     gap: 0.85rem 0;
-    margin-top: -5.5rem;
+    margin-top: 0;
     padding: 0.9rem 0.25rem;
   }
 
@@ -1926,6 +2034,14 @@ h1 {
 
   .nutri-benefits li:nth-child(even) {
     border-left: 1px solid rgb(255 255 255 / 22%);
+  }
+
+  .nutri-benefits strong {
+    font-size: max(0.9rem, 3.4cqi);
+  }
+
+  .nutri-benefits p {
+    font-size: max(0.78rem, 3cqi);
   }
 }
 

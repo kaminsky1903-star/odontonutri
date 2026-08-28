@@ -181,6 +181,11 @@ describe("App", () => {
     expect(css).not.toMatch(/html:has\(header\.is-nav-open\)/);
     expect(css).toMatch(/\.nav-arrow\s*\{\s*display:\s*none/);
     expect(css).toMatch(/\.hero-tagline[\s\S]*?color:\s*var\(--muted\)/);
+    expect(css).toMatch(/\.hero h1[\s\S]*?11cqi/);
+    expect(css).toMatch(
+      /@media \(width <= 840px\)[\s\S]*?\.hero-stage[\s\S]*?max-width:\s*none/,
+    );
+    expect(css).toMatch(/@media \(width > 840px\)[\s\S]*?\.hero-visual/);
   });
 
   it("exposes WhatsApp and map actions", () => {
@@ -256,7 +261,12 @@ describe("App", () => {
       "utf8",
     );
     expect(css).toMatch(/\.nutri-hero-photo[\s\S]*?object-fit:\s*contain/);
+    expect(css).toMatch(/\.nutri-hero-photo-clip[\s\S]*?aspect-ratio:\s*1024\s*\/\s*1280/);
     expect(css).toMatch(/\.nutri-hero-title-line[\s\S]*?white-space:\s*nowrap/);
+    expect(css).toMatch(/\.nutri-hero h1[\s\S]*?8\.5cqi/);
+    expect(css).toMatch(
+      /@media \(width <= 840px\)[\s\S]*?\.nutri-hero-stage[\s\S]*?max-width:\s*none/,
+    );
   });
 
   it("renders the Nutrición services section with WhatsApp handoff", () => {
@@ -481,15 +491,15 @@ describe("App", () => {
       "utf8",
     );
     expect(css).toMatch(
-      /url\("\/hero-odonto\.png"\) center right \/ cover no-repeat/,
+      /url\("\/hero-odonto\.png"\) 42% center \/ cover no-repeat/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 840px\)[\s\S]*?aspect-ratio:\s*1042 \/ 941/,
     );
     expect(css).toMatch(/\.dentistry-hero[\s\S]*?border-radius:\s*1\.4rem/);
     expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?font-family:\s*"DM Sans"/);
     expect(css).toMatch(/#f7f3ec 0%/);
     expect(css).toMatch(/rgba\(247, 243, 236, 0\) 64%/);
-    expect(css).toMatch(
-      /\.dentistry-hero-photo[\s\S]*?object-fit:\s*cover[\s\S]*?object-position:\s*72% center/,
-    );
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);
     expect(css).toMatch(/clamp\(680px,\s*78vh,\s*790px\)/);
     expect(css).toMatch(
