@@ -503,7 +503,10 @@ describe("App", () => {
     expect(css).toMatch(/#f7f3ec 0%/);
     expect(css).toMatch(/rgba\(247, 243, 236, 0\) 64%/);
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);
-    expect(css).toMatch(/clamp\(680px,\s*78vh,\s*790px\)/);
+    expect(css).toMatch(/aspect-ratio:\s*1120 \/ 680/);
+    expect(css).toMatch(
+      /@media \(width > 840px\)[\s\S]*?\.dentistry-hero h1[\s\S]*?5\.5cqi/,
+    );
     expect(css).toMatch(
       /\.dentistry-hero-band[\s\S]*?background:\s*var\(--process-bg\)/,
     );

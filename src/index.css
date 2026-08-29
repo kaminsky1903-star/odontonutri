@@ -533,8 +533,11 @@ main {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: clamp(680px, 78vh, 790px);
-  height: clamp(680px, 78vh, 790px);
+  container-type: inline-size;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 1120 / 680;
   padding: 0 0 100px;
   border-radius: 0 0 1.4rem 1.4rem;
   box-shadow: var(--shadow);
@@ -566,7 +569,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 590px;
+  max-width: 52.7cqi;
   width: 100%;
 }
 
@@ -645,7 +648,7 @@ main {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
   width: 100%;
-  height: 100px;
+  height: 8.93cqi;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -693,6 +696,7 @@ main {
     align-items: stretch;
     height: auto;
     min-height: 0;
+    aspect-ratio: auto;
     padding: 2rem 0 0;
     overflow: hidden;
     background-image: none;
@@ -1931,6 +1935,57 @@ h1 {
 }
 
 @media (width > 840px) {
+  .dentistry-hero,
+  .dentistry-hero-band {
+    border-radius: 0 0 2cqi 2cqi;
+  }
+
+  .dentistry-hero-kicker {
+    margin: 0 0 2.4cqi;
+    font-size: clamp(0.65rem, 2cqi, 0.78rem);
+  }
+
+  .dentistry-hero h1 {
+    font-size: clamp(1.85rem, 5.5cqi, 3.4rem);
+  }
+
+  .dentistry-hero-lead {
+    margin-top: 2.6cqi;
+    max-width: 42cqi;
+    font-size: clamp(0.92rem, 2.7cqi, 1.08rem);
+  }
+
+  .dentistry-hero .nutri-hero-actions {
+    margin-top: 3.4cqi;
+    gap: 1.1cqi;
+  }
+
+  .dentistry-hero .nutri-hero-primary,
+  .dentistry-hero .nutri-hero-secondary {
+    height: clamp(2.5rem, 4.8cqi, 54px);
+    padding: 0 clamp(1rem, 3.4cqi, 1.35rem);
+    font-size: clamp(0.8rem, 2.4cqi, 0.95rem);
+  }
+
+  .dentistry-hero-stars {
+    margin-top: 2.6cqi;
+  }
+
+  .dentistry-hero-stars svg {
+    width: clamp(0.85rem, 2.5cqi, 1rem);
+    height: clamp(0.85rem, 2.5cqi, 1rem);
+  }
+
+  .dentistry-hero-band li {
+    font-size: clamp(0.75rem, 2.2cqi, 0.95rem);
+    gap: 0.9cqi;
+  }
+
+  .dentistry-hero-band svg {
+    width: clamp(1.15rem, 2.5cqi, 28px);
+    height: clamp(1.15rem, 2.5cqi, 28px);
+  }
+
   .nutri-hero {
     padding-top: 0;
     margin-top: -3.6rem;
