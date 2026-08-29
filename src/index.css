@@ -536,7 +536,6 @@ main {
   min-height: clamp(680px, 78vh, 790px);
   height: clamp(680px, 78vh, 790px);
   padding: 0 0 100px;
-  overflow: hidden;
   border-radius: 0 0 1.4rem 1.4rem;
   box-shadow: var(--shadow);
   background: url("/hero-odonto.webp") 42% center / cover no-repeat;
@@ -548,6 +547,7 @@ main {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  border-radius: inherit;
   background: linear-gradient(
     90deg,
     #f7f3ec 0%,
@@ -791,7 +791,6 @@ main {
 
 .dentistry-services {
   padding-block: clamp(3rem, 7vw, 5.5rem);
-  border-top: 1px solid var(--line);
 }
 
 .dentistry-services h2,
