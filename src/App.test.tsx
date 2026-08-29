@@ -505,7 +505,7 @@ describe("App", () => {
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);
     expect(css).toMatch(/aspect-ratio:\s*1120 \/ 680/);
     expect(css).toMatch(
-      /@media \(width > 840px\)[\s\S]*?\.dentistry-hero h1[\s\S]*?5\.5cqi/,
+      /@media \(width > 840px\)[\s\S]*?\.dentistry-hero-copy[\s\S]*?scale\(calc\(100cqi \/ 1120px\)\)/,
     );
     expect(css).toMatch(
       /\.dentistry-hero-band[\s\S]*?background:\s*var\(--process-bg\)/,

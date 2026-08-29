@@ -534,7 +534,6 @@ main {
   display: flex;
   align-items: center;
   container-type: inline-size;
-  width: 100%;
   height: auto;
   min-height: 0;
   aspect-ratio: 1120 / 680;
@@ -569,7 +568,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 52.7cqi;
+  max-width: 590px;
   width: 100%;
 }
 
@@ -1940,50 +1939,26 @@ h1 {
     border-radius: 0 0 2cqi 2cqi;
   }
 
-  .dentistry-hero-kicker {
-    margin: 0 0 2.4cqi;
-    font-size: clamp(0.65rem, 2cqi, 0.78rem);
+  .dentistry-hero-copy {
+    width: 590px;
+    max-width: 590px;
+    flex-shrink: 0;
+    transform: scale(calc(100cqi / 1120px));
+    transform-origin: left center;
   }
 
   .dentistry-hero h1 {
-    font-size: clamp(1.85rem, 5.5cqi, 3.4rem);
-  }
-
-  .dentistry-hero-lead {
-    margin-top: 2.6cqi;
-    max-width: 42cqi;
-    font-size: clamp(0.92rem, 2.7cqi, 1.08rem);
-  }
-
-  .dentistry-hero .nutri-hero-actions {
-    margin-top: 3.4cqi;
-    gap: 1.1cqi;
-  }
-
-  .dentistry-hero .nutri-hero-primary,
-  .dentistry-hero .nutri-hero-secondary {
-    height: clamp(2.5rem, 4.8cqi, 54px);
-    padding: 0 clamp(1rem, 3.4cqi, 1.35rem);
-    font-size: clamp(0.8rem, 2.4cqi, 0.95rem);
-  }
-
-  .dentistry-hero-stars {
-    margin-top: 2.6cqi;
-  }
-
-  .dentistry-hero-stars svg {
-    width: clamp(0.85rem, 2.5cqi, 1rem);
-    height: clamp(0.85rem, 2.5cqi, 1rem);
+    font-size: 3.4rem;
   }
 
   .dentistry-hero-band li {
-    font-size: clamp(0.75rem, 2.2cqi, 0.95rem);
-    gap: 0.9cqi;
+    font-size: 1.357cqi;
+    gap: 0.357cqi;
   }
 
   .dentistry-hero-band svg {
-    width: clamp(1.15rem, 2.5cqi, 28px);
-    height: clamp(1.15rem, 2.5cqi, 28px);
+    width: 2.5cqi;
+    height: 2.5cqi;
   }
 
   .nutri-hero {
