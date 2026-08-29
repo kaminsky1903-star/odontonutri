@@ -1101,7 +1101,7 @@ function DentistryPage() {
         <div className="dentistry-hero-photo-wrap">
           <img
             className="dentistry-hero-photo"
-            src="/hero-odonto.png"
+            src="/hero-odonto.webp"
             alt="Dr. Kaminsky con una paciente en el sillón odontológico"
             width={1672}
             height={941}

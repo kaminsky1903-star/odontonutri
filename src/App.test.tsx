@@ -465,7 +465,7 @@ describe("App", () => {
       screen.getByAltText(
         "Dr. Kaminsky con una paciente en el sillón odontológico",
       ),
-    ).toHaveAttribute("src", "/hero-odonto.png");
+    ).toHaveAttribute("src", "/hero-odonto.webp");
     expect(
       screen.queryByRole("link", { name: "Consultá por WhatsApp" }),
     ).not.toBeInTheDocument();
@@ -491,19 +491,21 @@ describe("App", () => {
       "utf8",
     );
     expect(css).toMatch(
-      /url\("\/hero-odonto\.png"\) 42% center \/ cover no-repeat/,
+      /url\("\/hero-odonto\.webp"\) 42% center \/ cover no-repeat/,
     );
     expect(css).toMatch(
       /@media \(width <= 840px\)[\s\S]*?aspect-ratio:\s*1042 \/ 941/,
     );
-    expect(css).toMatch(/\.dentistry-hero[\s\S]*?border-radius:\s*1\.4rem/);
+    expect(css).toMatch(
+      /\.dentistry-hero[\s\S]*?border-radius:\s*0 0 1\.4rem 1\.4rem/,
+    );
     expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?font-family:\s*"DM Sans"/);
     expect(css).toMatch(/#f7f3ec 0%/);
     expect(css).toMatch(/rgba\(247, 243, 236, 0\) 64%/);
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);
     expect(css).toMatch(/clamp\(680px,\s*78vh,\s*790px\)/);
     expect(css).toMatch(
-      /\.dentistry-hero-band[\s\S]*?background:\s*var\(--accent\)/,
+      /\.dentistry-hero-band[\s\S]*?background:\s*var\(--process-bg\)/,
     );
 
     for (const service of [
