@@ -503,7 +503,7 @@ describe("App", () => {
     expect(css).toMatch(/#f7f3ec 0%/);
     expect(css).toMatch(/rgba\(247, 243, 236, 0\) 64%/);
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);
-    expect(css).toMatch(/aspect-ratio:\s*1120 \/ 680/);
+    expect(css).toMatch(/aspect-ratio:\s*1120 \/ 717/);
     expect(css).toMatch(
       /@media \(width > 840px\)[\s\S]*?\.dentistry-hero-copy[\s\S]*?scale\(calc\(100cqi \/ 1120px\)\)/,
     );
