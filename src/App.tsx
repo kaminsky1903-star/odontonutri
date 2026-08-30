@@ -1067,7 +1067,9 @@ function DentistryPage() {
           </p>
           <h1 id="dentistry-hero-title">
             Volvé a sonreír{" "}
-            <span className="dentistry-hero-title-line">con confianza.</span>
+            <span className="dentistry-hero-title-line">
+              con <span>confianza.</span>
+            </span>
           </h1>
           <p className="dentistry-hero-lead">
             Tratamientos personalizados para{" "}

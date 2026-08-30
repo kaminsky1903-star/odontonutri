@@ -500,6 +500,10 @@ describe("App", () => {
       /\.dentistry-hero[\s\S]*?border-radius:\s*0 0 1\.4rem 1\.4rem/,
     );
     expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?font-family:\s*"DM Sans"/);
+    expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?color:\s*#000/);
+    expect(css).toMatch(
+      /\.dentistry-hero h1 span:not\(\.dentistry-hero-title-line\)[\s\S]*?color:\s*var\(--process-bg\)/,
+    );
     expect(css).toMatch(/#f7f3ec 0%/);
     expect(css).toMatch(/rgba\(247, 243, 236, 0\) 64%/);
     expect(css).toMatch(/scrollbar-gutter:\s*stable/);

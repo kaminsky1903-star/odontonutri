@@ -589,12 +589,16 @@ main {
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1.05;
-  color: var(--process-bg);
+  color: #000;
 }
 
 .dentistry-hero-title-line,
 .dentistry-hero-lead-line {
   display: block;
+}
+
+.dentistry-hero h1 span:not(.dentistry-hero-title-line) {
+  color: var(--process-bg);
 }
 
 .dentistry-hero-lead {
