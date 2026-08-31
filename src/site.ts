@@ -48,6 +48,99 @@ export const NUTRITION_SERVICES = [
   },
 ] as const;
 
+export const DENTISTRY_FEATURED_TREATMENT = {
+  title: "Implantes Dentales",
+  description:
+    "Recuperá función, estabilidad y estética mediante soluciones implantológicas planificadas para cada caso.",
+  benefits: [
+    "Planificación personalizada",
+    "Resultados funcionales y estéticos",
+    "Tecnología aplicada al diagnóstico",
+  ],
+  image: "/implante-odonto.webp",
+  alt: "Planificación de implantes dentales",
+  objectPosition: "32% 48%",
+  message: "Hola, quisiera consultar por Implantes Dentales.",
+} as const;
+
+export const DENTISTRY_ADVANCED_TREATMENTS = [
+  {
+    title: "Regeneración Ósea Guiada",
+    description:
+      "Procedimientos destinados a recuperar volumen óseo y generar condiciones favorables para la colocación de implantes.",
+    image: "/ROG-odonto.webp",
+    alt: "Regeneración ósea guiada",
+    objectPosition: "50% 46%",
+    message: "Hola, quisiera consultar por Regeneración Ósea Guiada.",
+  },
+  {
+    title: "Levantamiento de Seno Maxilar",
+    description:
+      "Técnica indicada para aumentar la disponibilidad ósea en sectores posteriores del maxilar superior para colocación de implantes.",
+    image: "/seno-odonto.webp",
+    alt: "Levantamiento de seno maxilar",
+    objectPosition: "48% 42%",
+    message: "Hola, quisiera consultar por Levantamiento de Seno Maxilar.",
+  },
+] as const;
+
+export const DENTISTRY_COMMON_TREATMENTS = [
+  {
+    title: "Odontología General",
+    description:
+      "Prevención, diagnóstico y cuidado integral de tu salud bucal.",
+    image: "/general-odonto.webp",
+    alt: "Consulta odontológica general",
+    objectPosition: "42% 28%",
+    message: "Hola, quisiera consultar por Odontología General.",
+  },
+  {
+    title: "Prótesis y Rehabilitación Oral",
+    description:
+      "Recuperamos función y estética mediante soluciones protésicas personalizadas.",
+    image: "/lab-odonto.webp",
+    alt: "Prótesis y rehabilitación oral",
+    objectPosition: "50% 42%",
+    message: "Hola, quisiera consultar por Prótesis y Rehabilitación Oral.",
+  },
+  {
+    title: "Alineadores Invisibles",
+    description:
+      "Corrección de la posición dental mediante alineadores transparentes y removibles.",
+    image: "/invisible-odonto.webp",
+    alt: "Alineadores invisibles",
+    objectPosition: "55% 40%",
+    message: "Hola, quisiera consultar por Alineadores Invisibles.",
+  },
+  {
+    title: "Limpieza Dental",
+    description:
+      "Eliminación profesional de placa y cálculo para mantener dientes y encías saludables.",
+    image: "/limpieza-odonto.webp",
+    alt: "Limpieza dental profesional",
+    objectPosition: "50% 45%",
+    message: "Hola, quisiera consultar por Limpieza Dental.",
+  },
+  {
+    title: "Tratamiento de Conducto",
+    description:
+      "Tratamiento orientado a conservar piezas dentarias afectadas en su tejido pulpar.",
+    image: "/tc-odonto.webp",
+    alt: "Tratamiento de conducto",
+    objectPosition: "48% 40%",
+    message: "Hola, quisiera consultar por Tratamiento de Conducto.",
+  },
+  {
+    title: "Carillas Dentales",
+    description:
+      "Soluciones estéticas para mejorar forma, proporción y apariencia de la sonrisa.",
+    image: "/carilla-odonto.webp",
+    alt: "Carillas dentales",
+    objectPosition: "58% 38%",
+    message: "Hola, quisiera consultar por Carillas Dentales.",
+  },
+] as const;
+
 export const GOOGLE_REVIEWS = [
   {
     name: "Martin Zudaire",

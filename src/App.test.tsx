@@ -1,21 +1,24 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import App from "./App";
 import {
-  GOOGLE_REVIEWS,
-  INSTAGRAM_URL,
-  NUTRITION_SERVICES,
-  SITE_NAME,
-  STREET_ADDRESS,
-  WHATSAPP_NUTRITION_MESSAGE,
-  WHATSAPP_NUTRITION_PAGE,
-  WHATSAPP_PAGE,
-  WHATSAPP_URL,
-  whatsappPageWithMessage,
+    DENTISTRY_ADVANCED_TREATMENTS,
+    DENTISTRY_COMMON_TREATMENTS,
+    DENTISTRY_FEATURED_TREATMENT,
+    GOOGLE_REVIEWS,
+    INSTAGRAM_URL,
+    NUTRITION_SERVICES,
+    SITE_NAME,
+    STREET_ADDRESS,
+    WHATSAPP_NUTRITION_MESSAGE,
+    WHATSAPP_NUTRITION_PAGE,
+    WHATSAPP_PAGE,
+    WHATSAPP_URL,
+    whatsappPageWithMessage,
 } from "./site";
 
 describe("App", () => {
@@ -554,14 +557,79 @@ describe("App", () => {
       /\.dentistry-hero-band[\s\S]*?background:\s*var\(--process-bg\)/,
     );
 
-    for (const service of [
-      "Implantes dentales",
-      "Prótesis y rehabilitación oral",
-      "Tratamiento de conducto",
-      "Odontología integral",
-    ]) {
-      expect(screen.getByRole("heading", { name: service })).toBeInTheDocument();
+    const servicesSection = document.getElementById("tratamientos-odontologia");
+    expect(servicesSection).toHaveClass("odonto-services");
+    const services = within(servicesSection as HTMLElement);
+    expect(
+      services.getByRole("heading", {
+        level: 2,
+        name: "Odontología pensada para vos",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      services.getByText(
+        "Acompañamiento personalizado para cuidar tu salud y alcanzar tus objetivos.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      services.getByRole("heading", { level: 3, name: "Implantes Dentales" }),
+    ).toBeInTheDocument();
+    expect(
+      services.queryByRole("heading", { name: "Tratamientos avanzados" }),
+    ).toBeNull();
+    expect(
+      services.queryByRole("heading", { name: "Tratamientos comunes" }),
+    ).toBeNull();
+    expect(
+      services.getByAltText(DENTISTRY_FEATURED_TREATMENT.alt),
+    ).toHaveAttribute("src", DENTISTRY_FEATURED_TREATMENT.image);
+    for (const treatment of DENTISTRY_ADVANCED_TREATMENTS) {
+      expect(services.getByAltText(treatment.alt)).toHaveAttribute(
+        "src",
+        treatment.image,
+      );
+      expect(
+        services.getByRole("heading", { name: treatment.title }),
+      ).toBeInTheDocument();
     }
+    for (const treatment of DENTISTRY_COMMON_TREATMENTS) {
+      expect(services.getByAltText(treatment.alt)).toHaveAttribute(
+        "src",
+        treatment.image,
+      );
+      expect(
+        services.getByRole("heading", { name: treatment.title }),
+      ).toBeInTheDocument();
+    }
+    expect(
+      services.getByRole("link", { name: "Solicitar turno" }),
+    ).toHaveAttribute(
+      "href",
+      whatsappPageWithMessage(DENTISTRY_FEATURED_TREATMENT.message),
+    );
+    expect(
+      services.queryByRole("link", { name: "Conocer tratamiento" }),
+    ).toBeNull();
+    for (const treatment of [
+      ...DENTISTRY_ADVANCED_TREATMENTS,
+      ...DENTISTRY_COMMON_TREATMENTS,
+    ]) {
+      expect(
+        services.queryByRole("link", { name: new RegExp(treatment.title) }),
+      ).toBeNull();
+    }
+    const hero = screen.getByRole("region", {
+      name: "Volvé a sonreír con confianza.",
+    });
+    expect(
+      hero.compareDocumentPosition(servicesSection as Node) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("heading", {
+        name: "Cuidado odontológico para cada etapa",
+      }),
+    ).toBeNull();
   });
 
   it("does not offer a theme switch", () => {

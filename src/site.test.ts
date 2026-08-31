@@ -4,6 +4,9 @@ import {
   GOOGLE_REVIEWS,
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
+  DENTISTRY_ADVANCED_TREATMENTS,
+  DENTISTRY_COMMON_TREATMENTS,
+  DENTISTRY_FEATURED_TREATMENT,
   NUTRITION_SERVICES,
   PHONE_LABEL,
   PHONE_TEL,
@@ -43,6 +46,19 @@ describe("site constants", () => {
     expect(whatsappPageWithMessage("Hola, prueba")).toBe(
       `${WHATSAPP_PAGE}?text=${encodeURIComponent("Hola, prueba")}`,
     );
+    expect(DENTISTRY_FEATURED_TREATMENT.image).toBe("/implante-odonto.webp");
+    expect(DENTISTRY_ADVANCED_TREATMENTS.map((item) => item.image)).toEqual([
+      "/ROG-odonto.webp",
+      "/seno-odonto.webp",
+    ]);
+    expect(DENTISTRY_COMMON_TREATMENTS.map((item) => item.image)).toEqual([
+      "/general-odonto.webp",
+      "/lab-odonto.webp",
+      "/invisible-odonto.webp",
+      "/limpieza-odonto.webp",
+      "/tc-odonto.webp",
+      "/carilla-odonto.webp",
+    ]);
     expect(NUTRITION_SERVICES).toHaveLength(4);
     expect(NUTRITION_SERVICES.map((service) => service.image)).toEqual([
       "/bajar-peso.webp",

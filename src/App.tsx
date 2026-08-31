@@ -4,6 +4,9 @@ import { AdminApp } from "./admin/AdminApp";
 import { usePublicAnalytics } from "./analytics/usePublicAnalytics";
 import {
   ADMIN_PATH,
+  DENTISTRY_ADVANCED_TREATMENTS,
+  DENTISTRY_COMMON_TREATMENTS,
+  DENTISTRY_FEATURED_TREATMENT,
   INSTAGRAM_URL,
   MAP_QUERY,
   PHONE_LABEL,
@@ -320,6 +323,23 @@ function CheckCircleLineIcon() {
     <LineIcon>
       <circle cx="12" cy="12" r="8" />
       <path d="M8.8 12.2 11 14.4l4.4-5.2" />
+    </LineIcon>
+  );
+}
+
+function CalendarLineIcon() {
+  return (
+    <LineIcon>
+      <rect x="4.5" y="6" width="15" height="13.5" rx="2" />
+      <path d="M8 4.5v3M16 4.5v3M4.5 10.5h15" />
+    </LineIcon>
+  );
+}
+
+function BadgeStarIcon() {
+  return (
+    <LineIcon>
+      <path d="M12 4.8 13.6 9.2l4.7.4-3.6 3.1 1.1 4.5L12 14.9 8.2 17.2l1.1-4.5-3.6-3.1 4.7-.4Z" />
     </LineIcon>
   );
 }
@@ -1043,26 +1063,122 @@ const DENTISTRY_HERO_HIGHLIGHTS = [
   },
 ] as const;
 
-function DentistryPage() {
-  const services = [
-    {
-      title: "Implantes dentales",
-      text: "Evaluación y planificación para reemplazar piezas ausentes.",
-    },
-    {
-      title: "Prótesis y rehabilitación oral",
-      text: "Tratamientos orientados a recuperar función, comodidad y estética.",
-    },
-    {
-      title: "Tratamiento de conducto",
-      text: "Atención para conservar la pieza dental y tratar el origen del dolor.",
-    },
-    {
-      title: "Odontología integral",
-      text: "Controles, prevención y tratamientos adaptados a cada paciente.",
-    },
-  ];
+function DentistryMisServicios() {
+  const featured = DENTISTRY_FEATURED_TREATMENT;
 
+  return (
+    <section
+      id="tratamientos-odontologia"
+      className="odonto-services page-container"
+      aria-labelledby="odonto-services-title"
+    >
+      <div className="odonto-services-header">
+        <h2 id="odonto-services-title">
+          Odontología pensada <span>para vos</span>
+        </h2>
+        <p className="odonto-services-lead">
+          Acompañamiento personalizado para cuidar tu salud y alcanzar tus
+          objetivos.
+        </p>
+      </div>
+
+      <article className="odonto-featured">
+        <div className="odonto-featured-visual">
+          <img
+            src={featured.image}
+            alt={featured.alt}
+            width={960}
+            height={720}
+            loading="lazy"
+            decoding="async"
+            style={{ objectPosition: featured.objectPosition }}
+          />
+        </div>
+        <div className="odonto-featured-body">
+          <p className="odonto-featured-badge">
+            <BadgeStarIcon />
+            Tratamiento destacado
+          </p>
+          <h3 className="odonto-featured-title">{featured.title}</h3>
+          <p className="odonto-featured-text">{featured.description}</p>
+          <ul className="odonto-featured-benefits">
+            {featured.benefits.map((benefit) => (
+              <li key={benefit}>
+                <CheckCircleLineIcon />
+                {benefit}
+              </li>
+            ))}
+          </ul>
+          <div className="odonto-featured-actions">
+            <a
+              className="odonto-featured-cta"
+              href={whatsappPageWithMessage(featured.message)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <CalendarLineIcon />
+              Solicitar turno
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <div className="odonto-advanced">
+        <ul className="odonto-advanced-grid">
+          {DENTISTRY_ADVANCED_TREATMENTS.map((treatment) => (
+            <li key={treatment.title}>
+              <article className="odonto-advanced-card">
+                <div className="odonto-advanced-visual">
+                  <img
+                    src={treatment.image}
+                    alt={treatment.alt}
+                    width={720}
+                    height={480}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ objectPosition: treatment.objectPosition }}
+                  />
+                </div>
+                <div className="odonto-advanced-body">
+                  <h4>{treatment.title}</h4>
+                  <p>{treatment.description}</p>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="odonto-common">
+        <ul className="odonto-common-grid">
+          {DENTISTRY_COMMON_TREATMENTS.map((treatment) => (
+            <li key={treatment.title}>
+              <article className="odonto-common-card">
+                <div className="odonto-common-visual">
+                  <img
+                    src={treatment.image}
+                    alt={treatment.alt}
+                    width={480}
+                    height={360}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ objectPosition: treatment.objectPosition }}
+                  />
+                </div>
+                <div className="odonto-common-body">
+                  <h4>{treatment.title}</h4>
+                  <p>{treatment.description}</p>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function DentistryPage() {
   return (
     <main>
       <section
@@ -1131,22 +1247,7 @@ function DentistryPage() {
         </ul>
       </section>
 
-      <section
-        id="tratamientos-odontologia"
-        className="dentistry-services page-container"
-        aria-labelledby="dentistry-services-title"
-      >
-        <p className="eyebrow">Tratamientos</p>
-        <h2 id="dentistry-services-title">Cuidado odontológico para cada etapa</h2>
-        <div className="dentistry-grid">
-          {services.map((service) => (
-            <article className="dentistry-card" key={service.title}>
-              <h3>{service.title}</h3>
-              <p>{service.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <DentistryMisServicios />
 
       <section className="dentistry-plan page-container">
         <div>
