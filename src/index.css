@@ -292,8 +292,10 @@ main {
 }
 
 .hero-ctas {
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  max-width: 100%;
   gap: 0.7rem;
 }
 
@@ -307,6 +309,11 @@ main {
   font-size: 0.95rem;
   font-weight: 700;
   text-decoration: none;
+}
+
+.hero-btn {
+  width: 100%;
+  justify-content: center;
 }
 
 .hero-btn,
@@ -584,11 +591,11 @@ main {
 .dentistry-hero h1 {
   margin: 0;
   max-width: none;
-  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(2.35rem, 4.4vw, 3.4rem);
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.08;
   color: #000;
 }
 
@@ -599,15 +606,16 @@ main {
 
 .dentistry-hero h1 span:not(.dentistry-hero-title-line) {
   color: var(--process-bg);
+  letter-spacing: 0.012em;
+  font-kerning: none;
+  font-variant-ligatures: none;
 }
 
 .dentistry-hero-lead {
   margin: 1.15rem 0 0;
   max-width: 28rem;
-  font-family: "DM Sans", Segoe UI, sans-serif;
-  font-size: 1.08rem;
-  line-height: 1.5;
-  color: #555d59;
+  color: var(--muted);
+  font-size: 1.15rem;
 }
 
 .dentistry-hero-stars {
@@ -726,7 +734,7 @@ main {
 
   .dentistry-hero-lead {
     max-width: none;
-    font-size: max(1.08rem, 3.8cqi);
+    font-size: max(1.15rem, 3.8cqi);
   }
 
   .dentistry-hero-stars svg {
@@ -1526,11 +1534,10 @@ h1 {
 
 .nutri-hero h1 {
   margin: 0;
-  font-family: "DM Sans", Segoe UI, sans-serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(2.35rem, 4.4vw, 3.4rem);
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1.05;
+  font-weight: 600;
+  line-height: 1.08;
   color: var(--ink);
 }
 
@@ -1547,8 +1554,7 @@ h1 {
   margin: 1.15rem 0 0;
   max-width: 28rem;
   color: var(--muted);
-  font-size: 1.08rem;
-  line-height: 1.5;
+  font-size: 1.15rem;
 }
 
 .nutri-hero-actions {
@@ -2012,7 +2018,7 @@ h1 {
 
   .nutri-hero-lead {
     max-width: none;
-    font-size: max(1.08rem, 3.8cqi);
+    font-size: max(1.15rem, 3.8cqi);
   }
 
   .nutri-hero-actions {

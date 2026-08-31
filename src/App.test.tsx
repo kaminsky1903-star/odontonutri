@@ -537,7 +537,7 @@ describe("App", () => {
     expect(css).toMatch(
       /\.dentistry-hero[\s\S]*?border-radius:\s*0 0 1\.4rem 1\.4rem/,
     );
-    expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?font-family:\s*"DM Sans"/);
+    expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?font-family:\s*"Playfair Display"/);
     expect(css).toMatch(/\.dentistry-hero h1[\s\S]*?color:\s*#000/);
     expect(css).toMatch(
       /\.dentistry-hero h1 span:not\(\.dentistry-hero-title-line\)[\s\S]*?color:\s*var\(--process-bg\)/,
