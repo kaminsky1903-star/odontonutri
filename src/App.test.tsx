@@ -511,13 +511,14 @@ describe("App", () => {
       screen.queryByRole("link", { name: "Llamar al consultorio" }),
     ).not.toBeInTheDocument();
 
-    const band = screen.getByRole("list", { name: "Tratamientos destacados" });
+    const band = screen.getByRole("list", { name: "Por qué elegirnos" });
     expect(band).toHaveClass("dentistry-hero-band");
     expect(band.querySelectorAll("li")).toHaveLength(4);
-    expect(band).toHaveTextContent("Implantes");
-    expect(band).toHaveTextContent("Rehabilitación");
-    expect(band).toHaveTextContent("Endodoncia");
-    expect(band).toHaveTextContent("Estética");
+    expect(band).toHaveTextContent("Seguridad y confianza");
+    expect(band).toHaveTextContent("Equipo especializado");
+    expect(band).toHaveTextContent("Tecnología avanzada");
+    expect(band).toHaveTextContent("Atención personalizada");
+    expect(band).toHaveTextContent("Protocolos estrictos y materiales certificados.");
     expect(band.querySelectorAll("svg")).toHaveLength(4);
 
     const stars = document.querySelector(".dentistry-hero-stars");

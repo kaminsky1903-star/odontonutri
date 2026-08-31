@@ -73,44 +73,33 @@ function ToothLineIcon() {
   );
 }
 
-function ImplantLineIcon() {
+function ShieldCheckLineIcon() {
   return (
     <LineIcon>
-      <path d="M9.2 4.6c.9-.5 2.6-.5 3.6 0 1.2.6 1.6 1.6 1.6 2.6 0 1.2-.8 1.9-2.6 1.9h-1.6c-1.8 0-2.6-.7-2.6-1.9 0-1 .4-2 1.6-2.6Z" />
-      <path d="M12 9.1v9.4" />
-      <path d="M10.1 12h3.8" />
-      <path d="M10.1 14.4h3.8" />
-      <path d="M10.1 16.8h3.8" />
-      <path d="M10.4 18.8h3.2" />
+      <path d="M12 3.2 4.6 6.4v5.4c0 4.6 3.2 8.7 7.4 9.9 4.2-1.2 7.4-5.3 7.4-9.9V6.4L12 3.2Z" />
+      <path d="m8.8 12.1 2.1 2.1 4.3-4.4" />
     </LineIcon>
   );
 }
 
-function RehabLineIcon() {
+function TeamLineIcon() {
   return (
     <LineIcon>
-      <circle cx="12" cy="12" r="8.2" />
-      <path d="M8.2 13.4s1.4 2.3 3.8 2.3 3.8-2.3 3.8-2.3" />
-      <path d="M9 9.4h.01" />
-      <path d="M15 9.4h.01" />
+      <circle cx="9" cy="8.1" r="2.7" />
+      <path d="M3.8 18.6c.7-3.1 2.8-4.8 5.2-4.8s4.5 1.7 5.2 4.8" />
+      <circle cx="16.4" cy="8.6" r="2.2" />
+      <path d="M15.4 13.9c2.2.2 4 1.5 4.8 3.8" />
     </LineIcon>
   );
 }
 
-function EndoLineIcon() {
+function AutoclaveLineIcon() {
   return (
     <LineIcon>
-      <path d="M7.1 4.9c1.5-.8 3.2-.4 4.9.5 1.7-.9 3.4-1.3 4.9-.5 2.5 1.3 2.9 4.4 1.6 7.2-.7 1.5-.9 3.1-1.1 4.7-.2 2.1-.8 3.2-1.8 3.2s-1.4-1.1-1.8-2.7l-.5-2.1c-.2-.8-.6-1.2-1.3-1.2s-1.1.4-1.3 1.2l-.5 2.1c-.4 1.6-.8 2.7-1.8 2.7s-1.6-1.1-1.8-3.2c-.2-1.6-.4-3.2-1.1-4.7-1.3-2.8-.9-5.9 1.6-7.2Z" />
-      <path d="M12 7.2v8.2" />
-    </LineIcon>
-  );
-}
-
-function SparkleLineIcon() {
-  return (
-    <LineIcon>
-      <path d="M12 3.2 13.2 8.4 18.4 9.6 13.2 10.8 12 16 10.8 10.8 5.6 9.6 10.8 8.4Z" />
-      <path d="M18.2 14.2 18.8 16.4 21 17 18.8 17.6 18.2 19.8 17.6 17.6 15.4 17 17.6 16.4Z" />
+      <path d="M9.4 6.2V4.8h5.2v1.4" />
+      <path d="M6.6 7.4h10.8v9.4a2.4 2.4 0 0 1-2.4 2.4H9a2.4 2.4 0 0 1-2.4-2.4V7.4Z" />
+      <path d="M6.6 10.6h10.8" />
+      <path d="M9.6 15.2c.7.9 1.6 1.35 2.4 1.35s1.7-.45 2.4-1.35" />
     </LineIcon>
   );
 }
@@ -1031,11 +1020,27 @@ function GoogleReviews() {
   );
 }
 
-const DENTISTRY_HERO_TREATMENTS = [
-  { title: "Implantes", icon: <ImplantLineIcon /> },
-  { title: "Rehabilitación", icon: <RehabLineIcon /> },
-  { title: "Endodoncia", icon: <EndoLineIcon /> },
-  { title: "Estética", icon: <SparkleLineIcon /> },
+const DENTISTRY_HERO_HIGHLIGHTS = [
+  {
+    title: "Seguridad y confianza",
+    text: "Protocolos estrictos y materiales certificados.",
+    icon: <ShieldCheckLineIcon />,
+  },
+  {
+    title: "Equipo especializado",
+    text: "Profesionales con amplia experiencia y formación continua.",
+    icon: <TeamLineIcon />,
+  },
+  {
+    title: "Tecnología avanzada",
+    text: "Equipamiento de última generación para mejores resultados.",
+    icon: <AutoclaveLineIcon />,
+  },
+  {
+    title: "Atención personalizada",
+    text: "Planes de tratamiento adaptados a tus necesidades.",
+    icon: <HeartHandsIcon />,
+  },
 ] as const;
 
 function DentistryPage() {
@@ -1113,11 +1118,14 @@ function DentistryPage() {
             fetchPriority="high"
           />
         </div>
-        <ul className="dentistry-hero-band" aria-label="Tratamientos destacados">
-          {DENTISTRY_HERO_TREATMENTS.map((treatment) => (
-            <li key={treatment.title}>
-              {treatment.icon}
-              <span>{treatment.title}</span>
+        <ul className="dentistry-hero-band" aria-label="Por qué elegirnos">
+          {DENTISTRY_HERO_HIGHLIGHTS.map((item) => (
+            <li key={item.title}>
+              {item.icon}
+              <div className="dentistry-hero-band-copy">
+                <strong>{item.title}</strong>
+                <p>{item.text}</p>
+              </div>
             </li>
           ))}
         </ul>
