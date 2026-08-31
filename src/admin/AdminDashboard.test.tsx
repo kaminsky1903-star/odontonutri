@@ -44,6 +44,7 @@ describe("admin dashboard session", () => {
     expect(screen.getByText("clinica@example.com")).toBeInTheDocument();
     expect(screen.getByText("Visitantes de hoy")).toBeInTheDocument();
     expect(screen.getByText("Fuentes de tráfico")).toBeInTheDocument();
+    expect(screen.getByText("Actividad reciente")).toBeInTheDocument();
     expect(
       await screen.findByText("Visitas y clics del sitio, últimos 30 días."),
     ).toBeInTheDocument();

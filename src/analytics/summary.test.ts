@@ -20,19 +20,31 @@ describe("analytics summary", () => {
   it("counts unique visitors, live sessions, clicks and conversion", () => {
     const events: AnalyticsEvent[] = [
       event({
+        created_at: new Date(now.getTime() - 4 * 60 * 1000).toISOString(),
         event_type: "visit",
         session_id: "s1",
         referrer_host: "instagram.com",
       }),
-      event({ event_type: "page_view", session_id: "s1", path: "/" }),
-      event({ event_type: "whatsapp_click", session_id: "s1" }),
       event({
+        created_at: new Date(now.getTime() - 4 * 60 * 1000).toISOString(),
+        event_type: "page_view",
+        session_id: "s1",
+        path: "/",
+      }),
+      event({
+        created_at: new Date(now.getTime() - 3 * 60 * 1000).toISOString(),
+        event_type: "whatsapp_click",
+        session_id: "s1",
+      }),
+      event({
+        created_at: new Date(now.getTime() - 2 * 60 * 1000).toISOString(),
         event_type: "visit",
         session_id: "s2",
         path: "/nutricion",
         device_type: "mobile",
       }),
       event({
+        created_at: new Date(now.getTime() - 2 * 60 * 1000).toISOString(),
         event_type: "page_view",
         session_id: "s2",
         path: "/nutricion",
@@ -70,5 +82,87 @@ describe("analytics summary", () => {
       { type: "desktop", label: "Escritorio", visitors: 1 },
       { type: "mobile", label: "Celular", visitors: 1 },
     ]);
+    expect(snapshot.recentActivity.map((item) => item.action)).toEqual([
+      "Teléfono",
+      "Visita",
+      "WhatsApp",
+      "Visita",
+    ]);
+    expect(snapshot.recentActivity[0]).toMatchObject({
+      action: "Teléfono",
+      page: "Nutrición",
+      source: "Directo",
+      device: "Celular",
+      isContact: true,
+      landing: "Nutrición",
+      pages: ["Nutrición"],
+      durationMinutes: 2,
+    });
+    expect(snapshot.recentActivity[1]).toMatchObject({
+      action: "Visita",
+      isContact: false,
+      landing: null,
+      pages: [],
+      durationMinutes: null,
+    });
+    expect(snapshot.recentActivity[2]).toMatchObject({
+      action: "WhatsApp",
+      page: "Inicio",
+      source: "instagram.com",
+      device: "Escritorio",
+      isContact: true,
+      landing: "Inicio",
+      pages: ["Inicio"],
+      durationMinutes: 1,
+    });
+  });
+
+  it("builds the page journey under each contact", () => {
+    const events: AnalyticsEvent[] = [
+      event({
+        created_at: new Date(now.getTime() - 12 * 60 * 1000).toISOString(),
+        event_type: "visit",
+        session_id: "s3",
+        path: "/",
+        referrer_host: "google.com",
+      }),
+      event({
+        created_at: new Date(now.getTime() - 12 * 60 * 1000).toISOString(),
+        event_type: "page_view",
+        session_id: "s3",
+        path: "/",
+      }),
+      event({
+        created_at: new Date(now.getTime() - 8 * 60 * 1000).toISOString(),
+        event_type: "page_view",
+        session_id: "s3",
+        path: "/odontologia",
+      }),
+      event({
+        created_at: new Date(now.getTime() - 3 * 60 * 1000).toISOString(),
+        event_type: "page_view",
+        session_id: "s3",
+        path: "/nutricion",
+      }),
+      event({
+        created_at: now.toISOString(),
+        event_type: "whatsapp_click",
+        session_id: "s3",
+        path: "/nutricion",
+      }),
+    ];
+
+    const snapshot = summarizeAnalyticsEvents(events, now);
+    const contact = snapshot.recentActivity.find(
+      (item) => item.action === "WhatsApp",
+    );
+
+    expect(contact).toMatchObject({
+      page: "Nutrición",
+      isContact: true,
+      landing: "Inicio",
+      pages: ["Inicio", "Odontología", "Nutrición"],
+      durationMinutes: 12,
+    });
   });
 });

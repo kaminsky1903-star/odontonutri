@@ -2,6 +2,7 @@ import {
   type AnalyticsSnapshot,
   type DeviceStat,
   type PageViewStat,
+  type RecentActivity,
   type TrafficSource,
 } from "../admin/analyticsTypes";
 import type { AnalyticsEvent } from "./types";
@@ -22,6 +23,16 @@ const CONTACT_TYPES = new Set([
   "phone_click",
   "location_click",
 ]);
+const ACTION_LABELS: Record<string, string> = {
+  visit: "Visita",
+  whatsapp_click: "WhatsApp",
+  phone_click: "Teléfono",
+  location_click: "Ubicación",
+};
+
+function pageTitle(path: string) {
+  return PAGE_TITLES[path] ?? path;
+}
 
 function uniqueSessions(events: AnalyticsEvent[]) {
   const sessions = new Set<string>();
@@ -80,7 +91,7 @@ function topPages(events: AnalyticsEvent[]): PageViewStat[] {
   return [...counts.entries()]
     .map(([path, views]) => ({
       path,
-      title: PAGE_TITLES[path] ?? path,
+      title: pageTitle(path),
       views,
     }))
     .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
@@ -107,6 +118,123 @@ function deviceStats(events: AnalyticsEvent[]): DeviceStat[] {
       visitors: sessions.size,
     }))
     .sort((a, b) => (b.visitors ?? 0) - (a.visitors ?? 0));
+}
+
+function sessionContext(events: AnalyticsEvent[]) {
+  const context = new Map<string, { source: string; device: string }>();
+  for (const event of events) {
+    if (!event.session_id) {
+      continue;
+    }
+    const current = context.get(event.session_id) ?? {
+      source: "Directo",
+      device: "Escritorio",
+    };
+    if (event.event_type === "visit") {
+      current.source = event.referrer_host || "Directo";
+    } else if (event.referrer_host && current.source === "Directo") {
+      current.source = event.referrer_host;
+    }
+    if (event.device_type && DEVICE_LABELS[event.device_type]) {
+      current.device = DEVICE_LABELS[event.device_type];
+    }
+    context.set(event.session_id, current);
+  }
+  return context;
+}
+
+function uniqueConsecutivePages(events: AnalyticsEvent[]) {
+  const pages: string[] = [];
+  for (const event of events) {
+    if (event.event_type !== "visit" && event.event_type !== "page_view") {
+      continue;
+    }
+    const title = pageTitle(event.path);
+    if (pages[pages.length - 1] !== title) {
+      pages.push(title);
+    }
+  }
+  return pages;
+}
+
+function contactJourney(events: AnalyticsEvent[], contact: AnalyticsEvent) {
+  if (!contact.session_id) {
+    return {
+      landing: pageTitle(contact.path),
+      pages: [pageTitle(contact.path)],
+      durationMinutes: null as number | null,
+    };
+  }
+
+  const contactTime = new Date(contact.created_at).getTime();
+  const sessionEvents = events
+    .filter(
+      (event) =>
+        event.session_id === contact.session_id &&
+        new Date(event.created_at).getTime() <= contactTime,
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    );
+  const pages = uniqueConsecutivePages(sessionEvents);
+  const first = sessionEvents[0];
+  const durationMinutes = first
+    ? Math.max(
+        0,
+        Math.round(
+          (contactTime - new Date(first.created_at).getTime()) / 60000,
+        ),
+      )
+    : null;
+
+  return {
+    landing: pages[0] ?? pageTitle(contact.path),
+    pages: pages.length > 0 ? pages : [pageTitle(contact.path)],
+    durationMinutes,
+  };
+}
+
+function recentActivity(events: AnalyticsEvent[]): RecentActivity[] {
+  const context = sessionContext(events);
+  return events
+    .filter(
+      (event) =>
+        event.event_type === "visit" || CONTACT_TYPES.has(event.event_type),
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    )
+    .slice(0, 25)
+    .map((event, index) => {
+      const session = event.session_id
+        ? context.get(event.session_id)
+        : undefined;
+      const isContact = CONTACT_TYPES.has(event.event_type);
+      const journey = isContact
+        ? contactJourney(events, event)
+        : {
+            landing: null,
+            pages: [] as string[],
+            durationMinutes: null,
+          };
+      return {
+        id: `${event.created_at}-${event.event_type}-${event.session_id ?? index}`,
+        at: event.created_at,
+        action: ACTION_LABELS[event.event_type] ?? event.event_type,
+        page: pageTitle(event.path),
+        source: event.referrer_host || session?.source || "Directo",
+        device:
+          (event.device_type && DEVICE_LABELS[event.device_type]) ||
+          session?.device ||
+          "Escritorio",
+        isContact,
+        landing: journey.landing,
+        pages: journey.pages,
+        durationMinutes: journey.durationMinutes,
+      };
+    });
 }
 
 export function summarizeAnalyticsEvents(
@@ -145,6 +273,7 @@ export function summarizeAnalyticsEvents(
     topPages: topPages(events),
     cities: [],
     devices: deviceStats(events),
+    recentActivity: recentActivity(events),
   };
 }
 

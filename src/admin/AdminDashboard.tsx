@@ -6,7 +6,7 @@ import {
   EMPTY_ANALYTICS,
   type AnalyticsSnapshot,
   type DeviceStat,
-  type PageViewStat,
+  type RecentActivity,
   type TrafficSource,
 } from "./analyticsTypes";
 import { useAuth } from "./AuthContext";
@@ -105,6 +105,91 @@ function DeviceList({ items }: { items: DeviceStat[] }) {
           <span>{displayValue(item.visitors)}</span>
         </li>
       ))}
+    </ul>
+  );
+}
+
+function formatWhen(iso: string) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return iso;
+  }
+  return new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function formatDuration(minutes: number | null) {
+  if (minutes === null) {
+    return null;
+  }
+  if (minutes < 1) {
+    return "menos de 1 min";
+  }
+  if (minutes === 1) {
+    return "1 min";
+  }
+  return `${minutes} min`;
+}
+
+function specialtiesLooked(pages: string[]) {
+  const odonto = pages.includes("Odontología");
+  const nutri = pages.includes("Nutrición");
+  if (odonto && nutri) {
+    return "Vio Odontología y Nutrición";
+  }
+  if (odonto) {
+    return "Vio Odontología";
+  }
+  if (nutri) {
+    return "Vio Nutrición";
+  }
+  return null;
+}
+
+function contactDetail(item: RecentActivity) {
+  const parts: string[] = [];
+  if (item.landing) {
+    parts.push(`Entró por ${item.landing}`);
+  }
+  if (item.pages.length > 0) {
+    parts.push(`Recorrido: ${item.pages.join(" → ")}`);
+  }
+  const duration = formatDuration(item.durationMinutes);
+  if (duration) {
+    parts.push(`${duration} en el sitio`);
+  }
+  if (item.pages.length === 1) {
+    parts.push("1 página");
+  } else if (item.pages.length > 1) {
+    parts.push(`${item.pages.length} páginas`);
+  }
+  const specialties = specialtiesLooked(item.pages);
+  if (specialties) {
+    parts.push(specialties);
+  }
+  return parts.join(" · ");
+}
+
+function ActivityList({ items }: { items: RecentActivity[] }) {
+  return (
+    <ul className="admin-activity-list">
+      {items.map((item) => {
+        const detail = item.isContact ? contactDetail(item) : "";
+        return (
+          <li key={item.id}>
+            <div className="admin-activity-row">
+              <time dateTime={item.at}>{formatWhen(item.at)}</time>
+              <strong>{item.action}</strong>
+              <span>{item.page}</span>
+              <span>{item.source}</span>
+              <span>{item.device}</span>
+            </div>
+            {detail ? <p className="admin-activity-detail">{detail}</p> : null}
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -221,6 +306,22 @@ export function AdminDashboard() {
           <DeviceList items={analytics.devices} />
         </StatList>
       </div>
+
+      <section className="admin-panel admin-activity">
+        <h2>Actividad reciente</h2>
+        <p className="admin-activity-lead">
+          Visitas y contactos anónimos: horario, canal, página, origen y
+          dispositivo. Debajo de cada contacto, el recorrido de páginas. No se
+          guardan nombres ni datos personales.
+        </p>
+        {pending ? (
+          <p className="admin-empty">{ANALYTICS_PENDING_MESSAGE}</p>
+        ) : analytics.recentActivity.length === 0 ? (
+          <p className="admin-empty">Todavía no hay datos.</p>
+        ) : (
+          <ActivityList items={analytics.recentActivity} />
+        )}
+      </section>
     </div>
   );
 }

@@ -22,6 +22,19 @@ export type DeviceStat = {
   visitors: number | null;
 };
 
+export type RecentActivity = {
+  id: string;
+  at: string;
+  action: string;
+  page: string;
+  source: string;
+  device: string;
+  isContact: boolean;
+  landing: string | null;
+  pages: string[];
+  durationMinutes: number | null;
+};
+
 export type AnalyticsSnapshot = {
   status: "pending" | "ready";
   message: string;
@@ -37,6 +50,7 @@ export type AnalyticsSnapshot = {
   topPages: PageViewStat[];
   cities: CityStat[];
   devices: DeviceStat[];
+  recentActivity: RecentActivity[];
 };
 
 export const EMPTY_ANALYTICS: AnalyticsSnapshot = {
@@ -54,4 +68,5 @@ export const EMPTY_ANALYTICS: AnalyticsSnapshot = {
   topPages: [],
   cities: [],
   devices: [],
+  recentActivity: [],
 };
