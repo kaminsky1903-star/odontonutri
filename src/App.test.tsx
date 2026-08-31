@@ -22,6 +22,7 @@ describe("App", () => {
   afterEach(() => {
     cleanup();
     localStorage.clear();
+    sessionStorage.clear();
     window.history.replaceState(null, "", "/");
   });
 
@@ -98,6 +99,43 @@ describe("App", () => {
       "utf8",
     );
     expect(css).not.toMatch(/\.whatsapp-float\s*\{\s*display:\s*none/);
+  });
+
+  it("keeps the analytics panel out of the public navigation", () => {
+    render(<App />);
+
+    expect(
+      screen.queryByRole("link", { name: /panel de analíticas|admin/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      [...document.querySelectorAll("a")].some(
+        (link) => link.getAttribute("href") === "/admin",
+      ),
+    ).toBe(false);
+  });
+
+  it("shows the admin login without public chrome", async () => {
+    window.history.replaceState(null, "", "/admin");
+    render(<App />);
+
+    expect(
+      await screen.findByRole("heading", { name: "Panel de analíticas" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Email")).toBeInTheDocument();
+    expect(screen.getByLabelText("Contraseña")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ingresar" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Cerrar sesión" }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Visitantes de hoy")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: "Principal" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Contactar por WhatsApp" }),
+    ).not.toBeInTheDocument();
+    expect(document.querySelector(".site-footer")).toBeNull();
+    expect(document.querySelector(".map-block")).toBeNull();
   });
 
   it("shows header navigation without Instagram", async () => {
@@ -320,7 +358,7 @@ describe("App", () => {
     expect(css).toMatch(
       /@media \(width <= 640px\)[\s\S]*?\.nutri-service-grid[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/,
     );
-    expect(screen.getByAltText("Bajar de peso")).toHaveAttribute(
+    expect(screen.getByAltText("Pérdida de peso")).toHaveAttribute(
       "src",
       "/bajar-peso.webp",
     );

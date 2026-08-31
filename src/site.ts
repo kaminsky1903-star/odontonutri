@@ -6,6 +6,7 @@ export const INSTAGRAM_URL = "https://www.instagram.com/odontologia.nutricion/";
 export const INSTAGRAM_HANDLE = "@odontologia.nutricion";
 export const WHATSAPP_URL = "https://wa.link/g6wqj3";
 export const WHATSAPP_PAGE = "/whatsapp.html";
+export const ADMIN_PATH = "/admin";
 export const WHATSAPP_NUTRITION_MESSAGE =
   "Hola, quisiera agendar una consulta de nutrición.";
 export const WHATSAPP_NUTRITION_PAGE = `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`;
@@ -16,12 +17,12 @@ export function whatsappPageWithMessage(message: string) {
 
 export const NUTRITION_SERVICES = [
   {
-    title: "Bajar de peso",
+    title: "Pérdida de peso",
     description:
       "Plan personalizado para bajar de peso de forma saludable y sostenible.",
     features: ["Déficit saludable", "Hábitos sostenibles"],
     image: "/bajar-peso.webp",
-    message: "Hola, quisiera consultar el servicio de Bajar de peso.",
+    message: "Hola, quisiera consultar el servicio de Pérdida de peso.",
   },
   {
     title: "Ganancia muscular",

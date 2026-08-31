@@ -29,6 +29,17 @@
     <meta name="robots" content="index, follow" />
     <meta name="googlebot" content="index, follow" />
     <meta name="bingbot" content="index, follow" />
+    <script>
+      (function () {
+        var path = location.pathname.replace(/\/+$/, "") || "/";
+        if (path !== "/admin" && path.indexOf("/admin/") !== 0) return;
+        ["robots", "googlebot", "bingbot"].forEach(function (name) {
+          var meta = document.querySelector('meta[name="' + name + '"]');
+          if (meta) meta.setAttribute("content", "noindex, nofollow, noarchive");
+        });
+        document.title = "Panel de analíticas | Odontología y Nutrición";
+      })();
+    </script>
     <meta name="geo.region" content="AR-B" />
     <meta name="geo.placename" content="Bella Vista, San Miguel" />
     <meta name="ICBM" content="-34.5637, -58.6903" />
@@ -170,7 +181,7 @@
                   "@type": "Offer",
                   "itemOffered": {
                     "@type": "Service",
-                    "name": "Bajar de peso"
+                    "name": "Pérdida de peso"
                   }
                 },
                 {

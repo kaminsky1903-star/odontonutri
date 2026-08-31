@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ADMIN_PATH,
   GOOGLE_REVIEWS,
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
@@ -31,6 +32,7 @@ describe("site constants", () => {
       "https://www.instagram.com/odontologia.nutricion/",
     );
     expect(WHATSAPP_PAGE).toBe("/whatsapp.html");
+    expect(ADMIN_PATH).toBe("/admin");
     expect(WHATSAPP_URL).toMatch(/^https:\/\/wa\.link\//);
     expect(WHATSAPP_NUTRITION_MESSAGE).toBe(
       "Hola, quisiera agendar una consulta de nutrición.",

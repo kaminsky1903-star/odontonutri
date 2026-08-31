@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
+import { AdminApp } from "./admin/AdminApp";
+import { usePublicAnalytics } from "./analytics/usePublicAnalytics";
 import {
+  ADMIN_PATH,
   INSTAGRAM_URL,
   MAP_QUERY,
   PHONE_LABEL,
@@ -1156,6 +1159,12 @@ function DentistryPage() {
 
 export default function App() {
   const path = currentPath();
+  const isAdmin = path === ADMIN_PATH || path.startsWith(`${ADMIN_PATH}/`);
+  usePublicAnalytics(!isAdmin);
+
+  if (isAdmin) {
+    return <AdminApp />;
+  }
 
   return (
     <>

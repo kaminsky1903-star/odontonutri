@@ -1,0 +1,329 @@
+.admin-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at top right, #e7efe9 0, transparent 42%),
+    linear-gradient(180deg, #fbf8f2 0%, #f3eee4 100%);
+  color: var(--ink);
+  padding:
+    max(1.25rem, env(safe-area-inset-top))
+    max(1.15rem, env(safe-area-inset-right))
+    max(1.5rem, env(safe-area-inset-bottom))
+    max(1.15rem, env(safe-area-inset-left));
+}
+
+.admin-kicker {
+  margin: 0 0 0.2rem;
+  color: var(--accent-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-loading,
+.admin-login {
+  min-height: calc(100dvh - 2.5rem);
+  display: grid;
+  place-items: center;
+}
+
+.admin-loading {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.admin-login-card {
+  width: min(100%, 26.5rem);
+  padding: 2rem 1.6rem 1.7rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line));
+  border-radius: 1.35rem;
+  background: color-mix(in srgb, var(--bg-2) 92%, white);
+  box-shadow: var(--shadow);
+}
+
+.admin-login-logo {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 0.85rem;
+  object-fit: contain;
+}
+
+.admin-login-card h1,
+.admin-brand h1 {
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.admin-login-lead {
+  margin: 0.55rem 0 1.15rem;
+  color: var(--muted);
+}
+
+.admin-login-form {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-login-form label {
+  margin-top: 0.45rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.admin-login-form input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  padding: 0.78rem 0.9rem;
+  background: #fffdf9;
+  color: var(--ink);
+  font: inherit;
+}
+
+.admin-login-form input:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent-2) 55%, var(--line));
+  box-shadow: 0 0 0 3px rgb(46 106 90 / 16%);
+}
+
+.admin-login-form input:disabled,
+.admin-submit:disabled,
+.admin-password-toggle:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.admin-password-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.admin-password-toggle,
+.admin-submit,
+.admin-signout {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.admin-password-toggle {
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  padding: 0 0.9rem;
+  background: var(--chip);
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.admin-submit,
+.admin-signout {
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.admin-submit {
+  margin-top: 1rem;
+  padding: 0.85rem 1.1rem;
+  background: var(--accent-2);
+  color: #f7fbf8;
+}
+
+.admin-submit:focus-visible,
+.admin-signout:focus-visible,
+.admin-password-toggle:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgb(217 238 229 / 70%),
+    0 0 18px rgb(63 107 90 / 28%);
+}
+
+.admin-error,
+.admin-banner {
+  margin: 0.85rem 0 0;
+  border-radius: 0.9rem;
+  padding: 0.8rem 0.95rem;
+  font-size: 0.92rem;
+}
+
+.admin-error {
+  background: #f8ece6;
+  color: #7a3a2c;
+}
+
+.admin-banner {
+  background: color-mix(in srgb, var(--chip) 82%, #fff);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.admin-dashboard {
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  display: grid;
+  gap: 1.15rem;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+}
+
+.admin-brand,
+.admin-session {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.admin-brand img {
+  width: 2.6rem;
+  height: 2.6rem;
+  object-fit: contain;
+}
+
+.admin-session {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.admin-session-email {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.admin-signout {
+  padding: 0.62rem 1rem;
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+}
+
+.admin-metrics,
+.admin-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-metric,
+.admin-panel {
+  min-height: 8.2rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 12%, var(--line));
+  border-left: 3px solid var(--accent-2);
+  border-radius: 1.05rem;
+  padding: 1rem 1.05rem 0.95rem;
+  background: color-mix(in srgb, var(--bg-2) 88%, white);
+}
+
+.admin-metric-label,
+.admin-panel h2 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.admin-panel h2 {
+  font-size: 1rem;
+  color: var(--ink);
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 600;
+}
+
+.admin-metric-value {
+  margin: 0.55rem 0 0.35rem;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.admin-metric-note,
+.admin-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.admin-empty {
+  margin-top: 0.7rem;
+}
+
+.admin-stat-list {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+}
+
+.admin-stat-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.28rem 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.admin-stat-list li span:last-child {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+@media (width <= 900px) {
+  .admin-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (width <= 720px) {
+  .admin-topbar,
+  .admin-brand {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-session {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (width <= 520px) {
+  .admin-login-card {
+    padding: 1.55rem 1.15rem 1.35rem;
+  }
+
+  .admin-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-password-row {
+    grid-template-columns: 1fr;
+  }
+}

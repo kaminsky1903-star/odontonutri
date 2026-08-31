@@ -2,6 +2,13 @@ node_modules/
 dist/
 .wrangler/
 .dev.vars*
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+*.pem
+*service-account*.json
 worker-content.bin
 scripts/cf-domains.json
 _site_probe/

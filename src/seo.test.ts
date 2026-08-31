@@ -52,7 +52,7 @@ describe("search appearance", () => {
       url: SITE_URL,
     });
     expect(JSON.stringify(business)).toContain(STREET_ADDRESS.replace("Av.", "Avenida"));
-    expect(JSON.stringify(business)).toContain("Bajar de peso");
+    expect(JSON.stringify(business)).toContain("Pérdida de peso");
     expect(JSON.stringify(business)).toContain("Ganancia muscular");
     expect(JSON.stringify(business)).toContain("Alimentación saludable");
     expect(JSON.stringify(business)).toContain("Nutrición clínica");
@@ -64,11 +64,32 @@ describe("search appearance", () => {
     const sitemap = readPublic("sitemap.xml");
 
     expect(robots).toContain("Allow: /");
+    expect(robots).toMatch(/disallow:\s*\/admin/i);
     expect(robots).not.toMatch(/disallow:\s*\/favicon/i);
     expect(robots).toContain(`${SITE_URL}sitemap.xml`);
     expect(sitemap).toContain(`<loc>${SITE_URL}</loc>`);
     expect(sitemap).toContain("<loc>https://www.odontonutri.com/odontologia</loc>");
     expect(sitemap).toContain("<loc>https://www.odontonutri.com/nutricion</loc>");
+    expect(sitemap).not.toContain("/admin");
+  });
+
+  it("marks the admin area as noindex without changing public robots", () => {
+    expect(html).toContain('<meta name="robots" content="index, follow" />');
+    expect(html).toContain("noindex, nofollow, noarchive");
+    expect(html).toContain('path !== "/admin"');
+  });
+
+  it("keeps env files and credential dumps out of git", () => {
+    const ignore = readFileSync(join(root, ".gitignore"), "utf8");
+    const envExample = readFileSync(join(root, ".env.example"), "utf8");
+    expect(ignore).toMatch(/^\.env$/m);
+    expect(ignore).toContain(".env.local");
+    expect(ignore).toContain(".dev.vars");
+    expect(ignore).toContain("*service-account*.json");
+    expect(envExample).toContain("VITE_SUPABASE_PUBLISHABLE_KEY=");
+    expect(envExample).not.toContain("VITE_SUPABASE_ANON_KEY");
+    expect(envExample).not.toContain("sb_secret_");
+    expect(envExample).not.toContain("service_role");
   });
 
   it("publishes a real WhatsApp handoff page for conversion tracking", () => {
