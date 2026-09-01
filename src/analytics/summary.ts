@@ -16,6 +16,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/odontologia": "Odontología",
   "/nutricion": "Nutrición",
 };
+const CONVERSION_PAGES = ["/", "/odontologia", "/nutricion"] as const;
 const DEVICE_LABELS: Record<string, string> = {
   desktop: "Escritorio",
   mobile: "Celular",
@@ -190,6 +191,9 @@ function topPages(events: AnalyticsEvent[]): PageViewStat[] {
 
 function conversionsByPage(events: AnalyticsEvent[]): PageViewStat[] {
   const counts = new Map<string, number>();
+  for (const path of CONVERSION_PAGES) {
+    counts.set(path, 0);
+  }
   let total = 0;
   for (const event of events) {
     if (!CONTACT_TYPES.has(event.event_type)) {
@@ -198,6 +202,9 @@ function conversionsByPage(events: AnalyticsEvent[]): PageViewStat[] {
     counts.set(event.path, (counts.get(event.path) ?? 0) + 1);
     total += 1;
   }
+  if (total === 0) {
+    return [];
+  }
   return [...counts.entries()]
     .map(([path, views]) => ({
       path,
@@ -205,8 +212,22 @@ function conversionsByPage(events: AnalyticsEvent[]): PageViewStat[] {
       views,
       percent: percent(views, total),
     }))
-    .sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
+    .sort((a, b) => {
+      const byViews = (b.views ?? 0) - (a.views ?? 0);
+      if (byViews !== 0) {
+        return byViews;
+      }
+      return conversionPageRank(a.path) - conversionPageRank(b.path);
+    });
 }
+
+function conversionPageRank(path: string) {
+  const index = (CONVERSION_PAGES as readonly string[]).indexOf(path);
+  return index === -1 ? CONVERSION_PAGES.length : index;
+}
+
+const WHATSAPP_HOUR_START = 9;
+const WHATSAPP_HOUR_END = 18;
 
 function clinicHour(iso: string) {
   const hour = new Intl.DateTimeFormat("en-US", {
@@ -221,15 +242,19 @@ function clinicHour(iso: string) {
 }
 
 function whatsappHours(events: AnalyticsEvent[]): HourStat[] {
-  const values: HourStat[] = Array.from({ length: 24 }, (_, hour) => ({
-    hour,
-    value: 0,
-  }));
+  const values: HourStat[] = [];
+  for (let hour = WHATSAPP_HOUR_START; hour <= WHATSAPP_HOUR_END; hour += 1) {
+    values.push({ hour, value: 0 });
+  }
   for (const event of events) {
     if (event.event_type !== "whatsapp_click") {
       continue;
     }
-    values[clinicHour(event.created_at)].value += 1;
+    const hour = clinicHour(event.created_at);
+    if (hour < WHATSAPP_HOUR_START || hour > WHATSAPP_HOUR_END) {
+      continue;
+    }
+    values[hour - WHATSAPP_HOUR_START].value += 1;
   }
   return values;
 }

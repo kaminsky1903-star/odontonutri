@@ -96,17 +96,6 @@ function TrendIcon() {
   );
 }
 
-function CalendarIcon() {
-  return (
-    <LineIcon>
-      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
-      <path d="M8 3.5v3" />
-      <path d="M16 3.5v3" />
-      <path d="M3.5 10h17" />
-    </LineIcon>
-  );
-}
-
 function LogoutIcon() {
   return (
     <LineIcon>
@@ -331,7 +320,7 @@ function HourChart({ hours }: { hours: HourStat[] }) {
     <div
       className="admin-hours"
       role="img"
-      aria-label="Clics de WhatsApp por hora, horario de Argentina"
+      aria-label="Clics de WhatsApp de 9 a 18, horario de Argentina"
     >
       <div className="admin-hours-bars">
         {hours.map((item) => (
@@ -346,10 +335,9 @@ function HourChart({ hours }: { hours: HourStat[] }) {
         ))}
       </div>
       <div className="admin-hours-axis" aria-hidden="true">
-        <span>00</span>
-        <span>06</span>
-        <span>12</span>
-        <span>18</span>
+        {hours.map((item) => (
+          <span key={item.hour}>{item.hour}</span>
+        ))}
       </div>
     </div>
   );
@@ -601,13 +589,13 @@ export function AdminDashboard() {
             label="Últimos 7 días"
             value={displayValue(analytics.whatsappClicksLast7Days)}
             pending={pending}
-            icon={<CalendarIcon />}
+            icon={<WhatsAppIcon />}
           />
           <MetricCard
             label="Mes pasado"
             value={displayValue(analytics.whatsappClicksLastMonth)}
             pending={pending}
-            icon={<CalendarIcon />}
+            icon={<WhatsAppIcon />}
           />
         </div>
       </section>

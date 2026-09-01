@@ -384,11 +384,17 @@
 
 .admin-hours-axis {
   display: flex;
-  justify-content: space-between;
+  gap: 0.18rem;
   margin-top: 0.35rem;
   color: var(--muted);
   font-size: 0.72rem;
   font-weight: 700;
+}
+
+.admin-hours-axis span {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
 }
 
 .admin-bar-list {

@@ -89,9 +89,14 @@ describe("analytics summary", () => {
     expect(snapshot.conversionsByPage).toEqual([
       { path: "/", title: "Inicio", views: 1, percent: 50 },
       { path: "/nutricion", title: "Nutrición", views: 1, percent: 50 },
+      { path: "/odontologia", title: "Odontología", views: 0, percent: 0 },
     ]);
-    expect(snapshot.whatsappHours).toHaveLength(24);
-    expect(snapshot.whatsappHours[14]?.value).toBe(1);
+    expect(snapshot.whatsappHours.map((item) => item.hour)).toEqual([
+      9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+    ]);
+    expect(snapshot.whatsappHours.find((item) => item.hour === 14)?.value).toBe(
+      1,
+    );
     expect(
       snapshot.whatsappHours.filter((item) => item.value > 0),
     ).toHaveLength(1);
@@ -230,6 +235,55 @@ describe("analytics summary", () => {
     expect(snapshot.whatsappClicksToday).toBe(1);
     expect(snapshot.whatsappClicksLast7Days).toBe(2);
     expect(snapshot.whatsappClicksLastMonth).toBe(1);
+  });
+
+  it("only counts WhatsApp hours from 9 to 18", () => {
+    const snapshot = summarizeAnalyticsEvents(
+      [
+        event({
+          created_at: "2026-08-30T08:30:00-03:00",
+          event_type: "whatsapp_click",
+          session_id: "early",
+        }),
+        event({
+          created_at: "2026-08-31T11:00:00-03:00",
+          event_type: "whatsapp_click",
+          session_id: "mid",
+        }),
+        event({
+          created_at: "2026-08-30T21:00:00-03:00",
+          event_type: "whatsapp_click",
+          session_id: "late",
+        }),
+      ],
+      now,
+    );
+
+    expect(snapshot.whatsappHours.find((item) => item.hour === 11)?.value).toBe(
+      1,
+    );
+    expect(
+      snapshot.whatsappHours.filter((item) => item.value > 0).map((item) => item.hour),
+    ).toEqual([11]);
+  });
+
+  it("always lists Nutrición among conversion pages", () => {
+    const snapshot = summarizeAnalyticsEvents(
+      [
+        event({
+          event_type: "whatsapp_click",
+          session_id: "w-odonto",
+          path: "/odontologia",
+        }),
+      ],
+      now,
+    );
+
+    expect(snapshot.conversionsByPage).toEqual([
+      { path: "/odontologia", title: "Odontología", views: 1, percent: 100 },
+      { path: "/", title: "Inicio", views: 0, percent: 0 },
+      { path: "/nutricion", title: "Nutrición", views: 0, percent: 0 },
+    ]);
   });
 
   it("starts the analytics query at the previous calendar month", () => {
