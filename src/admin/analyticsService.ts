@@ -1,24 +1,46 @@
 import { getSupabaseClient } from "./supabaseClient";
-import { summarizeAnalyticsEvents } from "../analytics/summary";
+import {
+  analyticsQueryStart,
+  summarizeAnalyticsEvents,
+} from "../analytics/summary";
 import type { AnalyticsEvent } from "../analytics/types";
 import { EMPTY_ANALYTICS, type AnalyticsSnapshot } from "./analyticsTypes";
 
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+const FULL_COLUMNS =
+  "created_at, event_type, path, session_id, visitor_id, referrer_host, device_type, city";
+const BASE_COLUMNS =
+  "created_at, event_type, path, session_id, referrer_host, device_type";
 
 function asEvents(value: unknown): AnalyticsEvent[] {
   if (!Array.isArray(value)) {
     return [];
   }
-  return value.filter((row): row is AnalyticsEvent => {
+  return value.flatMap((row) => {
     if (!row || typeof row !== "object") {
-      return false;
+      return [];
     }
     const event = row as Partial<AnalyticsEvent>;
-    return (
-      typeof event.created_at === "string" &&
-      typeof event.event_type === "string" &&
-      typeof event.path === "string"
-    );
+    if (
+      typeof event.created_at !== "string" ||
+      typeof event.event_type !== "string" ||
+      typeof event.path !== "string"
+    ) {
+      return [];
+    }
+    return [
+      {
+        created_at: event.created_at,
+        event_type: event.event_type,
+        path: event.path,
+        session_id: typeof event.session_id === "string" ? event.session_id : null,
+        visitor_id: typeof event.visitor_id === "string" ? event.visitor_id : null,
+        referrer_host:
+          typeof event.referrer_host === "string" ? event.referrer_host : null,
+        device_type:
+          typeof event.device_type === "string" ? event.device_type : null,
+        city: typeof event.city === "string" ? event.city : null,
+      },
+    ];
   });
 }
 
@@ -29,18 +51,22 @@ export async function fetchAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
       return EMPTY_ANALYTICS;
     }
 
-    const since = new Date(Date.now() - THIRTY_DAYS_MS).toISOString();
-    const { data, error } = await supabase
-      .from("analytics_events")
-      .select("created_at, event_type, path, session_id, referrer_host, device_type")
-      .gte("created_at", since)
-      .limit(5000);
+    const since = analyticsQueryStart().toISOString();
+    const query = (columns: string) =>
+      supabase
+        .from("analytics_events")
+        .select(columns)
+        .gte("created_at", since)
+        .limit(5000);
 
-    if (error) {
+    const full = await query(FULL_COLUMNS);
+    const result = full.error ? await query(BASE_COLUMNS) : full;
+
+    if (result.error) {
       return EMPTY_ANALYTICS;
     }
 
-    return summarizeAnalyticsEvents(asEvents(data));
+    return summarizeAnalyticsEvents(asEvents(result.data));
   } catch {
     return EMPTY_ANALYTICS;
   }

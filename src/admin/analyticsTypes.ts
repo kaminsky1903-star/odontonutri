@@ -3,23 +3,21 @@ export const ANALYTICS_PENDING_MESSAGE = "Analíticas pendientes de conexión";
 export type TrafficSource = {
   name: string;
   sessions: number | null;
+  percent: number | null;
 };
 
 export type PageViewStat = {
   path: string;
   title: string;
   views: number | null;
-};
-
-export type CityStat = {
-  city: string;
-  visitors: number | null;
+  percent: number | null;
 };
 
 export type DeviceStat = {
   type: "desktop" | "mobile" | "tablet";
   label: string;
   visitors: number | null;
+  percent: number | null;
 };
 
 export type RecentActivity = {
@@ -33,6 +31,19 @@ export type RecentActivity = {
   landing: string | null;
   pages: string[];
   durationMinutes: number | null;
+  visitorLabel: string | null;
+  visitCount: number;
+  city: string | null;
+};
+
+export type DailyVisit = {
+  date: string;
+  value: number;
+};
+
+export type HourStat = {
+  hour: number;
+  value: number;
 };
 
 export type AnalyticsSnapshot = {
@@ -42,13 +53,17 @@ export type AnalyticsSnapshot = {
   visitorsLast7Days: number | null;
   visitorsLast30Days: number | null;
   activeNow: number | null;
-  whatsappClicks: number | null;
+  whatsappClicksToday: number | null;
+  whatsappClicksLast7Days: number | null;
+  whatsappClicksLastMonth: number | null;
   phoneClicks: number | null;
   locationClicks: number | null;
   conversionRate: number | null;
+  dailyVisits: DailyVisit[];
+  conversionsByPage: PageViewStat[];
+  whatsappHours: HourStat[];
   trafficSources: TrafficSource[];
   topPages: PageViewStat[];
-  cities: CityStat[];
   devices: DeviceStat[];
   recentActivity: RecentActivity[];
 };
@@ -60,13 +75,17 @@ export const EMPTY_ANALYTICS: AnalyticsSnapshot = {
   visitorsLast7Days: null,
   visitorsLast30Days: null,
   activeNow: null,
-  whatsappClicks: null,
+  whatsappClicksToday: null,
+  whatsappClicksLast7Days: null,
+  whatsappClicksLastMonth: null,
   phoneClicks: null,
   locationClicks: null,
   conversionRate: null,
+  dailyVisits: [],
+  conversionsByPage: [],
+  whatsappHours: [],
   trafficSources: [],
   topPages: [],
-  cities: [],
   devices: [],
   recentActivity: [],
 };

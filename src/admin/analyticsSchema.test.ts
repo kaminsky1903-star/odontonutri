@@ -3,13 +3,19 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const sql = readFileSync(
+const sql = `${readFileSync(
   join(
     dirname(fileURLToPath(import.meta.url)),
     "../../supabase/migrations/20260831134600_analytics_events.sql",
   ),
   "utf8",
-);
+)}\n${readFileSync(
+  join(
+    dirname(fileURLToPath(import.meta.url)),
+    "../../supabase/migrations/20260901140700_analytics_visitor_city.sql",
+  ),
+  "utf8",
+)}`;
 
 describe("analytics events migration", () => {
   it("stores only non-sensitive site events with insert-only anonymous access", () => {
@@ -24,6 +30,8 @@ describe("analytics events migration", () => {
     expect(sql).toContain("whatsapp_click");
     expect(sql).toContain("phone_click");
     expect(sql).toContain("location_click");
+    expect(sql).toContain("visitor_id");
+    expect(sql).toContain("city");
     expect(sql).not.toMatch(
       /^\s*(password|email|nombre|paciente|historia_clinica|ip_address)\s+/im,
     );

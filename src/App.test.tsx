@@ -54,6 +54,13 @@ describe("App", () => {
     expect(
       screen.getByAltText("Dr. Kaminsky y Lic. González"),
     ).toHaveAttribute("src", "/nosotros-hero.webp");
+    expect(
+      [...document.querySelectorAll("a[href]")].filter((link) =>
+        /^https?:\/\/(?:www\.)?odontonutri\.com/i.test(
+          link.getAttribute("href") ?? "",
+        ),
+      ),
+    ).toEqual([]);
   });
 
   it("shows the patient process between the hero photo and visit card", () => {

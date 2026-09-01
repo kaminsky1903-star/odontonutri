@@ -32,7 +32,7 @@ Instagram belongs in the visit card, not the header or footer.
 
 ## Guardrails
 
-- Keep the Worker asset 404 for non-`/api/` routes; Wrangler serves the SPA.
+- Public HTML routes must go through `env.ASSETS` so `/odontologia` and `/nutricion` work without a browser `Sec-Fetch-Mode: navigate` header (Instagram in-app). Force HTTPS and www in the Worker.
 - Do not commit Wrangler tokens, `worker-content.bin`, or `.dev.vars`.
 - `scripts/` are one-off Cloudflare/GitHub helpers, not runtime.
 - After changing clinic info, update `src/site.ts`, `index.html` metadata, and tests together.

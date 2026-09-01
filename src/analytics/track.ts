@@ -1,15 +1,57 @@
 import { getSupabaseClient } from "../admin/supabaseClient";
 import {
+  approxCity,
   deviceType,
   eventTypeFromHref,
   publicPath,
-  referrerHost,
 } from "./sanitize";
-import { consumeVisitFlag, getAnonymousSessionId } from "./session";
+import {
+  consumeVisitFlag,
+  getAnonymousSessionId,
+  getAnonymousVisitorId,
+  readCachedCity,
+  sessionTrafficSource,
+  writeCachedCity,
+} from "./session";
 import type { AnalyticsEventType } from "./types";
 
 function analyticsEnabled() {
   return import.meta.env.MODE !== "test";
+}
+
+let cityPromise: Promise<string | null> | null = null;
+
+async function fetchApproxCity(): Promise<string | null> {
+  const cached = readCachedCity();
+  if (cached !== undefined) {
+    return cached;
+  }
+  try {
+    const response = await fetch("/api/geo", {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      writeCachedCity(null);
+      return null;
+    }
+    const payload: unknown = await response.json();
+    const city =
+      payload && typeof payload === "object" && "city" in payload
+        ? approxCity((payload as { city: unknown }).city)
+        : null;
+    writeCachedCity(city);
+    return city;
+  } catch {
+    writeCachedCity(null);
+    return null;
+  }
+}
+
+function loadApproxCity() {
+  if (!cityPromise) {
+    cityPromise = fetchApproxCity();
+  }
+  return cityPromise;
 }
 
 async function recordEvent(eventType: AnalyticsEventType) {
@@ -25,13 +67,21 @@ async function recordEvent(eventType: AnalyticsEventType) {
       return;
     }
 
-    await supabase.from("analytics_events").insert({
+    const payload = {
       event_type: eventType,
       path,
       session_id: sessionId,
-      referrer_host: referrerHost(),
+      referrer_host: sessionTrafficSource(),
       device_type: deviceType(),
+    };
+    const { error } = await supabase.from("analytics_events").insert({
+      ...payload,
+      visitor_id: getAnonymousVisitorId(),
+      city: await loadApproxCity(),
     });
+    if (error) {
+      await supabase.from("analytics_events").insert(payload);
+    }
   } catch {
     // Analytics must never break the public site.
   }

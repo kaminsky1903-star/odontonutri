@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  approxCity,
   deviceType,
+  displayTrafficName,
   eventTypeFromHref,
+  inAppSocialHost,
   publicPath,
   referrerHost,
+  utmSourceHost,
 } from "./sanitize";
 
 describe("analytics sanitization", () => {
@@ -23,6 +27,20 @@ describe("analytics sanitization", () => {
       referrerHost("https://www.odontonutri.com/nutricion", "www.odontonutri.com"),
     ).toBeNull();
     expect(referrerHost("", "localhost")).toBeNull();
+  });
+
+  it("reads utm_source and Instagram in-app traffic without storing full URLs", () => {
+    expect(utmSourceHost("?utm_source=instagram&utm_medium=social")).toBe(
+      "instagram.com",
+    );
+    expect(utmSourceHost("utm_source=IG")).toBe("instagram.com");
+    expect(utmSourceHost("?utm_source=https://evil.example")).toBeNull();
+    expect(inAppSocialHost("Mozilla/5.0 Instagram 360.0.0.33.106")).toBe(
+      "instagram.com",
+    );
+    expect(inAppSocialHost("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")).toBeNull();
+    expect(displayTrafficName("instagram.com")).toBe("Instagram");
+    expect(displayTrafficName(null)).toBe("Directo");
   });
 
   it("classifies contact clicks without reading query values", () => {
@@ -48,5 +66,13 @@ describe("analytics sanitization", () => {
     expect(deviceType("Mozilla/5.0 (Windows NT 10.0; Win64; x64)")).toBe(
       "desktop",
     );
+  });
+
+  it("keeps an approximate city name without URLs or IPs", () => {
+    expect(approxCity("San Miguel")).toBe("San Miguel");
+    expect(approxCity("  Buenos Aires  ")).toBe("Buenos Aires");
+    expect(approxCity("https://evil.example")).toBeNull();
+    expect(approxCity("a")).toBeNull();
+    expect(approxCity(12)).toBeNull();
   });
 });

@@ -8,8 +8,10 @@ create table if not exists public.analytics_events (
   event_type text not null,
   path text not null,
   session_id uuid,
+  visitor_id uuid,
   referrer_host text,
   device_type text,
+  city text,
   constraint analytics_events_type_check
     check (
       event_type in (
@@ -38,6 +40,14 @@ create table if not exists public.analytics_events (
     check (
       device_type is null
       or device_type in ('desktop', 'mobile', 'tablet')
+    ),
+  constraint analytics_events_city_check
+    check (
+      city is null
+      or (
+        char_length(city) between 2 and 80
+        and city !~ '[/?#@]'
+      )
     )
 );
 
@@ -49,6 +59,12 @@ comment on column public.analytics_events.path is
 
 comment on column public.analytics_events.session_id is
   'UUID aleatorio de sesión en el navegador. No identifica a una persona.';
+
+comment on column public.analytics_events.visitor_id is
+  'UUID anónimo persistente del navegador para detectar visitas repetidas. No es un dato personal.';
+
+comment on column public.analytics_events.city is
+  'Ciudad aproximada según Cloudflare. Sin IP ni coordenadas.';
 
 comment on column public.analytics_events.referrer_host is
   'Solo el host de origen, por ejemplo instagram.com. Sin URL completa.';
@@ -72,6 +88,9 @@ begin
   new.path := left(new.path, 200);
   if new.referrer_host is not null then
     new.referrer_host := left(lower(new.referrer_host), 253);
+  end if;
+  if new.city is not null then
+    new.city := left(btrim(new.city), 80);
   end if;
   return new;
 end;

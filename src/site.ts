@@ -1,5 +1,7 @@
 export const SITE_NAME = "Odontología y Nutrición";
 export const SITE_URL = "https://www.odontonutri.com/";
+export const SITE_URL_FROM_INSTAGRAM = `${SITE_URL}?utm_source=instagram`;
+export const CLINIC_TIME_ZONE = "America/Argentina/Buenos_Aires";
 export const PHONE_TEL = "+541161370040";
 export const PHONE_LABEL = "11 6137 0040";
 export const INSTAGRAM_URL = "https://www.instagram.com/odontologia.nutricion/";

@@ -57,6 +57,6 @@ describe("analyticsService", () => {
     const snapshot = await fetchAnalyticsSnapshot();
     expect(snapshot.status).toBe("ready");
     expect(snapshot.visitorsLast30Days).toBe(1);
-    expect(snapshot.whatsappClicks).toBe(0);
+    expect(snapshot.whatsappClicksToday).toBe(0);
   });
 });

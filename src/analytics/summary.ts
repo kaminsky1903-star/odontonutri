@@ -1,10 +1,13 @@
 import {
   type AnalyticsSnapshot,
   type DeviceStat,
+  type HourStat,
   type PageViewStat,
   type RecentActivity,
   type TrafficSource,
 } from "../admin/analyticsTypes";
+import { CLINIC_TIME_ZONE } from "../site";
+import { displayTrafficName } from "./sanitize";
 import type { AnalyticsEvent } from "./types";
 
 const READY_MESSAGE = "Visitas y clics del sitio, últimos 30 días.";
@@ -44,6 +47,8 @@ function uniqueSessions(events: AnalyticsEvent[]) {
   return sessions;
 }
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 function since(now: Date, ms: number) {
   return new Date(now.getTime() - ms);
 }
@@ -54,9 +59,53 @@ function startOfLocalDay(now: Date) {
   return start;
 }
 
-function inWindow(event: AnalyticsEvent, start: Date, now: Date) {
+function startOfLocalMonth(now: Date) {
+  const start = startOfLocalDay(now);
+  start.setDate(1);
+  return start;
+}
+
+function startOfPreviousLocalMonth(now: Date) {
+  const start = startOfLocalMonth(now);
+  start.setMonth(start.getMonth() - 1);
+  return start;
+}
+
+export function analyticsQueryStart(now = new Date()) {
+  const thirtyDaysAgo = since(now, THIRTY_DAYS_MS);
+  const lastMonthStart = startOfPreviousLocalMonth(now);
+  return lastMonthStart.getTime() <= thirtyDaysAgo.getTime()
+    ? lastMonthStart
+    : thirtyDaysAgo;
+}
+
+function inWindow(event: AnalyticsEvent, start: Date, end: Date) {
   const time = new Date(event.created_at).getTime();
-  return time >= start.getTime() && time <= now.getTime();
+  return time >= start.getTime() && time <= end.getTime();
+}
+
+function inHalfOpenWindow(event: AnalyticsEvent, start: Date, endExclusive: Date) {
+  const time = new Date(event.created_at).getTime();
+  return time >= start.getTime() && time < endExclusive.getTime();
+}
+
+function dailyVisits(events: AnalyticsEvent[], now: Date) {
+  const today = startOfLocalDay(now);
+  const points = [];
+  for (let offset = 29; offset >= 0; offset -= 1) {
+    const start = new Date(today);
+    start.setDate(start.getDate() - offset);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    const value = uniqueSessions(
+      events.filter(
+        (event) =>
+          event.event_type === "visit" && inHalfOpenWindow(event, start, end),
+      ),
+    ).size;
+    points.push({ date: start.toISOString(), value });
+  }
+  return points;
 }
 
 function countType(events: AnalyticsEvent[], type: string) {
@@ -69,33 +118,120 @@ function topTraffic(events: AnalyticsEvent[]): TrafficSource[] {
     if (event.event_type !== "visit" || !event.session_id) {
       continue;
     }
-    const name = event.referrer_host || "Directo";
+    const name = displayTrafficName(event.referrer_host);
     const sessions = counts.get(name) ?? new Set<string>();
     sessions.add(event.session_id);
     counts.set(name, sessions);
   }
+  const total = [...counts.values()].reduce(
+    (sum, sessions) => sum + sessions.size,
+    0,
+  );
   return [...counts.entries()]
-    .map(([name, sessions]) => ({ name, sessions: sessions.size }))
+    .map(([name, sessions]) => ({
+      name,
+      sessions: sessions.size,
+      percent: percent(sessions.size, total),
+    }))
     .sort((a, b) => (b.sessions ?? 0) - (a.sessions ?? 0))
     .slice(0, 8);
 }
 
+function percent(part: number, total: number): number | null {
+  if (total <= 0) {
+    return null;
+  }
+  return Math.round((part / total) * 100);
+}
+
+function visitorKey(event: AnalyticsEvent) {
+  return event.visitor_id || event.session_id || null;
+}
+
+function visitorLabel(id: string) {
+  return id.replace(/-/g, "").slice(-4).toUpperCase();
+}
+
+function visitCountsByVisitor(events: AnalyticsEvent[]) {
+  const counts = new Map<string, number>();
+  for (const event of events) {
+    if (event.event_type !== "visit") {
+      continue;
+    }
+    const key = visitorKey(event);
+    if (!key) {
+      continue;
+    }
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return counts;
+}
+
 function topPages(events: AnalyticsEvent[]): PageViewStat[] {
   const counts = new Map<string, number>();
+  let total = 0;
   for (const event of events) {
     if (event.event_type !== "page_view") {
       continue;
     }
     counts.set(event.path, (counts.get(event.path) ?? 0) + 1);
+    total += 1;
   }
   return [...counts.entries()]
     .map(([path, views]) => ({
       path,
       title: pageTitle(path),
       views,
+      percent: percent(views, total),
     }))
     .sort((a, b) => (b.views ?? 0) - (a.views ?? 0))
     .slice(0, 8);
+}
+
+function conversionsByPage(events: AnalyticsEvent[]): PageViewStat[] {
+  const counts = new Map<string, number>();
+  let total = 0;
+  for (const event of events) {
+    if (!CONTACT_TYPES.has(event.event_type)) {
+      continue;
+    }
+    counts.set(event.path, (counts.get(event.path) ?? 0) + 1);
+    total += 1;
+  }
+  return [...counts.entries()]
+    .map(([path, views]) => ({
+      path,
+      title: pageTitle(path),
+      views,
+      percent: percent(views, total),
+    }))
+    .sort((a, b) => (b.views ?? 0) - (a.views ?? 0));
+}
+
+function clinicHour(iso: string) {
+  const hour = new Intl.DateTimeFormat("en-US", {
+    timeZone: CLINIC_TIME_ZONE,
+    hour: "numeric",
+    hourCycle: "h23",
+  })
+    .formatToParts(new Date(iso))
+    .find((part) => part.type === "hour")?.value;
+  const parsed = Number(hour);
+  return Number.isInteger(parsed) && parsed >= 0 && parsed <= 23 ? parsed : 0;
+}
+
+function whatsappHours(events: AnalyticsEvent[]): HourStat[] {
+  const values: HourStat[] = Array.from({ length: 24 }, (_, hour) => ({
+    hour,
+    value: 0,
+  }));
+  for (const event of events) {
+    if (event.event_type !== "whatsapp_click") {
+      continue;
+    }
+    values[clinicHour(event.created_at)].value += 1;
+  }
+  return values;
 }
 
 function deviceStats(events: AnalyticsEvent[]): DeviceStat[] {
@@ -111,13 +247,31 @@ function deviceStats(events: AnalyticsEvent[]): DeviceStat[] {
     sessions.add(event.session_id);
     counts.set(event.device_type, sessions);
   }
+  const total = [...counts.values()].reduce(
+    (sum, sessions) => sum + sessions.size,
+    0,
+  );
   return [...counts.entries()]
     .map(([type, sessions]) => ({
       type: type as DeviceStat["type"],
       label: DEVICE_LABELS[type],
       visitors: sessions.size,
+      percent: percent(sessions.size, total),
     }))
     .sort((a, b) => (b.visitors ?? 0) - (a.visitors ?? 0));
+}
+
+function cityByVisitor(events: AnalyticsEvent[]) {
+  const cities = new Map<string, string>();
+  for (const event of events) {
+    const key = visitorKey(event);
+    const city = event.city?.trim();
+    if (!key || !city || cities.has(key)) {
+      continue;
+    }
+    cities.set(key, city);
+  }
+  return cities;
 }
 
 function sessionContext(events: AnalyticsEvent[]) {
@@ -131,9 +285,9 @@ function sessionContext(events: AnalyticsEvent[]) {
       device: "Escritorio",
     };
     if (event.event_type === "visit") {
-      current.source = event.referrer_host || "Directo";
+      current.source = displayTrafficName(event.referrer_host);
     } else if (event.referrer_host && current.source === "Directo") {
-      current.source = event.referrer_host;
+      current.source = displayTrafficName(event.referrer_host);
     }
     if (event.device_type && DEVICE_LABELS[event.device_type]) {
       current.device = DEVICE_LABELS[event.device_type];
@@ -195,9 +349,16 @@ function contactJourney(events: AnalyticsEvent[], contact: AnalyticsEvent) {
   };
 }
 
-function recentActivity(events: AnalyticsEvent[]): RecentActivity[] {
-  const context = sessionContext(events);
-  return events
+function recentActivity(
+  events: AnalyticsEvent[],
+  now: Date,
+): RecentActivity[] {
+  const monthStart = since(now, THIRTY_DAYS_MS);
+  const scoped = events.filter((event) => inWindow(event, monthStart, now));
+  const context = sessionContext(scoped);
+  const visits = visitCountsByVisitor(scoped);
+  const cities = cityByVisitor(scoped);
+  return scoped
     .filter(
       (event) =>
         event.event_type === "visit" || CONTACT_TYPES.has(event.event_type),
@@ -206,7 +367,6 @@ function recentActivity(events: AnalyticsEvent[]): RecentActivity[] {
       (a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     )
-    .slice(0, 25)
     .map((event, index) => {
       const session = event.session_id
         ? context.get(event.session_id)
@@ -219,12 +379,14 @@ function recentActivity(events: AnalyticsEvent[]): RecentActivity[] {
             pages: [] as string[],
             durationMinutes: null,
           };
+      const key = visitorKey(event);
+      const eventSource = displayTrafficName(event.referrer_host);
       return {
         id: `${event.created_at}-${event.event_type}-${event.session_id ?? index}`,
         at: event.created_at,
         action: ACTION_LABELS[event.event_type] ?? event.event_type,
         page: pageTitle(event.path),
-        source: event.referrer_host || session?.source || "Directo",
+        source: eventSource !== "Directo" ? eventSource : session?.source || "Directo",
         device:
           (event.device_type && DEVICE_LABELS[event.device_type]) ||
           session?.device ||
@@ -233,6 +395,9 @@ function recentActivity(events: AnalyticsEvent[]): RecentActivity[] {
         landing: journey.landing,
         pages: journey.pages,
         durationMinutes: journey.durationMinutes,
+        visitorLabel: key ? visitorLabel(key) : null,
+        visitCount: key ? (visits.get(key) ?? 0) : 0,
+        city: key ? (cities.get(key) ?? event.city) : event.city,
       };
     });
 }
@@ -243,15 +408,22 @@ export function summarizeAnalyticsEvents(
 ): AnalyticsSnapshot {
   const day = startOfLocalDay(now);
   const week = since(now, 7 * 24 * 60 * 60 * 1000);
+  const month = since(now, THIRTY_DAYS_MS);
+  const lastMonthStart = startOfPreviousLocalMonth(now);
+  const thisMonthStart = startOfLocalMonth(now);
   const activeWindow = since(now, 5 * 60 * 1000);
   const todayEvents = events.filter((event) => inWindow(event, day, now));
   const weekEvents = events.filter((event) => inWindow(event, week, now));
+  const monthEvents = events.filter((event) => inWindow(event, month, now));
+  const lastMonthEvents = events.filter((event) =>
+    inHalfOpenWindow(event, lastMonthStart, thisMonthStart),
+  );
   const activeEvents = events.filter((event) =>
     inWindow(event, activeWindow, now),
   );
-  const visitors = uniqueSessions(events);
+  const visitors = uniqueSessions(monthEvents);
   const converted = uniqueSessions(
-    events.filter((event) => CONTACT_TYPES.has(event.event_type)),
+    monthEvents.filter((event) => CONTACT_TYPES.has(event.event_type)),
   );
   const conversionRate =
     visitors.size === 0
@@ -265,16 +437,65 @@ export function summarizeAnalyticsEvents(
     visitorsLast7Days: uniqueSessions(weekEvents).size,
     visitorsLast30Days: visitors.size,
     activeNow: uniqueSessions(activeEvents).size,
-    whatsappClicks: countType(events, "whatsapp_click"),
+    whatsappClicksToday: countType(todayEvents, "whatsapp_click"),
+    whatsappClicksLast7Days: countType(weekEvents, "whatsapp_click"),
+    whatsappClicksLastMonth: countType(lastMonthEvents, "whatsapp_click"),
     phoneClicks: countType(events, "phone_click"),
     locationClicks: countType(events, "location_click"),
     conversionRate,
+    dailyVisits: dailyVisits(events, now),
+    conversionsByPage: conversionsByPage(monthEvents),
+    whatsappHours: whatsappHours(monthEvents),
     trafficSources: topTraffic(events),
     topPages: topPages(events),
-    cities: [],
     devices: deviceStats(events),
-    recentActivity: recentActivity(events),
+    recentActivity: recentActivity(events, now),
   };
+}
+
+export type VisitorActivityRange = "today" | "7d" | "month";
+
+export function visitorRangeStart(
+  range: VisitorActivityRange,
+  now = new Date(),
+) {
+  if (range === "today") {
+    return startOfLocalDay(now);
+  }
+  if (range === "7d") {
+    return since(now, 7 * 24 * 60 * 60 * 1000);
+  }
+  return since(now, THIRTY_DAYS_MS);
+}
+
+export function filterActivityByRange(
+  items: RecentActivity[],
+  range: VisitorActivityRange,
+  now = new Date(),
+) {
+  const start = visitorRangeStart(range, now).getTime();
+  const end = now.getTime();
+  return items.filter((item) => {
+    const time = new Date(item.at).getTime();
+    return time >= start && time <= end;
+  });
+}
+
+export function visitorsForRange(
+  snapshot: {
+    visitorsToday: number | null;
+    visitorsLast7Days: number | null;
+    visitorsLast30Days: number | null;
+  },
+  range: VisitorActivityRange,
+) {
+  if (range === "today") {
+    return snapshot.visitorsToday;
+  }
+  if (range === "7d") {
+    return snapshot.visitorsLast7Days;
+  }
+  return snapshot.visitorsLast30Days;
 }
 
 export { READY_MESSAGE };
