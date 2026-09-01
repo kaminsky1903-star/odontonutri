@@ -1089,7 +1089,6 @@ function DentistryMisServicios() {
             alt={featured.alt}
             width={960}
             height={720}
-            loading="lazy"
             decoding="async"
             style={{ objectPosition: featured.objectPosition }}
           />
@@ -1134,7 +1133,6 @@ function DentistryMisServicios() {
                     alt={treatment.alt}
                     width={720}
                     height={480}
-                    loading="lazy"
                     decoding="async"
                     style={{ objectPosition: treatment.objectPosition }}
                   />
@@ -1160,7 +1158,6 @@ function DentistryMisServicios() {
                     alt={treatment.alt}
                     width={480}
                     height={360}
-                    loading="lazy"
                     decoding="async"
                     style={{ objectPosition: treatment.objectPosition }}
                   />

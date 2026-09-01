@@ -583,6 +583,29 @@ describe("App", () => {
     expect(
       services.getByAltText(DENTISTRY_FEATURED_TREATMENT.alt),
     ).toHaveAttribute("src", DENTISTRY_FEATURED_TREATMENT.image);
+    const servicePhotos = [
+      DENTISTRY_FEATURED_TREATMENT,
+      ...DENTISTRY_ADVANCED_TREATMENTS,
+      ...DENTISTRY_COMMON_TREATMENTS,
+    ].map((treatment) => services.getByAltText(treatment.alt));
+    for (const photo of servicePhotos) {
+      expect(photo).not.toHaveAttribute("loading", "lazy");
+    }
+    expect(css).not.toMatch(
+      /\.odonto-featured-visual,\s*\.odonto-advanced-visual,\s*\.odonto-common-visual \{[^}]*min-height:\s*0/,
+    );
+    expect(css).toMatch(
+      /\.odonto-common-visual img \{\s*position:\s*static/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-featured-visual img \{\s*position:\s*static/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-advanced-visual img \{\s*position:\s*static/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 840px\)[\s\S]*?\.hero-photo \{\s*position:\s*relative/,
+    );
     for (const treatment of DENTISTRY_ADVANCED_TREATMENTS) {
       expect(services.getByAltText(treatment.alt)).toHaveAttribute(
         "src",
