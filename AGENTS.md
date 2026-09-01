@@ -7,7 +7,7 @@ This is the production site for **Odontología y Nutrición** (`www.odontonutri.
 - Vite 8 + React 19 SPA in `src/`
 - Cloudflare Worker in `worker/index.ts` (apex → www redirect, `/api/` JSON)
 - Static files in `public/` (logo, Open Graph image, robots, sitemap)
-- Search metadata and JSON-LD live in `index.html` so Google/Bing do not need JS
+- Search metadata and JSON-LD are injected by the Worker from `src/seo.ts` into the SPA shell so Google/Bing do not need JS
 
 ## Clinic facts
 
@@ -32,7 +32,7 @@ Instagram belongs in the visit card, not the header or footer.
 
 ## Guardrails
 
-- Public HTML routes must go through `env.ASSETS` so `/odontologia` and `/nutricion` work without a browser `Sec-Fetch-Mode: navigate` header (Instagram in-app). Force HTTPS and www in the Worker.
+- Public HTML is only `/`, `/odontologia`, `/nutricion`, and `/admin`. The Worker serves the `index.html` shell from `env.ASSETS` for those routes (no `Sec-Fetch-Mode` required) and injects per-route metadata. Unknown URLs must 404. Force HTTPS, www, `/index.html` → `/`, and trailing-slash redirects in the Worker.
 - Do not commit Wrangler tokens, `worker-content.bin`, or `.dev.vars`.
 - `scripts/` are one-off Cloudflare/GitHub helpers, not runtime.
 - After changing clinic info, update `src/site.ts`, `index.html` metadata, and tests together.

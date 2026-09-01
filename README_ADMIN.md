@@ -2,7 +2,7 @@
 
 Área privada de Odontología y Nutrición. No aparece en el menú público, el sitemap ni debe indexarse.
 
-El hosting ya sirve la SPA en rutas internas: Cloudflare Workers usa `not_found_handling: "single-page-application"` en `wrangler.jsonc`. Recargar `https://www.odontonutri.com/admin` debe devolver el sitio y React muestra el panel.
+El hosting sirve el panel recargando `/admin` desde el Worker: pide el `index.html` al binding `ASSETS` y lo entrega con `noindex`. Recargar `https://www.odontonutri.com/admin` debe devolver el sitio y React muestra el panel.
 
 ## 1. Crear el proyecto en Supabase
 

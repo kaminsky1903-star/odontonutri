@@ -172,3 +172,5 @@ export const GOOGLE_REVIEWS = [
 export const MAP_QUERY =
   "Av.+Senador+Moron+858,+Bella+Vista,+Buenos+Aires,+Argentina";
 export const STREET_ADDRESS = "Av. Senador Morón 858";
+export const DENTISTRY_SERVICES_LEAD =
+  "Atención odontológica personalizada para recuperar salud, función y estética.";

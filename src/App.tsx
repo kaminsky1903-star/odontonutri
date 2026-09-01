@@ -15,6 +15,7 @@ import {
   STREET_ADDRESS,
   GOOGLE_REVIEWS,
   NUTRITION_SERVICES,
+  DENTISTRY_SERVICES_LEAD,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   whatsappPageWithMessage,
@@ -716,6 +717,7 @@ function HomePage() {
                 alt="Dr. Kaminsky y Lic. González"
                 width={851}
                 height={916}
+                fetchPriority="high"
               />
             </div>
           </div>
@@ -1076,10 +1078,7 @@ function DentistryMisServicios() {
         <h2 id="odonto-services-title">
           Odontología pensada <span>para vos</span>
         </h2>
-        <p className="odonto-services-lead">
-          Acompañamiento personalizado para cuidar tu salud y alcanzar tus
-          objetivos.
-        </p>
+        <p className="odonto-services-lead">{DENTISTRY_SERVICES_LEAD}</p>
       </div>
 
       <article className="odonto-featured">
@@ -1089,6 +1088,7 @@ function DentistryMisServicios() {
             alt={featured.alt}
             width={960}
             height={720}
+            loading="lazy"
             decoding="async"
             style={{ objectPosition: featured.objectPosition }}
           />
@@ -1133,12 +1133,13 @@ function DentistryMisServicios() {
                     alt={treatment.alt}
                     width={720}
                     height={480}
+                    loading="lazy"
                     decoding="async"
                     style={{ objectPosition: treatment.objectPosition }}
                   />
                 </div>
                 <div className="odonto-advanced-body">
-                  <h4>{treatment.title}</h4>
+                  <h3>{treatment.title}</h3>
                   <p>{treatment.description}</p>
                 </div>
               </article>
@@ -1158,12 +1159,13 @@ function DentistryMisServicios() {
                     alt={treatment.alt}
                     width={480}
                     height={360}
+                    loading="lazy"
                     decoding="async"
                     style={{ objectPosition: treatment.objectPosition }}
                   />
                 </div>
                 <div className="odonto-common-body">
-                  <h4>{treatment.title}</h4>
+                  <h3>{treatment.title}</h3>
                   <p>{treatment.description}</p>
                 </div>
               </article>

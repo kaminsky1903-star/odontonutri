@@ -14,6 +14,7 @@ import {
   SITE_NAME,
   SITE_URL,
   STREET_ADDRESS,
+  DENTISTRY_SERVICES_LEAD,
   WHATSAPP_NUTRITION_MESSAGE,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
@@ -27,6 +28,9 @@ describe("site constants", () => {
     expect(SITE_URL).toBe("https://www.odontonutri.com/");
     expect(CLINIC_TIME_ZONE).toBe("America/Argentina/Buenos_Aires");
     expect(STREET_ADDRESS).toBe("Av. Senador Morón 858");
+    expect(DENTISTRY_SERVICES_LEAD).toBe(
+      "Atención odontológica personalizada para recuperar salud, función y estética.",
+    );
   });
 
   it("exposes reachable contact channels", () => {

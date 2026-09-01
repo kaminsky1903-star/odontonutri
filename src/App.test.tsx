@@ -9,6 +9,7 @@ import {
     DENTISTRY_ADVANCED_TREATMENTS,
     DENTISTRY_COMMON_TREATMENTS,
     DENTISTRY_FEATURED_TREATMENT,
+    DENTISTRY_SERVICES_LEAD,
     GOOGLE_REVIEWS,
     INSTAGRAM_URL,
     NUTRITION_SERVICES,
@@ -54,6 +55,9 @@ describe("App", () => {
     expect(
       screen.getByAltText("Dr. Kaminsky y Lic. González"),
     ).toHaveAttribute("src", "/nosotros-hero.webp");
+    expect(
+      screen.getByAltText("Dr. Kaminsky y Lic. González"),
+    ).toHaveAttribute("fetchPriority", "high");
     expect(
       [...document.querySelectorAll("a[href]")].filter((link) =>
         /^https?:\/\/(?:www\.)?odontonutri\.com/i.test(
@@ -515,6 +519,11 @@ describe("App", () => {
       ),
     ).toHaveAttribute("src", "/hero-odonto.webp");
     expect(
+      screen.getByAltText(
+        "Dr. Kaminsky con una paciente en el sillón odontológico",
+      ),
+    ).toHaveAttribute("fetchPriority", "high");
+    expect(
       screen.queryByRole("link", { name: "Consultá por WhatsApp" }),
     ).not.toBeInTheDocument();
     expect(
@@ -573,11 +582,7 @@ describe("App", () => {
         name: "Odontología pensada para vos",
       }),
     ).toBeInTheDocument();
-    expect(
-      services.getByText(
-        "Acompañamiento personalizado para cuidar tu salud y alcanzar tus objetivos.",
-      ),
-    ).toBeInTheDocument();
+    expect(services.getByText(DENTISTRY_SERVICES_LEAD)).toBeInTheDocument();
     expect(
       services.getByRole("heading", { level: 3, name: "Implantes Dentales" }),
     ).toBeInTheDocument();
@@ -596,7 +601,8 @@ describe("App", () => {
       ...DENTISTRY_COMMON_TREATMENTS,
     ].map((treatment) => services.getByAltText(treatment.alt));
     for (const photo of servicePhotos) {
-      expect(photo).not.toHaveAttribute("loading", "lazy");
+      expect(photo).toHaveAttribute("loading", "lazy");
+      expect(photo).toHaveAttribute("decoding", "async");
     }
     expect(css).not.toMatch(
       /\.odonto-featured-visual,\s*\.odonto-advanced-visual,\s*\.odonto-common-visual \{[^}]*min-height:\s*0/,
@@ -619,7 +625,7 @@ describe("App", () => {
         treatment.image,
       );
       expect(
-        services.getByRole("heading", { name: treatment.title }),
+        services.getByRole("heading", { level: 3, name: treatment.title }),
       ).toBeInTheDocument();
     }
     for (const treatment of DENTISTRY_COMMON_TREATMENTS) {
@@ -628,7 +634,7 @@ describe("App", () => {
         treatment.image,
       );
       expect(
-        services.getByRole("heading", { name: treatment.title }),
+        services.getByRole("heading", { level: 3, name: treatment.title }),
       ).toBeInTheDocument();
     }
     expect(

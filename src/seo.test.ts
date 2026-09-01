@@ -3,6 +3,19 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
+  ADMIN_METADATA,
+  applyPageMetadata,
+  HOME_METADATA,
+  NUTRICION_METADATA,
+  ODONTOLOGIA_METADATA,
+  parseJsonLd,
+  PUBLIC_PATHS,
+} from "./seo";
+import {
+  DENTISTRY_ADVANCED_TREATMENTS,
+  DENTISTRY_COMMON_TREATMENTS,
+  DENTISTRY_FEATURED_TREATMENT,
+  NUTRITION_SERVICES,
   PHONE_LABEL,
   PHONE_TEL,
   SITE_NAME,
@@ -17,66 +30,142 @@ function readPublic(name: string) {
   return readFileSync(join(root, "public", name), "utf8");
 }
 
-describe("search appearance", () => {
-  const html = readFileSync(join(root, "index.html"), "utf8");
+const indexHtml = readFileSync(join(root, "index.html"), "utf8");
 
+describe("search appearance", () => {
   it("has a scannable title and description for Google and Bing", () => {
-    expect(html).toContain(
-      `<title>${SITE_NAME} | Bella Vista, San Miguel</title>`,
-    );
-    expect(html).toMatch(
-      /name="description"\s+content="[^"]*Bella Vista[^"]*11 6137 0040/,
-    );
-    expect(html).toContain(`<link rel="canonical" href="${SITE_URL}" />`);
+    const html = applyPageMetadata(indexHtml, HOME_METADATA);
+
+    expect(html).toContain(`<title data-seo="title">${HOME_METADATA.title}</title>`);
+    expect(html).toContain(`content="${HOME_METADATA.description}"`);
+    expect(html).toContain(`<link data-seo="canonical" rel="canonical" href="${SITE_URL}" />`);
     expect(html).toContain('property="og:image"');
     expect(html).toContain(`${SITE_URL}og-image.png`);
+    expect(html).toContain('hreflang="es-AR"');
+    expect(html).toContain('hreflang="x-default"');
+    expect(html).toContain('rel="preload"');
+    expect(html).toContain('href="/nosotros-hero.webp"');
+    expect(indexHtml).toContain(PHONE_LABEL);
   });
 
-  it("embeds valid LocalBusiness JSON-LD", () => {
-    const match = html.match(
-      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
-    );
-    expect(match).toBeTruthy();
-    const data = JSON.parse(match![1]) as {
+  it("uses distinct initial metadata for each public route", () => {
+    const pages = [HOME_METADATA, ODONTOLOGIA_METADATA, NUTRICION_METADATA];
+    const titles = new Set(pages.map((page) => page.title));
+    const canonicals = new Set(pages.map((page) => page.canonical));
+
+    expect(titles.size).toBe(3);
+    expect(canonicals.size).toBe(3);
+    expect(PUBLIC_PATHS).toEqual(["/", "/odontologia", "/nutricion"]);
+
+    for (const page of pages) {
+      const html = applyPageMetadata(indexHtml, page);
+      expect(html).toContain(`<title data-seo="title">${page.title}</title>`);
+      expect(html).toContain(`content="${page.description}"`);
+      expect(html).toContain(`href="${page.canonical}"`);
+      expect(html).toContain(`property="og:url"`);
+      expect(html).toContain(`property="og:title"`);
+      expect(html).toContain(`property="og:description"`);
+      expect(html).toContain(`name="twitter:title"`);
+      expect(html).toContain(`name="twitter:description"`);
+      expect(html).toContain(page.preload);
+      expect(html).toContain(`<h1>${page.title}</h1>`);
+    }
+  });
+
+  it("embeds valid JSON-LD graphs that match visible clinic data", () => {
+    const home = parseJsonLd(applyPageMetadata(indexHtml, HOME_METADATA)) as {
       "@graph": Array<Record<string, unknown>>;
     };
-    const business = data["@graph"].find((node) =>
-      Array.isArray(node["@type"])
-        ? node["@type"].includes("LocalBusiness")
-        : node["@type"] === "LocalBusiness",
-    );
+    const odontologia = parseJsonLd(
+      applyPageMetadata(indexHtml, ODONTOLOGIA_METADATA),
+    ) as { "@graph": Array<Record<string, unknown>> };
+    const nutricion = parseJsonLd(
+      applyPageMetadata(indexHtml, NUTRICION_METADATA),
+    ) as { "@graph": Array<Record<string, unknown>> };
 
+    const business = home["@graph"].find((node) => node["@type"] === "LocalBusiness");
     expect(business).toMatchObject({
       name: SITE_NAME,
       telephone: PHONE_TEL,
       url: SITE_URL,
     });
-    expect(JSON.stringify(business)).toContain(STREET_ADDRESS.replace("Av.", "Avenida"));
-    expect(JSON.stringify(business)).toContain("Pérdida de peso");
-    expect(JSON.stringify(business)).toContain("Ganancia muscular");
-    expect(JSON.stringify(business)).toContain("Alimentación saludable");
-    expect(JSON.stringify(business)).toContain("Nutrición clínica");
-    expect(html).toContain(PHONE_LABEL);
+    expect(JSON.stringify(business)).toContain(
+      STREET_ADDRESS.replace("Av.", "Avenida"),
+    );
+    expect(JSON.stringify(business)).not.toContain("Dentist");
+    expect(home["@graph"].some((node) => node["@type"] === "WebSite")).toBe(true);
+    expect(home["@graph"].some((node) => node["@type"] === "WebPage")).toBe(true);
+    expect(
+      home["@graph"].some(
+        (node) => node["@type"] === "Person" && node.name === "Dr. Kaminsky",
+      ),
+    ).toBe(true);
+    expect(
+      home["@graph"].some(
+        (node) => node["@type"] === "Person" && node.name === "Lic. González",
+      ),
+    ).toBe(true);
+    expect(JSON.stringify(home)).not.toContain("AggregateRating");
+    expect(JSON.stringify(home)).not.toContain("openingHours");
+
+    const dentist = odontologia["@graph"].find((node) => node["@type"] === "Dentist");
+    expect(dentist).toBeTruthy();
+    expect(JSON.stringify(dentist)).toContain(DENTISTRY_FEATURED_TREATMENT.title);
+    for (const treatment of [
+      ...DENTISTRY_ADVANCED_TREATMENTS,
+      ...DENTISTRY_COMMON_TREATMENTS,
+    ]) {
+      expect(JSON.stringify(dentist)).toContain(treatment.title);
+    }
+    expect(
+      odontologia["@graph"].some((node) => node["@type"] === "BreadcrumbList"),
+    ).toBe(true);
+
+    const nutrition = nutricion["@graph"].find(
+      (node) => node["@type"] === "ProfessionalService",
+    );
+    expect(nutrition).toBeTruthy();
+    for (const service of NUTRITION_SERVICES) {
+      expect(JSON.stringify(nutrition)).toContain(service.title);
+    }
+    expect(
+      nutricion["@graph"].some((node) => node["@type"] === "BreadcrumbList"),
+    ).toBe(true);
   });
 
   it("publishes robots and a sitemap for the canonical host", () => {
     const robots = readPublic("robots.txt");
     const sitemap = readPublic("sitemap.xml");
+    const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+      (match) => match[1],
+    );
 
     expect(robots).toContain("Allow: /");
     expect(robots).toMatch(/disallow:\s*\/admin/i);
     expect(robots).not.toMatch(/disallow:\s*\/favicon/i);
     expect(robots).toContain(`${SITE_URL}sitemap.xml`);
-    expect(sitemap).toContain(`<loc>${SITE_URL}</loc>`);
-    expect(sitemap).toContain("<loc>https://www.odontonutri.com/odontologia</loc>");
-    expect(sitemap).toContain("<loc>https://www.odontonutri.com/nutricion</loc>");
+    expect(locs).toEqual([
+      SITE_URL,
+      "https://www.odontonutri.com/odontologia",
+      "https://www.odontonutri.com/nutricion",
+    ]);
     expect(sitemap).not.toContain("/admin");
+    expect(sitemap).not.toContain("whatsapp.html");
   });
 
-  it("marks the admin area as noindex without changing public robots", () => {
-    expect(html).toContain('<meta name="robots" content="index, follow" />');
-    expect(html).toContain("noindex, nofollow, noarchive");
-    expect(html).toContain('path !== "/admin"');
+  it("does not use the generic SPA asset fallback for unknown URLs", () => {
+    const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
+    expect(wrangler).toContain('"binding": "ASSETS"');
+    expect(wrangler).toContain('"run_worker_first": true');
+    expect(wrangler).toContain('"not_found_handling": "none"');
+    expect(wrangler).not.toContain("single-page-application");
+  });
+
+  it("marks the admin area as noindex in the initial document metadata", () => {
+    const html = applyPageMetadata(indexHtml, ADMIN_METADATA);
+    expect(html).toContain(`content="${ADMIN_METADATA.robots}"`);
+    expect(html).toContain(ADMIN_METADATA.title);
+    expect(html).not.toContain('href="/nosotros-hero.webp"');
   });
 
   it("keeps env files and credential dumps out of git", () => {
@@ -115,28 +204,28 @@ describe("search appearance", () => {
   });
 
   it("declares square favicon files Google Search can crawl", () => {
-    expect(html).toContain(
+    expect(indexHtml).toContain(
       '<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="48x48" />',
     );
-    expect(html).toContain(
+    expect(indexHtml).toContain(
       '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />',
     );
-    expect(html).toContain(
+    expect(indexHtml).toContain(
       '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />',
     );
-    expect(html).toContain(
+    expect(indexHtml).toContain(
       '<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />',
     );
-    expect(html).toContain(
+    expect(indexHtml).toContain(
       '<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />',
     );
-    expect(html).toContain(
+    expect(indexHtml).toContain(
       '<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />',
     );
-    expect(html).toContain('rel="apple-touch-icon"');
-    expect(html).toContain('type="image/png"');
-    expect(html).toContain('sizes="180x180"');
-    expect(html).toContain('href="/apple-touch-icon.png"');
+    expect(indexHtml).toContain('rel="apple-touch-icon"');
+    expect(indexHtml).toContain('type="image/png"');
+    expect(indexHtml).toContain('sizes="180x180"');
+    expect(indexHtml).toContain('href="/apple-touch-icon.png"');
 
     const pngSig = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
     const pngs: Array<[string, number]> = [
