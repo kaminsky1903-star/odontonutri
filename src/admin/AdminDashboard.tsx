@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { SITE_NAME, SITE_URL_FROM_INSTAGRAM } from "../site";
+import { SITE_NAME } from "../site";
 import { fetchAnalyticsSnapshot } from "./analyticsService";
 import {
   ANALYTICS_PENDING_MESSAGE,
@@ -166,19 +166,16 @@ function StatList({
   title,
   pending,
   empty,
-  hint,
   children,
 }: {
   title: string;
   pending: boolean;
   empty: boolean;
-  hint?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section className="admin-panel">
       <h2>{title}</h2>
-      {hint}
       {pending ? (
         <p className="admin-empty">{ANALYTICS_PENDING_MESSAGE}</p>
       ) : empty ? (
@@ -627,13 +624,6 @@ export function AdminDashboard() {
           title="Fuentes de tráfico"
           pending={pending}
           empty={analytics.trafficSources.length === 0}
-          hint={
-            <p className="admin-hint">
-              Para que Instagram no cuente como Directo, pegá este link en la
-              bio:{" "}
-              <code>{SITE_URL_FROM_INSTAGRAM}</code>
-            </p>
-          }
         >
           <TrafficList items={analytics.trafficSources} />
         </StatList>

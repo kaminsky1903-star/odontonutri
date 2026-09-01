@@ -65,9 +65,6 @@ describe("admin dashboard session", () => {
     expect(screen.getByText("Fuentes de tráfico")).toBeInTheDocument();
     expect(screen.getByText("Conversiones por página")).toBeInTheDocument();
     expect(screen.getByText("Horario de WhatsApp")).toBeInTheDocument();
-    expect(
-      screen.getByText("https://www.odontonutri.com/?utm_source=instagram"),
-    ).toBeInTheDocument();
     expect(screen.queryByText("Actividad reciente")).not.toBeInTheDocument();
     expect(
       await screen.findByText("Visitas y clics del sitio, últimos 30 días."),

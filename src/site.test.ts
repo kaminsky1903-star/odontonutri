@@ -5,7 +5,6 @@ import {
   INSTAGRAM_HANDLE,
   INSTAGRAM_URL,
   CLINIC_TIME_ZONE,
-  SITE_URL_FROM_INSTAGRAM,
   DENTISTRY_ADVANCED_TREATMENTS,
   DENTISTRY_COMMON_TREATMENTS,
   DENTISTRY_FEATURED_TREATMENT,
@@ -26,9 +25,6 @@ describe("site constants", () => {
   it("uses the public clinic identity", () => {
     expect(SITE_NAME).toBe("Odontología y Nutrición");
     expect(SITE_URL).toBe("https://www.odontonutri.com/");
-    expect(SITE_URL_FROM_INSTAGRAM).toBe(
-      "https://www.odontonutri.com/?utm_source=instagram",
-    );
     expect(CLINIC_TIME_ZONE).toBe("America/Argentina/Buenos_Aires");
     expect(STREET_ADDRESS).toBe("Av. Senador Morón 858");
   });
