@@ -513,7 +513,9 @@ describe("App", () => {
       screen.getByText("IMPLANTES · REHABILITACIÓN · ESTÉTICA"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Tratamientos personalizados para/),
+      screen.getByText(
+        /Diagnóstico, planificación y tratamiento con un enfoque integral y personalizado\./,
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText("Atención particular")).not.toBeInTheDocument();
     expect(

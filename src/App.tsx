@@ -1196,10 +1196,8 @@ function DentistryPage() {
             </span>
           </h1>
           <p className="dentistry-hero-lead">
-            Tratamientos personalizados para{" "}
-            <span className="dentistry-hero-lead-line">
-              recuperar función, estética y seguridad.
-            </span>
+            Diagnóstico, planificación y tratamiento con un enfoque integral y
+            personalizado.
           </p>
           <div className="nutri-hero-actions">
             <a
