@@ -141,7 +141,7 @@ describe("search appearance", () => {
     );
 
     expect(robots).toContain("Allow: /");
-    expect(robots).toMatch(/disallow:\s*\/admin/i);
+    expect(robots).not.toMatch(/disallow:\s*\/admin/i);
     expect(robots).not.toMatch(/disallow:\s*\/favicon/i);
     expect(robots).toContain(`${SITE_URL}sitemap.xml`);
     expect(locs).toEqual([
@@ -153,12 +153,13 @@ describe("search appearance", () => {
     expect(sitemap).not.toContain("whatsapp.html");
   });
 
-  it("does not use the generic SPA asset fallback for unknown URLs", () => {
+  it("keeps the SPA asset fallback behind the Worker route guard", () => {
     const wrangler = readFileSync(join(root, "wrangler.jsonc"), "utf8");
     expect(wrangler).toContain('"binding": "ASSETS"');
     expect(wrangler).toContain('"run_worker_first": true');
-    expect(wrangler).toContain('"not_found_handling": "none"');
-    expect(wrangler).not.toContain("single-page-application");
+    expect(wrangler).toContain(
+      '"not_found_handling": "single-page-application"',
+    );
   });
 
   it("marks the admin area as noindex in the initial document metadata", () => {

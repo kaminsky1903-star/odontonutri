@@ -259,6 +259,17 @@ describe("worker", () => {
     expect(html).toContain("Panel de analíticas | Odontología y Nutrición");
   });
 
+  it("returns a real 404 for unknown paths below /admin", async () => {
+    const response = await fetchWorker(
+      "https://www.odontonutri.com/admin/ruta-inexistente",
+      assetsEnv(),
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get("X-Robots-Tag")).toBe("noindex, nofollow");
+    expect(await response.text()).toContain("Página no encontrada");
+  });
+
   it("still serves static assets and robots.txt", async () => {
     const env = assetsEnv();
     const logo = await fetchWorker("https://www.odontonutri.com/logo.png", env);

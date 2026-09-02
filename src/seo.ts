@@ -319,7 +319,7 @@ export function normalizePathname(pathname: string): string {
 
 export function isAdminPath(pathname: string): boolean {
   const path = normalizePathname(pathname);
-  return path === ADMIN_PATH || path.startsWith(`${ADMIN_PATH}/`);
+  return path === ADMIN_PATH;
 }
 
 export function isPublicPath(pathname: string): pathname is PublicPath {
