@@ -65,7 +65,7 @@ describe("admin dashboard session", () => {
     expect(screen.getByRole("heading", { name: "WhatsApp" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Visitantes" })).toBeInTheDocument();
     expect(screen.getByText(
-      "Por defecto ves quiénes entraron hoy. Podés cargar hasta el último mes. Un código identifica al mismo navegador si volvió y la localidad es aproximada. No se guardan nombres ni datos personales.",
+      "Por defecto ves quiénes entraron hoy. Podés cargar hasta el último mes. Un código identifica al mismo navegador si volvió y la localidad es aproximada. No se guardan nombres, direcciones exactas ni direcciones IP completas.",
     )).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Hoy" })).toHaveAttribute(
       "aria-pressed",
