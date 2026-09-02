@@ -691,7 +691,7 @@ export function AdminDashboard() {
         <p className="admin-activity-lead">
           Por defecto ves quiénes entraron hoy. Podés cargar hasta el último
           mes. Un código identifica al mismo navegador si volvió y la localidad
-          es aproximada. No se guardan nombres ni datos personales.
+          es aproximada. No se guardan nombres, direcciones exactas ni direcciones IP completas.
         </p>
         <div className="admin-range-actions" role="group" aria-label="Período de visitantes">
           <button
