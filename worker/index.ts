@@ -45,12 +45,13 @@ export default {
     if (isHtmlShellPath(url.pathname)) {
       return htmlShellResponse(request, env);
     }
+    // Keep Cloudflare's SPA asset fallback enabled as a production safety net,
+    // but never let it turn an unknown extensionless URL into a false 200.
+    if (isUnknownDocumentPath(url)) {
+      return notFoundResponse();
+    }
     if (env?.ASSETS) {
-      const asset = await env.ASSETS.fetch(request);
-      if (asset.status === 404 && isMissingDocument(url, request)) {
-        return notFoundResponse();
-      }
-      return asset;
+      return env.ASSETS.fetch(request);
     }
     return notFoundResponse();
   },
@@ -119,12 +120,12 @@ function canonicalPublicUrl(url: URL, request: Request): string | null {
   return changed ? next.toString() : null;
 }
 
-function isMissingDocument(url: URL, request: Request) {
-  const accept = request.headers.get("Accept") ?? "";
-  if (accept.includes("text/html")) {
-    return true;
+function isUnknownDocumentPath(url: URL) {
+  const path = url.pathname.replace(/\/+$/, "") || "/";
+  if (path === "/") {
+    return false;
   }
-  const last = url.pathname.split("/").pop() ?? "";
+  const last = path.split("/").pop() ?? "";
   return last !== "" && !last.includes(".");
 }
 
