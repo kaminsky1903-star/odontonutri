@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { AdminApp } from "./admin/AdminApp";
+import { applyAnalyticsOptOutFromSearch } from "./analytics/session";
 import { usePublicAnalytics } from "./analytics/usePublicAnalytics";
 import {
   ADMIN_PATH,
@@ -1268,6 +1269,9 @@ function DentistryPage() {
 export default function App() {
   const path = currentPath();
   const isAdmin = path === ADMIN_PATH || path.startsWith(`${ADMIN_PATH}/`);
+  useLayoutEffect(() => {
+    applyAnalyticsOptOutFromSearch();
+  }, []);
   usePublicAnalytics(!isAdmin);
 
   if (isAdmin) {

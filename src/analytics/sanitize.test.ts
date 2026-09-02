@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   approxCity,
+  approxCountry,
+  approxRegion,
   deviceType,
   displayTrafficName,
   eventTypeFromHref,
+  formatApproxLocation,
   inAppSocialHost,
   publicPath,
   referrerHost,
@@ -74,5 +77,22 @@ describe("analytics sanitization", () => {
     expect(approxCity("https://evil.example")).toBeNull();
     expect(approxCity("a")).toBeNull();
     expect(approxCity(12)).toBeNull();
+    expect(approxRegion("Buenos Aires")).toBe("Buenos Aires");
+    expect(approxRegion("https://evil.example")).toBeNull();
+    expect(approxCountry("AR")).toBe("AR");
+    expect(approxCountry("ar")).toBe("AR");
+    expect(approxCountry("XX")).toBeNull();
+    expect(approxCountry("Argentina")).toBeNull();
+    expect(formatApproxLocation("San Miguel", "Buenos Aires", "AR")).toBe(
+      "San Miguel, Buenos Aires",
+    );
+    expect(formatApproxLocation("Bella Vista", "Buenos Aires", "AR")).toBe(
+      "Bella Vista, Buenos Aires",
+    );
+    expect(formatApproxLocation("Buenos Aires", "CABA", "AR")).toBe(
+      "Buenos Aires, CABA",
+    );
+    expect(formatApproxLocation(null, null, null)).toBeNull();
+    expect(formatApproxLocation(null, null, "AR")).toBe("Argentina");
   });
 });

@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   analyticsQueryStart,
   filterActivityByRange,
+  formatVisitorLabel,
   summarizeAnalyticsEvents,
+  withoutIgnoredVisitors,
 } from "./summary";
 import type { AnalyticsEvent } from "./types";
 
@@ -18,6 +20,8 @@ function event(
     referrer_host: null,
     device_type: "desktop",
     city: null,
+    region: null,
+    country: null,
     ...partial,
   };
 }
@@ -123,6 +127,7 @@ describe("analytics summary", () => {
       landing: "Nutrición",
       pages: ["Nutrición"],
       durationMinutes: 2,
+      visitorId: "s2",
       visitorLabel: "S2",
       visitCount: 1,
       city: null,
@@ -320,11 +325,53 @@ describe("analytics summary", () => {
 
     const snapshot = summarizeAnalyticsEvents(events, now);
     const returning = snapshot.recentActivity.filter(
-      (item) => item.visitorLabel === "FFFF",
+      (item) => item.visitorLabel === "V-AAAAAAAA",
     );
     expect(returning.length).toBe(2);
     expect(returning.every((item) => item.visitCount === 2)).toBe(true);
+    expect(returning.every((item) => item.location === "San Miguel")).toBe(true);
     expect(returning.every((item) => item.city === "San Miguel")).toBe(true);
+  });
+
+  it("keeps the same visitor code on a later WhatsApp click and formats location", () => {
+    const visitor = "f95f2a6c-1111-4222-8333-444444444444";
+    const snapshot = summarizeAnalyticsEvents(
+      [
+        event({
+          created_at: new Date(now.getTime() - 2 * 60 * 1000).toISOString(),
+          event_type: "visit",
+          session_id: "s-same",
+          visitor_id: visitor,
+          city: "Bella Vista",
+          region: "Buenos Aires",
+          country: "AR",
+        }),
+        event({
+          created_at: new Date(now.getTime() - 2 * 60 * 1000).toISOString(),
+          event_type: "page_view",
+          session_id: "s-same",
+          visitor_id: visitor,
+          path: "/",
+        }),
+        event({
+          event_type: "whatsapp_click",
+          session_id: "s-same",
+          visitor_id: visitor,
+          city: "Bella Vista",
+          region: "Buenos Aires",
+          country: "AR",
+        }),
+      ],
+      now,
+    );
+
+    expect(formatVisitorLabel(visitor)).toBe("V-F95F2A6C");
+    expect(snapshot.recentActivity.map((item) => item.visitorLabel)).toEqual([
+      "V-F95F2A6C",
+      "V-F95F2A6C",
+    ]);
+    expect(snapshot.recentActivity[0]?.location).toBe("Bella Vista, Buenos Aires");
+    expect(snapshot.visitorsToday).toBe(1);
   });
 
   it("filters visitor activity to today until a longer range is requested", () => {
@@ -353,5 +400,28 @@ describe("analytics summary", () => {
     expect(
       filterActivityByRange(snapshot.recentActivity, "month", now),
     ).toHaveLength(2);
+  });
+
+  it("drops ignored clinic devices before summarizing", () => {
+    const events: AnalyticsEvent[] = [
+      event({
+        event_type: "visit",
+        session_id: "s-clinic",
+        visitor_id: "clinic-device",
+      }),
+      event({
+        event_type: "visit",
+        session_id: "s-patient",
+        visitor_id: "patient-device",
+      }),
+    ];
+
+    const snapshot = summarizeAnalyticsEvents(
+      withoutIgnoredVisitors(events, ["clinic-device"]),
+      now,
+    );
+    expect(snapshot.visitorsToday).toBe(1);
+    expect(snapshot.recentActivity).toHaveLength(1);
+    expect(snapshot.recentActivity[0]?.visitorId).toBe("patient-device");
   });
 });

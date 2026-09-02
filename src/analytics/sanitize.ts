@@ -101,14 +101,54 @@ export function displayTrafficName(host: string | null | undefined): string {
 }
 
 export function approxCity(value: unknown): string | null {
+  return approxPlace(value);
+}
+
+export function approxRegion(value: unknown): string | null {
+  return approxPlace(value);
+}
+
+export function approxCountry(value: unknown): string | null {
   if (typeof value !== "string") {
     return null;
   }
-  const city = value.normalize("NFC").trim().replace(/\s+/g, " ").slice(0, 80);
-  if (city.length < 2 || /[/?#@]/.test(city) || /https?:/i.test(city)) {
+  const code = value.trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code) || code === "XX" || code === "T1") {
     return null;
   }
-  return city;
+  return code;
+}
+
+function approxPlace(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const place = value.normalize("NFC").trim().replace(/\s+/g, " ").slice(0, 80);
+  if (place.length < 2 || /[/?#@]/.test(place) || /https?:/i.test(place)) {
+    return null;
+  }
+  return place;
+}
+
+export function formatApproxLocation(
+  city: string | null | undefined,
+  region: string | null | undefined,
+  country: string | null | undefined = null,
+): string | null {
+  const parts: string[] = [];
+  if (city) {
+    parts.push(city);
+  }
+  if (region && region !== city) {
+    parts.push(region);
+  }
+  if (parts.length > 0) {
+    return parts.join(", ");
+  }
+  if (country === "AR") {
+    return "Argentina";
+  }
+  return country || null;
 }
 
 export function deviceType(

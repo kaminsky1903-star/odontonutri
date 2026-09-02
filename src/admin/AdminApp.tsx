@@ -1,3 +1,5 @@
+import { useLayoutEffect } from "react";
+import { markInternalAnalyticsBrowser } from "../analytics/session";
 import { AdminDashboard } from "./AdminDashboard";
 import { AuthProvider } from "./AuthContext";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -6,6 +8,9 @@ import "./admin.css";
 
 export function AdminApp() {
   useAdminSeo();
+  useLayoutEffect(() => {
+    markInternalAnalyticsBrowser();
+  }, []);
 
   return (
     <AuthProvider>

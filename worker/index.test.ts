@@ -302,16 +302,41 @@ describe("worker", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("Cache-Control")).toBe("private, max-age=300");
-    await expect(response.json()).resolves.toEqual({ city: null });
+    await expect(response.json()).resolves.toEqual({
+      city: null,
+      region: null,
+      country: null,
+    });
   });
 
   it("uses the Cloudflare city when present", async () => {
     const request = new Request("https://www.odontonutri.com/api/geo");
     Object.defineProperty(request, "cf", {
-      value: { city: "San Miguel" },
+      value: { city: "San Miguel", region: "Buenos Aires", country: "AR" },
     });
 
     const response = await fetchWorker(request);
-    await expect(response.json()).resolves.toEqual({ city: "San Miguel" });
+    await expect(response.json()).resolves.toEqual({
+      city: "San Miguel",
+      region: "Buenos Aires",
+      country: "AR",
+    });
+  });
+
+  it("reads Cloudflare geo headers when cf is missing", async () => {
+    const response = await fetchWorker(
+      new Request("https://www.odontonutri.com/api/geo", {
+        headers: {
+          "CF-IPCity": "Bella Vista",
+          "CF-Region": "Buenos Aires",
+          "CF-IPCountry": "AR",
+        },
+      }),
+    );
+    await expect(response.json()).resolves.toEqual({
+      city: "Bella Vista",
+      region: "Buenos Aires",
+      country: "AR",
+    });
   });
 });

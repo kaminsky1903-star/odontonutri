@@ -4,6 +4,7 @@ import {
   isHtmlShellPath,
   metadataForPath,
 } from "../src/seo";
+import { approxCity, approxCountry, approxRegion } from "../src/analytics/sanitize";
 
 type WorkerEnv = {
   ASSETS?: Fetcher;
@@ -176,10 +177,17 @@ function notFoundResponse() {
 
 function geoResponse(request: Request) {
   const cf = "cf" in request ? request.cf : undefined;
-  const raw = cf && typeof cf === "object" && "city" in cf ? cf.city : null;
-  const city = approxCityFromCf(raw);
+  const city = approxCity(
+    cfField(cf, "city") ?? headerValue(request, "CF-IPCity"),
+  );
+  const region = approxRegion(
+    cfField(cf, "region") ?? headerValue(request, "CF-Region"),
+  );
+  const country = approxCountry(
+    cfField(cf, "country") ?? headerValue(request, "CF-IPCountry"),
+  );
   return Response.json(
-    { city },
+    { city, region, country },
     {
       headers: {
         "Cache-Control": "private, max-age=300",
@@ -188,15 +196,15 @@ function geoResponse(request: Request) {
   );
 }
 
-function approxCityFromCf(value: unknown): string | null {
-  if (typeof value !== "string") {
+function cfField(cf: unknown, key: "city" | "region" | "country"): unknown {
+  if (!cf || typeof cf !== "object" || !(key in cf)) {
     return null;
   }
-  const city = value.trim().replace(/\s+/g, " ").slice(0, 80);
-  if (city.length < 2 || /[/?#@]/.test(city) || /https?:/i.test(city)) {
-    return null;
-  }
-  return city;
+  return (cf as Record<string, unknown>)[key];
+}
+
+function headerValue(request: Request, name: string): string | null {
+  return request.headers.get(name) ?? request.headers.get(name.toLowerCase());
 }
 
 function adminAnalyticsResponse(request: Request) {

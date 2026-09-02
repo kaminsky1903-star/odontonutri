@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { SITE_NAME } from "../site";
-import { fetchAnalyticsSnapshot } from "./analyticsService";
+import { fetchAnalyticsSnapshot, ignoreStaffVisitor } from "./analyticsService";
 import {
   ANALYTICS_PENDING_MESSAGE,
   EMPTY_ANALYTICS,
@@ -418,11 +418,10 @@ function contactDetail(item: RecentActivity) {
 function activityDetail(item: RecentActivity) {
   const parts: string[] = [];
   if (item.visitorLabel) {
-    const city = item.city ? ` (${item.city})` : "";
     parts.push(
       item.visitCount >= 2
-        ? `Visitante ${item.visitorLabel}${city} · ${item.visitCount} visitas`
-        : `Visitante ${item.visitorLabel}${city}`,
+        ? `Visitante ${item.visitorLabel} · ${item.visitCount} visitas`
+        : `Visitante ${item.visitorLabel}`,
     );
   }
   if (item.isContact) {
@@ -454,7 +453,14 @@ function visitorsRangeCopy(range: VisitorActivityRange, count: number | null) {
   return `En el último mes entraron ${count} ${noun}.`;
 }
 
-function ActivityList({ items }: { items: RecentActivity[] }) {
+function ActivityList({
+  items,
+  onIgnore,
+}: {
+  items: RecentActivity[];
+  onIgnore: (visitorId: string) => void;
+}) {
+  const offered = new Set<string>();
   return (
     <div className="admin-activity-table">
       <div className="admin-activity-head" aria-hidden="true">
@@ -462,11 +468,17 @@ function ActivityList({ items }: { items: RecentActivity[] }) {
         <span>Acción</span>
         <span>Página</span>
         <span>Fuente</span>
+        <span>Ubicación aproximada</span>
         <span>Dispositivo</span>
       </div>
       <ul className="admin-activity-list">
         {items.map((item) => {
           const detail = activityDetail(item);
+          const visitorId = item.visitorId;
+          const showIgnore = Boolean(visitorId) && !offered.has(visitorId ?? "");
+          if (visitorId) {
+            offered.add(visitorId);
+          }
           return (
             <li key={item.id}>
               <div className="admin-activity-row">
@@ -477,9 +489,29 @@ function ActivityList({ items }: { items: RecentActivity[] }) {
                 </span>
                 <span>{item.page}</span>
                 <span>{item.source}</span>
+                <span className="admin-activity-location">
+                  {item.location ? (
+                    <>
+                      <PinIcon />
+                      {item.location}
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </span>
                 <span>{item.device}</span>
               </div>
               {detail ? <p className="admin-activity-detail">{detail}</p> : null}
+              {showIgnore && visitorId ? (
+                <button
+                  type="button"
+                  className="admin-activity-ignore"
+                  onClick={() => onIgnore(visitorId)}
+                  aria-label={`Soy yo, no contar visitante ${item.visitorLabel ?? ""}`.trim()}
+                >
+                  Soy yo
+                </button>
+              ) : null}
             </li>
           );
         })}
@@ -515,6 +547,12 @@ export function AdminDashboard() {
       cancelled = true;
     };
   }, [session?.access_token]);
+
+  function hideVisitor(visitorId: string) {
+    void ignoreStaffVisitor(visitorId).then(() =>
+      fetchAnalyticsSnapshot().then(setAnalytics),
+    );
+  }
 
   return (
     <div className="admin-dashboard">
@@ -652,8 +690,8 @@ export function AdminDashboard() {
         </div>
         <p className="admin-activity-lead">
           Por defecto ves quiénes entraron hoy. Podés cargar hasta el último
-          mes. Un código identifica al mismo navegador si volvió. No se guardan
-          nombres ni datos personales.
+          mes. Un código identifica al mismo navegador si volvió y la localidad
+          es aproximada. No se guardan nombres ni datos personales.
         </p>
         <div className="admin-range-actions" role="group" aria-label="Período de visitantes">
           <button
@@ -692,7 +730,7 @@ export function AdminDashboard() {
               {visitorsRangeCopy(visitorRange, visitorCount)}
             </p>
             {visibleActivity.length > 0 ? (
-              <ActivityList items={visibleActivity} />
+              <ActivityList items={visibleActivity} onIgnore={hideVisitor} />
             ) : null}
           </>
         )}

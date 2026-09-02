@@ -1,6 +1,8 @@
 import { getSupabaseClient } from "../admin/supabaseClient";
 import {
   approxCity,
+  approxCountry,
+  approxRegion,
   deviceType,
   eventTypeFromHref,
   publicPath,
@@ -9,49 +11,56 @@ import {
   consumeVisitFlag,
   getAnonymousSessionId,
   getAnonymousVisitorId,
-  readCachedCity,
+  readCachedGeo,
   sessionTrafficSource,
-  writeCachedCity,
+  shouldRecordPublicAnalytics,
+  writeCachedGeo,
+  type ApproxGeo,
 } from "./session";
 import type { AnalyticsEventType } from "./types";
 
 function analyticsEnabled() {
-  return import.meta.env.MODE !== "test";
+  return shouldRecordPublicAnalytics();
 }
 
-let cityPromise: Promise<string | null> | null = null;
+let geoPromise: Promise<ApproxGeo> | null = null;
 
-async function fetchApproxCity(): Promise<string | null> {
-  const cached = readCachedCity();
+async function fetchApproxGeo(): Promise<ApproxGeo> {
+  const cached = readCachedGeo();
   if (cached !== undefined) {
-    return cached;
+    return cached ?? { city: null, region: null, country: null };
   }
+  const empty = { city: null, region: null, country: null };
   try {
     const response = await fetch("/api/geo", {
       headers: { Accept: "application/json" },
     });
     if (!response.ok) {
-      writeCachedCity(null);
-      return null;
+      writeCachedGeo(empty);
+      return empty;
     }
     const payload: unknown = await response.json();
-    const city =
-      payload && typeof payload === "object" && "city" in payload
-        ? approxCity((payload as { city: unknown }).city)
-        : null;
-    writeCachedCity(city);
-    return city;
+    const geo =
+      payload && typeof payload === "object"
+        ? {
+            city: approxCity((payload as { city?: unknown }).city),
+            region: approxRegion((payload as { region?: unknown }).region),
+            country: approxCountry((payload as { country?: unknown }).country),
+          }
+        : empty;
+    writeCachedGeo(geo);
+    return geo;
   } catch {
-    writeCachedCity(null);
-    return null;
+    writeCachedGeo(empty);
+    return empty;
   }
 }
 
-function loadApproxCity() {
-  if (!cityPromise) {
-    cityPromise = fetchApproxCity();
+function loadApproxGeo() {
+  if (!geoPromise) {
+    geoPromise = fetchApproxGeo();
   }
-  return cityPromise;
+  return geoPromise;
 }
 
 async function recordEvent(eventType: AnalyticsEventType) {
@@ -74,13 +83,24 @@ async function recordEvent(eventType: AnalyticsEventType) {
       referrer_host: sessionTrafficSource(),
       device_type: deviceType(),
     };
-    const { error } = await supabase.from("analytics_events").insert({
+    const location = await loadApproxGeo();
+    const withVisitor = {
       ...payload,
       visitor_id: getAnonymousVisitorId(),
-      city: await loadApproxCity(),
+      city: location.city,
+    };
+    const { error: locationError } = await supabase.from("analytics_events").insert({
+      ...withVisitor,
+      region: location.region,
+      country: location.country,
     });
-    if (error) {
-      await supabase.from("analytics_events").insert(payload);
+    if (locationError) {
+      const { error: visitorError } = await supabase
+        .from("analytics_events")
+        .insert(withVisitor);
+      if (visitorError) {
+        await supabase.from("analytics_events").insert(payload);
+      }
     }
   } catch {
     // Analytics must never break the public site.

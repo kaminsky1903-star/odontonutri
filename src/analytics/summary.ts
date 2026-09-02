@@ -7,7 +7,7 @@ import {
   type TrafficSource,
 } from "../admin/analyticsTypes";
 import { CLINIC_TIME_ZONE } from "../site";
-import { displayTrafficName } from "./sanitize";
+import { displayTrafficName, formatApproxLocation } from "./sanitize";
 import type { AnalyticsEvent } from "./types";
 
 const READY_MESSAGE = "Visitas y clics del sitio, últimos 30 días.";
@@ -149,8 +149,16 @@ function visitorKey(event: AnalyticsEvent) {
   return event.visitor_id || event.session_id || null;
 }
 
+export function formatVisitorLabel(id: string) {
+  const compact = id.replace(/-/g, "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (compact.length >= 8) {
+    return `V-${compact.slice(0, 8)}`;
+  }
+  return compact;
+}
+
 function visitorLabel(id: string) {
-  return id.replace(/-/g, "").slice(-4).toUpperCase();
+  return formatVisitorLabel(id);
 }
 
 function visitCountsByVisitor(events: AnalyticsEvent[]) {
@@ -286,19 +294,6 @@ function deviceStats(events: AnalyticsEvent[]): DeviceStat[] {
     .sort((a, b) => (b.visitors ?? 0) - (a.visitors ?? 0));
 }
 
-function cityByVisitor(events: AnalyticsEvent[]) {
-  const cities = new Map<string, string>();
-  for (const event of events) {
-    const key = visitorKey(event);
-    const city = event.city?.trim();
-    if (!key || !city || cities.has(key)) {
-      continue;
-    }
-    cities.set(key, city);
-  }
-  return cities;
-}
-
 function sessionContext(events: AnalyticsEvent[]) {
   const context = new Map<string, { source: string; device: string }>();
   for (const event of events) {
@@ -382,7 +377,6 @@ function recentActivity(
   const scoped = events.filter((event) => inWindow(event, monthStart, now));
   const context = sessionContext(scoped);
   const visits = visitCountsByVisitor(scoped);
-  const cities = cityByVisitor(scoped);
   return scoped
     .filter(
       (event) =>
@@ -420,11 +414,27 @@ function recentActivity(
         landing: journey.landing,
         pages: journey.pages,
         durationMinutes: journey.durationMinutes,
+        visitorId: key,
         visitorLabel: key ? visitorLabel(key) : null,
         visitCount: key ? (visits.get(key) ?? 0) : 0,
-        city: key ? (cities.get(key) ?? event.city) : event.city,
+        location: formatApproxLocation(event.city, event.region, event.country),
+        city: event.city,
       };
     });
+}
+
+export function withoutIgnoredVisitors(
+  events: AnalyticsEvent[],
+  ignored: Iterable<string>,
+) {
+  const skip = new Set(ignored);
+  if (skip.size === 0) {
+    return events;
+  }
+  return events.filter((event) => {
+    const key = event.visitor_id || event.session_id;
+    return !key || !skip.has(key);
+  });
 }
 
 export function summarizeAnalyticsEvents(

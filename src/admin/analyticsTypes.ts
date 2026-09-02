@@ -31,8 +31,10 @@ export type RecentActivity = {
   landing: string | null;
   pages: string[];
   durationMinutes: number | null;
+  visitorId: string | null;
   visitorLabel: string | null;
   visitCount: number;
+  location: string | null;
   city: string | null;
 };
 
