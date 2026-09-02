@@ -82,6 +82,19 @@ describe("App", () => {
     expect(screen.getByText("Plan personalizado")).toBeInTheDocument();
     expect(screen.getByText("Tratamiento")).toBeInTheDocument();
     expect(screen.getByText("Seguimiento y controles")).toBeInTheDocument();
+
+    const css = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "index.css"),
+      "utf8",
+    );
+    expect(css).toMatch(
+      /\.process-steps \{[\s\S]*?grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/,
+    );
+    expect(css).toMatch(
+      /\.process-step \{[\s\S]*?grid-template-columns:\s*var\(--process-node\) minmax\(0, 1fr\)/,
+    );
+    expect(css).toMatch(/\.process-steps::before \{[^}]*width:\s*1px/);
+    expect(css).not.toMatch(/\.process-steps::before \{[^}]*display:\s*none/);
   });
 
   it("keeps WhatsApp out of the header and uses a floating control", () => {
