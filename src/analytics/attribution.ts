@@ -53,9 +53,6 @@ export function trafficChannel(event: AnalyticsEvent): string {
   const host = normalizeTrafficHost(event.referrer_host);
   if (data?.google_click || (isGoogle(source) && /^(cpc|ppc|paid|paidsearch|paid_search|display|cpm)$/i.test(data?.medium ?? ""))) return "Google Ads";
   if (host === "syndicatedsearch.goog") return "syndicatedsearch";
-  if (isGoogle(source) || isGoogle(host)) {
-    return data && !data.source && !data.medium && isGoogle(host)
-      ? "google.com" : "Google · sin determinar";
-  }
+  if (isGoogle(source) || isGoogle(host)) return "google.com";
   return displayTrafficName(source || host);
 }

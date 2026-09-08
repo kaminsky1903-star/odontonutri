@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Session } from "@supabase/supabase-js";
@@ -59,14 +59,15 @@ describe("admin dashboard session", () => {
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/");
     expect(await screen.findByText("0 visitantes · 0 sesiones · 0 contactos únicos")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "WhatsApp" })).toBeInTheDocument();
-    for (const name of ["Fuentes de tráfico", "Campañas", "Páginas de entrada", "Clics de contacto por página", "Tipo de dispositivo", "Localidades", "Horario de WhatsApp", "Visitantes"]) {
+    for (const name of ["Fuentes de tráfico", "Páginas de entrada", "Clics de contacto por página", "Tipo de dispositivo", "Localidades", "Horario de WhatsApp", "Visitantes"]) {
       expect(screen.getByRole("heading", { name })).toBeInTheDocument();
     }
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Hoy" }));
+    const activityPanel = screen.getByRole("heading", { name: "Visitantes" }).closest("section");
+    expect(activityPanel).not.toBeNull();
+    await user.click(within(activityPanel!).getByRole("button", { name: "Hoy" }));
     expect(await screen.findByText("Sin actividad en este período.")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Personalizado" }));
-    expect(screen.getByLabelText("Desde")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Período de todas las métricas" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeEnabled();
   });
 

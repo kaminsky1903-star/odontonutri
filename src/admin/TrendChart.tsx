@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { CLINIC_TIME_ZONE } from "../site";
 import type { DailyVisit } from "./analyticsTypes";
 
@@ -6,8 +6,8 @@ const dateLabel = (date: string) => new Intl.DateTimeFormat("es-AR", {
   timeZone: CLINIC_TIME_ZONE, day: "numeric", month: "short",
 }).format(new Date(date));
 
-export function TrendChart({ points, pending = false, periodLabel, uniqueVisitors }: {
-  points: (DailyVisit & { contacts?: number })[]; pending?: boolean; periodLabel?: string; uniqueVisitors?: number;
+export function TrendChart({ points, pending = false, periodLabel, uniqueVisitors, periodControls }: {
+  points: (DailyVisit & { contacts?: number })[]; pending?: boolean; periodLabel?: string; uniqueVisitors?: number; periodControls?: ReactNode;
 }) {
   const [days, setDays] = useState<7 | 30>(7);
   const [selected, setSelected] = useState<string | null>(null);
@@ -51,7 +51,7 @@ export function TrendChart({ points, pending = false, periodLabel, uniqueVisitor
 
   return <section ref={container} className="admin-panel admin-trend" aria-label="Evolución de visitas">
     <div className="admin-trend-heading">
-      <div><h2>Evolución de visitas</h2><p>{periodLabel ? "Visitantes y contactos únicos por día" : "Sesiones por día"} · horario de Argentina</p></div>
+      <div><h2>Evolución de visitas</h2>{periodControls}<p>{periodLabel ? "Visitantes y contactos únicos por día" : "Sesiones por día"} · horario de Argentina</p></div>
       {!periodLabel && <div className="admin-range-actions" role="group" aria-label="Período del gráfico">
         {([7, 30] as const).map(value => <button key={value} type="button"
           aria-pressed={days === value} className={days === value ? "is-active" : undefined}

@@ -11,7 +11,7 @@ import {
 import { TrendChart } from "./TrendChart";
 import { useAuth } from "./AuthContext";
 import { recentActivity } from "../analytics/summary";
-import { buildReport, clinicDate, periodBounds, type Period, type Breakdown } from "../analytics/report";
+import { buildReport, clinicDate, type Period, type Breakdown } from "../analytics/report";
 
 function displayValue(value: number | null) {
   if (value === null) {
@@ -138,17 +138,20 @@ function MetricCard({
   value,
   pending,
   icon,
+  periodControls,
 }: {
   label: string;
   value: string;
   pending: boolean;
   icon: ReactNode;
+  periodControls?: ReactNode;
 }) {
   return (
     <article className="admin-metric">
       <span className="admin-icon-tile">{icon}</span>
       <p className="admin-metric-label">{label}</p>
       <p className="admin-metric-value">{value}</p>
+      {periodControls}
       {pending ? (
         <p className="admin-metric-note">{ANALYTICS_PENDING_MESSAGE}</p>
       ) : null}
@@ -161,15 +164,18 @@ function StatList({
   pending,
   empty,
   children,
+  periodControls,
 }: {
   title: string;
   pending: boolean;
   empty: boolean;
   children: ReactNode;
+  periodControls?: ReactNode;
 }) {
   return (
     <section className="admin-panel">
       <h2>{title}</h2>
+      {periodControls}
       {pending ? (
         <p className="admin-empty">{ANALYTICS_PENDING_MESSAGE}</p>
       ) : empty ? (
@@ -371,8 +377,8 @@ function ActivityList({
   );
 }
 
-function BreakdownTable({ title, items, pending, note }: { title: string; items: Breakdown[]; pending: boolean; note?: string }) {
-  return <StatList title={title} pending={pending} empty={!items.length}>
+function BreakdownTable({ title, items, pending, note, periodControls }: { title: string; items: Breakdown[]; pending: boolean; note?: string; periodControls?: ReactNode }) {
+  return <StatList title={title} pending={pending} empty={!items.length} periodControls={periodControls}>
     {note && <p className="admin-empty">{note}</p>}
     <div className="admin-report-table-wrap" tabIndex={0} role="region" aria-label={title}>
       <table className="admin-report-table"><thead><tr><th scope="col">Detalle</th><th scope="col">Visitantes</th><th scope="col">Contactos únicos</th><th scope="col">Clics</th><th scope="col">Conversión</th></tr></thead>
@@ -381,29 +387,46 @@ function BreakdownTable({ title, items, pending, note }: { title: string; items:
   </StatList>;
 }
 
+type QuickPeriod = "today" | "7d" | "30d";
+type PanelId = "visitors" | "sessions" | "whatsapp" | "phone" | "location" | "conversion" | "trend" | "sources" | "entries" | "pages" | "devices" | "locations" | "pageViews" | "hours" | "activity";
+
+function quickPeriod(preset: QuickPeriod): Period {
+  const today = clinicDate();
+  return { preset, from: today, to: today };
+}
+
+function PeriodShortcuts({ active, onSelect }: { active: QuickPeriod; onSelect: (preset: QuickPeriod) => void }) {
+  return <div className="admin-card-period" role="group" aria-label="Resumen del período">
+    <span>Resumen del período</span>
+    {([['today', 'Hoy'], ['7d', '7 días'], ['30d', '1 mes']] as const).map(([preset, label]) => <button type="button" key={preset} className={active === preset ? "is-active" : undefined} aria-pressed={active === preset} onClick={() => onSelect(preset)}>{label}</button>)}
+  </div>;
+}
+
 export function AdminDashboard() {
   const { session, signOut } = useAuth();
   const [analytics, setAnalytics] = useState<AnalyticsSnapshot>(EMPTY_ANALYTICS);
-  const [period, setPeriod] = useState<Period>({ preset: "7d", from: clinicDate(), to: clinicDate() });
+  const [panelPeriods, setPanelPeriods] = useState<Record<PanelId, QuickPeriod>>(() => ({ visitors: "7d", sessions: "7d", whatsapp: "7d", phone: "7d", location: "7d", conversion: "7d", trend: "7d", sources: "7d", entries: "7d", pages: "7d", devices: "7d", locations: "7d", pageViews: "7d", hours: "7d", activity: "7d" }));
   const [refresh, setRefresh] = useState(0);
   const [loading, setLoading] = useState(true);
   const [ignoring, setIgnoring] = useState(false);
-  const bounds = periodBounds(period);
-  const report = useMemo(() => buildReport(analytics.events ?? [], period), [analytics, period]);
-  const pending = loading || analytics.status !== "ready" || !bounds;
-  const visibleActivity = useMemo(() => recentActivity(report?.events ?? [], new Date()), [report]);
-  const periodLabel = bounds ? `${bounds.from} al ${bounds.to}` : "Rango inválido";
-  const whatsappPeak = peakWhatsAppCopy(report?.hours ?? []);
+  const reports = useMemo(() => ({ today: buildReport(analytics.events ?? [], quickPeriod("today")), "7d": buildReport(analytics.events ?? [], quickPeriod("7d")), "30d": buildReport(analytics.events ?? [], quickPeriod("30d")) }), [analytics]);
+  const reportFor = (panel: PanelId) => reports[panelPeriods[panel]];
+  const chartReport = reports[panelPeriods.trend === "today" ? "7d" : panelPeriods.trend];
+  const pending = loading || analytics.status !== "ready";
+  const activityReport = reportFor("activity");
+  const visibleActivity = useMemo(() => recentActivity(activityReport?.events ?? [], new Date()), [activityReport]);
+  const whatsappPeak = peakWhatsAppCopy(reportFor("hours")?.hours ?? []);
+  const periodControls = (panel: PanelId) => <PeriodShortcuts active={panelPeriods[panel]} onSelect={preset => setPanelPeriods(value => ({ ...value, [panel]: preset }))}/>;
 
   useEffect(() => {
-    if (!session?.access_token || !periodBounds(period)) return;
+    if (!session?.access_token) return;
     let cancelled = false;
     setLoading(true);
-    fetchAnalyticsSnapshot(period).then(snapshot => {
+    fetchAnalyticsSnapshot().then(snapshot => {
       if (!cancelled) { setAnalytics(snapshot); setLoading(false); }
     }).catch(() => { if (!cancelled) { setAnalytics({ ...EMPTY_ANALYTICS, message: "No se pudieron cargar las métricas." }); setLoading(false); } });
     return () => { cancelled = true; };
-  }, [session?.access_token, period, refresh]);
+  }, [session?.access_token, refresh]);
 
   async function hideVisitor(visitorId: string) {
     if (ignoring) return;
@@ -419,50 +442,30 @@ export function AdminDashboard() {
         <a className="admin-home-link" href="/" aria-label="Ir al inicio"><img src="/logo.png" alt="" width={40} height={40}/></a>
         <div><p className="admin-kicker">{SITE_NAME}</p><h1>Panel de analíticas</h1></div>
       </div>
-      <div className="admin-session"><p className="admin-session-email">{session?.user.email ?? ""}</p><button type="button" className="admin-signout" onClick={() => void signOut()}><LogoutIcon/>Cerrar sesión</button></div>
+      <div className="admin-session"><p className="admin-session-email">{session?.user.email ?? ""}</p><button type="button" className="admin-signout" disabled={loading} onClick={() => setRefresh(value => value + 1)}>Actualizar</button><button type="button" className="admin-signout" onClick={() => void signOut()}><LogoutIcon/>Cerrar sesión</button></div>
     </header>
 
-    <section className="admin-panel admin-period" aria-label="Período de todas las métricas">
-      <div><h2>Resumen del período</h2><p className="admin-empty">Indicadores y desgloses del período · Argentina. Las referencias históricas se indican por separado.</p></div>
-      <div className="admin-range-actions" role="group" aria-label="Período">
-        {([['today', 'Hoy'], ['7d', '7 días'], ['30d', '1 mes'], ['custom', 'Personalizado']] as const).map(([preset, label]) => <button type="button" key={preset} aria-pressed={period.preset === preset} className={period.preset === preset ? 'is-active' : undefined} onClick={() => setPeriod(value => ({ ...value, preset }))}>{label}</button>)}
-        <button type="button" disabled={loading || !bounds} onClick={() => setRefresh(value => value + 1)}>Actualizar</button>
-      </div>
-      {period.preset === 'custom' && <div className="admin-custom-dates">
-        <label>Desde<input type="date" value={period.from} max={period.to || clinicDate()} onChange={event => setPeriod(value => ({ ...value, from: event.target.value }))}/></label>
-        <label>Hasta<input type="date" value={period.to} min={period.from} max={clinicDate()} onChange={event => setPeriod(value => ({ ...value, to: event.target.value }))}/></label>
-      </div>}
-      {!bounds && <p className="admin-error" role="alert">Elegí fechas válidas, sin días futuros y hasta 366 días por consulta.</p>}
-      <p className="admin-data-status" role="status">{loading ? "Cargando métricas…" : analytics.status !== 'ready' ? analytics.message : `Período: ${periodLabel}`}</p>
-    </section>
-
     <section className="admin-metrics" aria-label="Indicadores principales">
-      <MetricCard label="Visitantes únicos" value={metric(report?.visitors)} pending={false} icon={<PeopleIcon/>}/>
-      <MetricCard label="Visitas / sesiones" value={metric(report?.sessions)} pending={false} icon={<VisitIcon/>}/>
-      <MetricCard label="Clics en WhatsApp" value={metric(report?.whatsapp)} pending={false} icon={<WhatsAppIcon/>}/>
-      <MetricCard label="Clics en teléfono" value={metric(report?.phone)} pending={false} icon={<PhoneIcon/>}/>
-      <MetricCard label="Clics en ubicación" value={metric(report?.location)} pending={false} icon={<PinIcon/>}/>
-      <MetricCard label="Porcentaje de conversión" value={pending ? "—" : displayPercent(report?.conversion ?? null)} pending={false} icon={<TrendIcon/>}/>
+      <MetricCard label="Visitantes únicos" value={metric(reportFor("visitors")?.visitors)} pending={false} icon={<PeopleIcon/>} periodControls={periodControls("visitors")}/>
+      <MetricCard label="Visitas / sesiones" value={metric(reportFor("sessions")?.sessions)} pending={false} icon={<VisitIcon/>} periodControls={periodControls("sessions")}/>
+      <MetricCard label="Clics en WhatsApp" value={metric(reportFor("whatsapp")?.whatsapp)} pending={false} icon={<WhatsAppIcon/>} periodControls={periodControls("whatsapp")}/>
+      <MetricCard label="Clics en teléfono" value={metric(reportFor("phone")?.phone)} pending={false} icon={<PhoneIcon/>} periodControls={periodControls("phone")}/>
+      <MetricCard label="Clics en ubicación" value={metric(reportFor("location")?.location)} pending={false} icon={<PinIcon/>} periodControls={periodControls("location")}/>
+      <MetricCard label="Porcentaje de conversión" value={pending ? "—" : displayPercent(reportFor("conversion")?.conversion ?? null)} pending={false} icon={<TrendIcon/>} periodControls={periodControls("conversion")}/>
     </section>
-    <p className="admin-measure-note"><strong>{metric(report?.contacts)} visitantes hicieron contacto.</strong> Conversión = visitantes con al menos un clic en WhatsApp, teléfono o ubicación ÷ visitantes únicos. Varios clics de la misma persona cuentan una vez. Un clic no confirma una consulta ni un turno.</p>
-    {!pending && report?.estimatedVisitors && <p className="admin-banner">Hay eventos sin identificador de visitante: se usa la sesión como aproximación. El total de visitantes y la conversión son estimados.</p>}
-    {!pending && report?.missingIdentity && <p className="admin-banner">Hay eventos sin visitante ni sesión: se incluyen en los clics, pero no en los visitantes ni contactos únicos. Esos totales son parciales.</p>}
-    <TrendChart points={report?.daily ?? []} pending={pending} periodLabel={periodLabel} uniqueVisitors={report?.visitors}/>
-
-    <section className="admin-panel"><h2>Cómo leer Google y Google Ads</h2><p className="admin-measure-note">Google Ads indica una señal publicitaria o etiquetas de pago. google.com indica una llegada probable desde el buscador sin esas señales; no garantiza que sea orgánica. syndicatedsearch representa el origen técnico syndicatedsearch.goog cuando no hay evidencia suficiente para clasificarlo como anuncio.</p></section>
-    <BreakdownTable title="Fuentes de tráfico" items={report?.sources ?? []} pending={pending} note="Un visitante puede volver desde distintas fuentes. No sumes las filas para obtener el total general."/>
-    <BreakdownTable title="Campañas" items={report?.campaigns ?? []} pending={pending} note="Solo se muestran campañas registradas en las etiquetas de entrada. El gasto y el costo por paciente todavía no están disponibles."/>
+    <TrendChart points={chartReport?.daily ?? []} pending={pending} periodLabel={panelPeriods.trend === "today" ? "Últimos 7 días" : panelPeriods.trend === "7d" ? "7 días" : "1 mes"} uniqueVisitors={chartReport?.visitors} periodControls={periodControls("trend")}/>
+    <BreakdownTable title="Fuentes de tráfico" items={reportFor("sources")?.sources ?? []} pending={pending} periodControls={periodControls("sources")} note="Un visitante puede volver desde distintas fuentes. No sumes las filas para obtener el total general."/>
     <div className="admin-insight-grid">
-      <BreakdownTable title="Páginas de entrada" items={report?.entries ?? []} pending={pending} note="Primera página disponible de cada sesión. Si la sesión empezó antes del historial cargado, la entrada puede ser parcial."/>
-      <BreakdownTable title="Clics de contacto por página" items={report?.pages ?? []} pending={pending} note="La conversión de cada página usa sus visitantes. Una persona puede figurar en varias páginas."/>
+      <BreakdownTable title="Páginas de entrada" items={reportFor("entries")?.entries ?? []} pending={pending} periodControls={periodControls("entries")} note="Primera página disponible de cada sesión. Si la sesión empezó antes del historial cargado, la entrada puede ser parcial."/>
+      <BreakdownTable title="Clics de contacto por página" items={reportFor("pages")?.pages ?? []} pending={pending} periodControls={periodControls("pages")} note="La conversión de cada página usa sus visitantes. Una persona puede figurar en varias páginas."/>
     </div>
     <div className="admin-insight-grid">
-      <BreakdownTable title="Tipo de dispositivo" items={report?.devices ?? []} pending={pending}/>
-      <BreakdownTable title="Localidades" items={report?.locations ?? []} pending={pending} note="Ubicación aproximada; puede corresponder al proveedor de internet."/>
+      <BreakdownTable title="Tipo de dispositivo" items={reportFor("devices")?.devices ?? []} pending={pending} periodControls={periodControls("devices")}/>
+      <BreakdownTable title="Localidades" items={(reportFor("locations")?.locations ?? []).slice(0, 4)} pending={pending} periodControls={periodControls("locations")} note="Las 4 localidades con más visitantes. La ubicación es aproximada y puede corresponder al proveedor de internet."/>
     </div>
     <div className="admin-insight-grid">
-      <StatList title="Páginas y tratamientos más visitados" pending={pending} empty={!report?.pageViews.length}><ul className="admin-page-counts">{report?.pageViews.map(page => <li key={page.path}><span>{page.title}</span><strong>{page.views} vistas</strong></li>)}</ul></StatList>
-      <StatList title="Horario de WhatsApp" pending={pending} empty={!report?.hours.some(hour => hour.value > 0)}>{whatsappPeak && <p className="admin-hours-peak">{whatsappPeak}</p>}<HourChart hours={report?.hours ?? []}/></StatList>
+      <StatList title="Páginas y tratamientos más visitados" pending={pending} empty={!reportFor("pageViews")?.pageViews.length} periodControls={periodControls("pageViews")}><ul className="admin-page-counts">{reportFor("pageViews")?.pageViews.map(page => <li key={page.path}><span>{page.title}</span><strong>{page.views} vistas</strong></li>)}</ul></StatList>
+      <StatList title="Horario de WhatsApp" pending={pending} empty={!reportFor("hours")?.hours.some(hour => hour.value > 0)} periodControls={periodControls("hours")}>{whatsappPeak && <p className="admin-hours-peak">{whatsappPeak}</p>}<HourChart hours={reportFor("hours")?.hours ?? []}/></StatList>
     </div>
 
     <section className="admin-whatsapp" aria-labelledby="admin-whatsapp-title"><h2 id="admin-whatsapp-title">WhatsApp</h2><p className="admin-empty">Referencia histórica fija, independiente del período seleccionado.</p><div className="admin-metrics admin-whatsapp-metrics">
@@ -473,8 +476,8 @@ export function AdminDashboard() {
     <p className="admin-live-note"><PersonIcon/>Actividad en los últimos 5 minutos: {metric(analytics.activeNow)} sesiones. No confirma que sigan conectadas. Se actualiza al pulsar Actualizar.</p>
 
     <section className="admin-panel admin-activity" aria-busy={ignoring}>
-      <h2>Visitantes</h2><p className="admin-activity-lead">Actividad del período seleccionado. Un código identifica al mismo navegador si volvió. La localidad es aproximada y el tiempo hasta el clic no equivale al tiempo activo de lectura. No se guardan nombres ni datos clínicos.</p>
-      {pending ? <p className="admin-empty">{loading ? 'Cargando…' : analytics.message}</p> : <><p className="admin-visitors-count">{report?.visitors ?? 0} visitantes · {report?.sessions ?? 0} sesiones · {report?.contacts ?? 0} contactos únicos</p>{visibleActivity.length ? <ActivityList items={visibleActivity} onIgnore={id => void hideVisitor(id)}/> : <p className="admin-empty">Sin actividad en este período.</p>}</>}
+      <h2>Visitantes</h2>{periodControls("activity")}<p className="admin-activity-lead">Actividad del período seleccionado. Un código identifica al mismo navegador si volvió. La localidad es aproximada y el tiempo hasta el clic no equivale al tiempo activo de lectura. No se guardan nombres ni datos clínicos.</p>
+      {pending ? <p className="admin-empty">{loading ? 'Cargando…' : analytics.message}</p> : <><p className="admin-visitors-count">{activityReport?.visitors ?? 0} visitantes · {activityReport?.sessions ?? 0} sesiones · {activityReport?.contacts ?? 0} contactos únicos</p>{activityReport?.estimatedVisitors && <p className="admin-banner">Hay eventos sin identificador de visitante: se usa la sesión como aproximación. El total de visitantes y la conversión son estimados.</p>}{activityReport?.missingIdentity && <p className="admin-banner">Hay eventos sin visitante ni sesión: se incluyen en los clics, pero no en los visitantes ni contactos únicos. Esos totales son parciales.</p>}{visibleActivity.length ? <ActivityList items={visibleActivity} onIgnore={id => void hideVisitor(id)}/> : <p className="admin-empty">Sin actividad en este período.</p>}</>}
     </section>
   </div>;
 }

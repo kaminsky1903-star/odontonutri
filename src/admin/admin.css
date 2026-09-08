@@ -359,6 +359,33 @@ body:has(.admin-shell) {
   letter-spacing: 0.01em;
 }
 
+.admin-card-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+.admin-card-period button {
+  border: 1px solid #d9e3dc;
+  border-radius: 999px;
+  padding: 0.18rem 0.42rem;
+  background: #fff;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-card-period button.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
 .admin-panel h2 {
   font-size: 1.05rem;
   color: var(--ink);
