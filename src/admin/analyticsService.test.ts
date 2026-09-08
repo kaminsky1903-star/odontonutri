@@ -24,24 +24,24 @@ describe("analyticsService", () => {
     getSupabaseClient.mockReturnValue({
       from: () => ({
         select: () => ({
-          gte: () => ({
-            limit: async () => ({ data: null, error: { message: "denied" } }),
+          gte: () => ({ lte() { return this; }, order() { return this; },
+            range: async () => ({ data: null, error: { message: "denied" } }),
           }),
         }),
       }),
     });
-    await expect(fetchAnalyticsSnapshot()).resolves.toEqual(EMPTY_ANALYTICS);
+    await expect(fetchAnalyticsSnapshot()).resolves.toMatchObject({ status: "pending", message: "No se pudieron cargar las métricas. Intentá actualizar." });
   });
 
   it("summarizes rows returned for an authenticated session", async () => {
     getSupabaseClient.mockReturnValue({
       from: () => ({
         select: () => ({
-          gte: () => ({
-            limit: async () => ({
+          gte: () => ({ lte() { return this; }, order() { return this; },
+            range: async () => ({
               data: [
                 {
-                  created_at: new Date().toISOString(),
+                  created_at: new Date(Date.now() - 1000).toISOString(),
                   event_type: "visit",
                   path: "/",
                   session_id: "11111111-1111-4111-8111-111111111111",
@@ -67,11 +67,11 @@ describe("analyticsService", () => {
     getSupabaseClient.mockReturnValue({
       from: () => ({
         select: () => ({
-          gte: () => ({
-            limit: async () => ({
+          gte: () => ({ lte() { return this; }, order() { return this; },
+            range: async () => ({
               data: [
                 {
-                  created_at: new Date().toISOString(),
+                  created_at: new Date(Date.now() - 1000).toISOString(),
                   event_type: "visit",
                   path: "/",
                   session_id: "11111111-1111-4111-8111-111111111111",
@@ -109,11 +109,11 @@ describe("analyticsService", () => {
         }
         return {
           select: () => ({
-            gte: () => ({
-              limit: async () => ({
+            gte: () => ({ lte() { return this; }, order() { return this; },
+              range: async () => ({
                 data: [
                   {
-                    created_at: new Date().toISOString(),
+                    created_at: new Date(Date.now() - 1000).toISOString(),
                     event_type: "visit",
                     path: "/",
                     session_id: staffId,
@@ -135,4 +135,42 @@ describe("analyticsService", () => {
     expect(snapshot.visitorsLast30Days).toBe(0);
     expect(snapshot.recentActivity).toEqual([]);
   });
+});
+
+
+
+it("loads all pages, including when the server page cap is below the requested size", async () => {
+  const rows = Array.from({ length: 1201 }, (_, i) => ({ created_at: new Date(Date.now() - 1000).toISOString(), event_type: "visit", path: "/", session_id: `s${i}` }));
+  const ranges: number[] = [];
+  getSupabaseClient.mockReturnValue({ from: (table: string) => table === "analytics_staff_devices" ? { select: async () => ({ data: [] }), upsert: async () => ({ error: null }) } : {
+    select: () => ({ gte() { return this; }, lte() { return this; }, order() { return this; }, range: async (start: number) => {
+      ranges.push(start); return { data: rows.slice(start, start + 200), count: rows.length, error: null };
+    } }),
+  } });
+  const result = await fetchAnalyticsSnapshot();
+  expect(result.events).toHaveLength(1201);
+  expect(ranges).toEqual([0, 200, 400, 600, 800, 1000, 1200]);
+});
+
+it("does not display partial totals when a later page fails", async () => {
+  getSupabaseClient.mockReturnValue({ from: (table: string) => table === "analytics_staff_devices" ? { select: async () => ({ data: [] }), upsert: async () => ({ error: null }) } : {
+    select: () => ({ gte() { return this; }, lte() { return this; }, order() { return this; }, range: async (start: number) => start ? { data: null, error: { code: "500", message: "failed" } } : { data: [{ created_at: new Date().toISOString(), event_type: "visit", path: "/" }], count: 2, error: null } }),
+  } });
+  const result = await fetchAnalyticsSnapshot();
+  expect(result.status).toBe("pending");
+  expect(result.events).toBeUndefined();
+});
+
+it("falls back to the existing schema without inventing attribution", async () => {
+  const columns: string[] = [];
+  getSupabaseClient.mockReturnValue({ from: (table: string) => table === "analytics_staff_devices" ? { select: async () => ({ data: [] }), upsert: async () => ({ error: null }) } : {
+    select: (selection: string) => {
+      columns.push(selection);
+      return { gte() { return this; }, lte() { return this; }, order() { return this; }, range: async () => selection.includes("traffic_attribution") ? { data: null, error: { code: "PGRST204" } } : { data: [{ created_at: new Date(Date.now() - 1000).toISOString(), event_type: "visit", path: "/", session_id: "s" }], count: 1, error: null } };
+    },
+  } });
+  const result = await fetchAnalyticsSnapshot();
+  expect(result.status).toBe("ready");
+  expect(columns).toHaveLength(2);
+  expect(result.events?.[0].traffic_attribution).toBeNull();
 });

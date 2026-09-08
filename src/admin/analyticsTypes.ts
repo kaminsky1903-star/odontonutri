@@ -49,6 +49,7 @@ export type HourStat = {
 };
 
 export type AnalyticsSnapshot = {
+  events?: import("../analytics/types").AnalyticsEvent[];
   status: "pending" | "ready";
   message: string;
   visitorsToday: number | null;

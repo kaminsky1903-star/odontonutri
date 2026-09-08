@@ -1,3 +1,5 @@
+import { periodBounds, type Period } from "../analytics/report";
+import { readAttribution } from "../analytics/attribution";
 import { getSupabaseClient } from "./supabaseClient";
 import {
   analyticsQueryStart,
@@ -40,6 +42,7 @@ function asEvents(value: unknown): AnalyticsEvent[] {
     }
     return [
       {
+        traffic_attribution: readAttribution(event.traffic_attribution),
         created_at: event.created_at,
         event_type: event.event_type,
         path: event.path,
@@ -110,39 +113,44 @@ async function fetchStaffVisitorIds(): Promise<string[]> {
   }
 }
 
-export async function fetchAnalyticsSnapshot(): Promise<AnalyticsSnapshot> {
+export async function fetchAnalyticsSnapshot(period?: Period): Promise<AnalyticsSnapshot> {
   try {
     const supabase = getSupabaseClient();
-    if (!supabase) {
-      return EMPTY_ANALYTICS;
-    }
-
+    if (!supabase) return EMPTY_ANALYTICS;
+    const now = new Date();
+    const bounds = period ? periodBounds(period, now) : null;
+    if (period && !bounds) return { ...EMPTY_ANALYTICS, message: "Revisá el rango de fechas." };
     await registerCurrentStaffDevice();
-
-    const since = analyticsQueryStart().toISOString();
-    const query = (columns: string) =>
-      supabase
-        .from("analytics_events")
-        .select(columns)
-        .gte("created_at", since)
-        .limit(5000);
-
-    const [full, staffIds] = await Promise.all([
-      query(FULL_COLUMNS),
-      fetchStaffVisitorIds(),
-    ]);
-    const withCity = full.error ? await query(CITY_COLUMNS) : full;
-    const result = withCity.error ? await query(BASE_COLUMNS) : withCity;
-
-    if (result.error) {
-      return EMPTY_ANALYTICS;
+    const start = Math.min(analyticsQueryStart(now).getTime(), bounds?.start ?? Infinity);
+    const query = async (columns: string) => {
+      const rows: unknown[] = [];
+      let offset = 0;
+      while (true) {
+        const result = await supabase.from("analytics_events").select(columns, { count: "exact" })
+          .gte("created_at", new Date(start).toISOString()).lte("created_at", now.toISOString())
+          .order("created_at", { ascending: true }).order("id", { ascending: true })
+          .range(offset, offset + 499);
+        if (result.error) return { data: null, error: result.error };
+        const page = Array.isArray(result.data) ? result.data : [];
+        rows.push(...page);
+        offset += page.length;
+        if ((result.count != null && offset >= result.count) || (result.count == null && page.length < 500)) break;
+        if (!page.length) throw new Error("Incomplete analytics response");
+      }
+      return { data: rows, error: null };
+    };
+    const [first, staffIds] = await Promise.all([query(FULL_COLUMNS + ", traffic_attribution"), fetchStaffVisitorIds()]);
+    let result = first;
+    for (const columns of [FULL_COLUMNS, CITY_COLUMNS, BASE_COLUMNS]) {
+      if (!result.error) break;
+      if (!["42703", "PGRST204"].includes(result.error.code)) break;
+      result = await query(columns);
     }
-
+    if (result.error) return { ...EMPTY_ANALYTICS, message: "No se pudieron cargar las métricas. Intentá actualizar." };
     const ignored = new Set([...readIgnoredVisitorIds(), ...staffIds]);
-    return summarizeAnalyticsEvents(
-      withoutIgnoredVisitors(asEvents(result.data), ignored),
-    );
+    const events = withoutIgnoredVisitors(asEvents(result.data), ignored);
+    return { ...summarizeAnalyticsEvents(events, now), events };
   } catch {
-    return EMPTY_ANALYTICS;
+    return { ...EMPTY_ANALYTICS, message: "No se pudieron cargar las métricas completas. Intentá actualizar." };
   }
 }

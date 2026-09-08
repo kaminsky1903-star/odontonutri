@@ -96,7 +96,7 @@ describe("analytics summary", () => {
       { path: "/odontologia", title: "Odontología", views: 0, percent: 0 },
     ]);
     expect(snapshot.whatsappHours.map((item) => item.hour)).toEqual([
-      9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+      8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
     ]);
     expect(snapshot.whatsappHours.find((item) => item.hour === 14)?.value).toBe(
       1,
@@ -242,9 +242,14 @@ describe("analytics summary", () => {
     expect(snapshot.whatsappClicksLastMonth).toBe(1);
   });
 
-  it("only counts WhatsApp hours from 9 to 18", () => {
+  it("only counts WhatsApp hours from 8 to 22", () => {
     const snapshot = summarizeAnalyticsEvents(
       [
+        event({
+          created_at: "2026-08-30T07:30:00-03:00",
+          event_type: "whatsapp_click",
+          session_id: "too-early",
+        }),
         event({
           created_at: "2026-08-30T08:30:00-03:00",
           event_type: "whatsapp_click",
@@ -260,6 +265,11 @@ describe("analytics summary", () => {
           event_type: "whatsapp_click",
           session_id: "late",
         }),
+        event({
+          created_at: "2026-08-30T23:00:00-03:00",
+          event_type: "whatsapp_click",
+          session_id: "too-late",
+        }),
       ],
       now,
     );
@@ -269,7 +279,7 @@ describe("analytics summary", () => {
     );
     expect(
       snapshot.whatsappHours.filter((item) => item.value > 0).map((item) => item.hour),
-    ).toEqual([11]);
+    ).toEqual([8, 11, 21]);
   });
 
   it("always lists Nutrición among conversion pages", () => {

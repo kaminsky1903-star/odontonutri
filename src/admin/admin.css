@@ -1,3 +1,7 @@
+body:has(.admin-shell) {
+  padding-top: 0;
+}
+
 .admin-shell {
   min-height: 100vh;
   min-height: 100dvh;
@@ -167,10 +171,21 @@
   width: min(100%, 1080px);
   margin-inline: auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.05rem;
 }
 
 .admin-topbar {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  height: auto;
+  min-height: 0;
+  padding: 0 0 0.35rem;
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -190,6 +205,40 @@
   height: 2.75rem;
   object-fit: contain;
 }
+
+.admin-dashboard > * { min-width: 0; }
+
+.admin-brand, .admin-brand > div, .admin-session { min-width: 0; }
+.admin-home-link { display: inline-flex; flex: 0 0 auto; border-radius: 0.6rem; }
+.admin-home-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.admin-session-email { overflow-wrap: anywhere; }
+.admin-signout { flex-shrink: 0; }
+.admin-data-status { margin: 0; color: var(--muted); font-size: 0.8rem; }
+.admin-trend {
+  min-width: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 86% 5%, rgb(216 231 220 / 58%), transparent 29%),
+    linear-gradient(155deg, #fff 15%, #f8faf5 100%);
+}
+.admin-trend-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.admin-trend-heading h2 { font-size: 1.4rem; }
+.admin-trend-heading p, .admin-trend-note, .admin-trend-dates { color: var(--muted); font-size: 0.8rem; margin: 0.4rem 0 0; }
+.admin-trend-heading .admin-range-actions { margin: 0; }
+.admin-trend-summary { display: flex; align-items: baseline; gap: 0.7rem; margin-top: 1.4rem; }
+.admin-trend-summary strong { font-family: "Playfair Display", Georgia, serif; font-size: 2.7rem; font-weight: 500; color: var(--accent); }
+.admin-trend-summary span { font-size: 0.86rem; color: var(--muted); }
+.admin-trend-detail { display: flex; justify-content: space-between; gap: 1rem; padding: 0.72rem 0.95rem; margin-top: 0.65rem; background: rgb(232 240 232 / 80%); border: 1px solid rgb(63 107 83 / 8%); border-radius: 0.85rem; color: var(--accent); font-size: 0.85rem; }
+.admin-trend-legend { display: flex; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: 0.78rem; font-weight: 650; }
+.admin-trend-legend span { display: inline-flex; align-items: center; gap: 0.42rem; }
+.admin-trend-legend span::before { content: ""; width: 1.8rem; height: 3px; border-radius: 999px; background: #3f6b53; }
+.admin-trend-legend .is-contacts::before { height: 2px; background: repeating-linear-gradient(90deg, #b57b42 0 7px, transparent 7px 11px); }
+.admin-trend-svg { width: 100%; height: auto; display: block; overflow: hidden; margin-top: 0.25rem; }
+.admin-trend-svg text { font: 13px system-ui, sans-serif; fill: #667366; }
+.admin-trend-scrubber { display: flex; align-items: center; gap: 1rem; font-size: 0.8rem; color: var(--muted); }
+.admin-trend-scrubber input { flex: 1; min-width: 0; height: 44px; accent-color: #3f6b53; cursor: pointer; }
+.admin-range-actions button { cursor: pointer; min-height: 44px; }
+.admin-range-actions button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .admin-session {
   flex-wrap: wrap;
@@ -224,8 +273,30 @@
 }
 
 .admin-metrics {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+
+.admin-period { display: grid; gap: 0.85rem; }
+.admin-period .admin-range-actions { margin: 0; }
+.admin-custom-dates { display: flex; flex-wrap: wrap; gap: 1rem; }
+.admin-custom-dates label { display: grid; gap: 0.35rem; font-size: 0.86rem; }
+.admin-custom-dates input { font: inherit; padding: 0.65rem; border: 1px solid #d5ded2; background: #fff; color: var(--ink); border-radius: 0.6rem; min-width: 0; }
+.admin-measure-note { font-size: 0.86rem; line-height: 1.65; color: var(--muted); margin: 0.5rem 0; }
+.admin-live-note { display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--muted); }
+.admin-live-note svg { width: 1.3rem; height: 1.3rem; flex-shrink: 0; }
+.admin-report-table-wrap { max-width: 100%; overflow-x: auto; margin-top: 0.8rem; }
+.admin-report-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.admin-report-table th, .admin-report-table td { padding: 0.8rem 0.55rem; text-align: right; border-bottom: 1px solid #e9ece5; }
+.admin-report-table thead th { color: var(--muted); font-size: 0.75rem; font-weight: 600; }
+.admin-report-table th:first-child { text-align: left; min-width: 9rem; overflow-wrap: anywhere; }
+.admin-report-table tbody th { color: var(--accent); font-weight: 600; }
+.admin-insight-grid > *, .admin-grid > * { min-width: 0; }
+.admin-page-counts { list-style: none; padding: 0; }
+.admin-page-counts li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 0; border-bottom: 1px solid #e9ece5; font-size: 0.86rem; }
+.admin-trend-detail { flex-wrap: wrap; }
+.admin-hours { overflow-x: auto; }
+.admin-hours-axis, .admin-hours-bars { min-width: 430px; }
+.admin-activity[aria-busy="true"] .admin-activity-ignore { pointer-events: none; opacity: 0.5; }
 
 .admin-whatsapp {
   display: grid;
@@ -365,7 +436,8 @@
   flex: 1 1 0;
   min-width: 0;
   border-radius: 999px 999px 2px 2px;
-  background: var(--accent);
+  background: linear-gradient(180deg, #6f967d, var(--accent));
+  box-shadow: 0 3px 8px rgb(47 74 60 / 12%);
 }
 
 .admin-hours-axis {
@@ -592,11 +664,17 @@
 }
 
 @media (width <= 720px) {
-  .admin-topbar,
-  .admin-brand {
+  .admin-topbar {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .admin-brand { flex-direction: row; align-items: center; }
+  .admin-brand h1 { font-size: 1.55rem; }
+  .admin-kicker { font-size: 0.67rem; }
+  .admin-session { border-top: 1px solid #e2ded4; padding-top: 0.8rem; }
+  .admin-session-email { flex: 1 1 140px; }
+  .admin-trend-svg { min-height: 180px; }
 
   .admin-session {
     width: 100%;
@@ -623,7 +701,7 @@
   }
 
   .admin-metrics {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .admin-metrics.admin-whatsapp-metrics {

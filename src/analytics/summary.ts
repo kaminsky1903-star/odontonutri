@@ -1,3 +1,5 @@
+import { clinicDate, midnight } from "./report";
+import { trafficChannel } from "./attribution";
 import {
   type AnalyticsSnapshot,
   type DeviceStat,
@@ -54,23 +56,11 @@ function since(now: Date, ms: number) {
   return new Date(now.getTime() - ms);
 }
 
-function startOfLocalDay(now: Date) {
-  const start = new Date(now);
-  start.setHours(0, 0, 0, 0);
-  return start;
-}
+function startOfLocalDay(now: Date) { return midnight(clinicDate(now)); }
 
-function startOfLocalMonth(now: Date) {
-  const start = startOfLocalDay(now);
-  start.setDate(1);
-  return start;
-}
+function startOfLocalMonth(now: Date) { return midnight(clinicDate(now).slice(0, 7) + "-01"); }
 
-function startOfPreviousLocalMonth(now: Date) {
-  const start = startOfLocalMonth(now);
-  start.setMonth(start.getMonth() - 1);
-  return start;
-}
+function startOfPreviousLocalMonth(now: Date) { return startOfLocalMonth(new Date(startOfLocalMonth(now).getTime() - 86400000)); }
 
 export function analyticsQueryStart(now = new Date()) {
   const thirtyDaysAgo = since(now, THIRTY_DAYS_MS);
@@ -91,17 +81,20 @@ function inHalfOpenWindow(event: AnalyticsEvent, start: Date, endExclusive: Date
 }
 
 function dailyVisits(events: AnalyticsEvent[], now: Date) {
-  const today = startOfLocalDay(now);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: CLINIC_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(now);
+  const part = (type: string) => parts.find(item => item.type === type)!.value;
+  const today = new Date(`${part("year")}-${part("month")}-${part("day")}T00:00:00-03:00`);
   const points = [];
   for (let offset = 29; offset >= 0; offset -= 1) {
-    const start = new Date(today);
-    start.setDate(start.getDate() - offset);
-    const end = new Date(start);
-    end.setDate(end.getDate() + 1);
+    const start = new Date(today.getTime() - offset * 86400000);
+    const end = new Date(start.getTime() + 86400000);
     const value = uniqueSessions(
       events.filter(
         (event) =>
-          event.event_type === "visit" && inHalfOpenWindow(event, start, end),
+          event.event_type === "visit" && inHalfOpenWindow(event, start, end) &&
+          new Date(event.created_at).getTime() <= now.getTime(),
       ),
     ).size;
     points.push({ date: start.toISOString(), value });
@@ -234,8 +227,8 @@ function conversionPageRank(path: string) {
   return index === -1 ? CONVERSION_PAGES.length : index;
 }
 
-const WHATSAPP_HOUR_START = 9;
-const WHATSAPP_HOUR_END = 18;
+const WHATSAPP_HOUR_START = 8;
+const WHATSAPP_HOUR_END = 22;
 
 function clinicHour(iso: string) {
   const hour = new Intl.DateTimeFormat("en-US", {
@@ -305,9 +298,9 @@ function sessionContext(events: AnalyticsEvent[]) {
       device: "Escritorio",
     };
     if (event.event_type === "visit") {
-      current.source = displayTrafficName(event.referrer_host);
+      current.source = trafficChannel(event);
     } else if (event.referrer_host && current.source === "Directo") {
-      current.source = displayTrafficName(event.referrer_host);
+      current.source = trafficChannel(event);
     }
     if (event.device_type && DEVICE_LABELS[event.device_type]) {
       current.device = DEVICE_LABELS[event.device_type];
@@ -369,14 +362,21 @@ function contactJourney(events: AnalyticsEvent[], contact: AnalyticsEvent) {
   };
 }
 
-function recentActivity(
+export function recentActivity(
   events: AnalyticsEvent[],
   now: Date,
 ): RecentActivity[] {
-  const monthStart = since(now, THIRTY_DAYS_MS);
-  const scoped = events.filter((event) => inWindow(event, monthStart, now));
+
+  const scoped = events.filter((event) => new Date(event.created_at).getTime() <= now.getTime());
   const context = sessionContext(scoped);
   const visits = visitCountsByVisitor(scoped);
+  const sessionEvents = new Map<string, AnalyticsEvent[]>();
+  for (const event of events) {
+    if (!event.session_id) continue;
+    const rows = sessionEvents.get(event.session_id) ?? [];
+    rows.push(event);
+    sessionEvents.set(event.session_id, rows);
+  }
   return scoped
     .filter(
       (event) =>
@@ -392,14 +392,14 @@ function recentActivity(
         : undefined;
       const isContact = CONTACT_TYPES.has(event.event_type);
       const journey = isContact
-        ? contactJourney(events, event)
+        ? contactJourney(event.session_id ? sessionEvents.get(event.session_id) ?? [] : [], event)
         : {
             landing: null,
             pages: [] as string[],
             durationMinutes: null,
           };
       const key = visitorKey(event);
-      const eventSource = displayTrafficName(event.referrer_host);
+      const eventSource = trafficChannel(event);
       return {
         id: `${event.created_at}-${event.event_type}-${event.session_id ?? index}`,
         at: event.created_at,
@@ -484,7 +484,7 @@ export function summarizeAnalyticsEvents(
     trafficSources: topTraffic(events),
     topPages: topPages(events),
     devices: deviceStats(events),
-    recentActivity: recentActivity(events, now),
+    recentActivity: recentActivity(monthEvents, now),
   };
 }
 

@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "../admin/supabaseClient";
+import { sessionAttribution } from "./attribution";
 import {
   approxCity,
   approxCountry,
@@ -83,17 +84,25 @@ async function recordEvent(eventType: AnalyticsEventType) {
       referrer_host: sessionTrafficSource(),
       device_type: deviceType(),
     };
+    const attribution = sessionAttribution();
     const location = await loadApproxGeo();
     const withVisitor = {
       ...payload,
       visitor_id: getAnonymousVisitorId(),
       city: location.city,
     };
-    const { error: locationError } = await supabase.from("analytics_events").insert({
+    const fullPayload = {
       ...withVisitor,
       region: location.region,
       country: location.country,
+    };
+    const { error: attributionError } = await supabase.from("analytics_events").insert({
+      ...fullPayload, traffic_attribution: attribution,
     });
+    if (!attributionError) return;
+    if (!["42703", "PGRST204"].includes(attributionError.code)) return;
+    // Older databases keep receiving the original events until migration is applied.
+    const { error: locationError } = await supabase.from("analytics_events").insert(fullPayload);
     if (locationError) {
       const { error: visitorError } = await supabase
         .from("analytics_events")

@@ -31,6 +31,7 @@ export function AdminLogin({ pending = false }: AdminLoginProps) {
   return (
     <div className="admin-login">
       <div className="admin-login-card">
+        <a href="/" aria-label="Ir al inicio">
         <img
           className="admin-login-logo"
           src="/logo.png"
@@ -38,6 +39,7 @@ export function AdminLogin({ pending = false }: AdminLoginProps) {
           width={56}
           height={56}
         />
+        </a>
         <p className="admin-kicker">{SITE_NAME}</p>
         <h1>Panel de analíticas</h1>
         <p className="admin-login-lead">

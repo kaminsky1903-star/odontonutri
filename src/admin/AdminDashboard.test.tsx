@@ -31,8 +31,8 @@ vi.mock("./supabaseClient", () => ({
     },
     from: () => ({
       select: () => ({
-        gte: () => ({
-          limit: () => Promise.resolve(queryResult.current),
+        gte: () => ({ lte() { return this; }, order() { return this; },
+          range: () => Promise.resolve(queryResult.current),
         }),
       }),
     }),
@@ -55,52 +55,18 @@ describe("admin dashboard session", () => {
     ).toBeInTheDocument();
     expect(localStorage.getItem(INTERNAL_ANALYTICS_KEY)).toBe("1");
     expect(screen.getByText("clinica@example.com")).toBeInTheDocument();
-    expect(screen.getByText("Visitantes de hoy")).toBeInTheDocument();
-    expect(
-      screen.queryByText("Visitantes de los últimos 7 días"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Visitantes de los últimos 30 días"),
-    ).not.toBeInTheDocument();
+    expect(screen.getByText("Visitantes únicos")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/");
+    expect(await screen.findByText("0 visitantes · 0 sesiones · 0 contactos únicos")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "WhatsApp" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Visitantes" })).toBeInTheDocument();
-    expect(screen.getByText(
-      "Por defecto ves quiénes entraron hoy. Podés cargar hasta el último mes. Un código identifica al mismo navegador si volvió y la localidad es aproximada. No se guardan nombres, direcciones exactas ni direcciones IP completas.",
-    )).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Hoy" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(
-      screen.getByRole("button", { name: "Cargar últimos 7 días" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Cargar último mes" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Fuentes de tráfico")).toBeInTheDocument();
-    expect(screen.getByText("Conversiones por página")).toBeInTheDocument();
-    expect(screen.getByText("Horario de WhatsApp")).toBeInTheDocument();
-    expect(screen.queryByText("Actividad reciente")).not.toBeInTheDocument();
-    expect(
-      await screen.findByText("Visitas y clics del sitio, últimos 30 días."),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Hoy no entró ningún visitante.")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Soy yo/ })).not.toBeInTheDocument();
-    expect(screen.getAllByText("Todavía no hay datos.").length).toBeGreaterThan(
-      0,
-    );
+    for (const name of ["Fuentes de tráfico", "Campañas", "Páginas de entrada", "Clics de contacto por página", "Tipo de dispositivo", "Localidades", "Horario de WhatsApp", "Visitantes"]) {
+      expect(screen.getByRole("heading", { name })).toBeInTheDocument();
+    }
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Cargar últimos 7 días" }));
-    expect(
-      screen.getByText("En los últimos 7 días entraron 0 visitantes."),
-    ).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Cargar último mes" }));
-    expect(
-      screen.getByText("En el último mes entraron 0 visitantes."),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: "Contactar por WhatsApp" }),
-    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Hoy" }));
+    expect(await screen.findByText("Sin actividad en este período.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Personalizado" }));
+    expect(screen.getByLabelText("Desde")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeEnabled();
   });
 
@@ -122,17 +88,17 @@ describe("admin dashboard session", () => {
     };
     render(<AdminApp />);
 
-    expect(await screen.findByText("Hoy entró 1 visitante.")).toBeInTheDocument();
+    expect(await screen.findByText("1 visitantes · 1 sesiones · 0 contactos únicos")).toBeInTheDocument();
     expect(screen.getByText("Ubicación aproximada")).toBeInTheDocument();
     expect(screen.getByText("Visitante V-AAAAAAAA")).toBeInTheDocument();
-    expect(screen.getByText("San Miguel")).toBeInTheDocument();
+    expect(screen.getAllByText("San Miguel")).toHaveLength(2);
     expect(screen.getByText("Fecha y hora")).toBeInTheDocument();
     expect(screen.getByText("Fuente")).toBeInTheDocument();
     expect(screen.getByText("Dispositivo")).toBeInTheDocument();
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: /Soy yo/ }));
     expect(
-      await screen.findByText("Hoy no entró ningún visitante."),
+      await screen.findByText("0 visitantes · 0 sesiones · 0 contactos únicos"),
     ).toBeInTheDocument();
   });
 
@@ -197,10 +163,10 @@ describe("admin dashboard session", () => {
 
     expect(
       await screen.findAllByText("Bella Vista, Buenos Aires", { exact: false }),
-    ).toHaveLength(2);
+    ).toHaveLength(3);
     expect(
       screen.getByText(
-        "Visitante V-F95F2A6C · Entró por Inicio · Recorrido: Inicio → Odontología · menos de 1 min en el sitio · 2 páginas · Vio Odontología",
+        "Visitante V-F95F2A6C · Entró por Inicio · Recorrido: Inicio → Odontología · menos de 1 min hasta el clic (tiempo transcurrido) · 2 páginas · Vio Odontología",
       ),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/^Visitante V-F95F2A6C/).length).toBe(2);

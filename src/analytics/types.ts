@@ -22,6 +22,7 @@ export type AnalyticsEventType = (typeof ANALYTICS_EVENT_TYPES)[number];
 export type DeviceType = "desktop" | "mobile" | "tablet";
 
 export type AnalyticsEvent = {
+  traffic_attribution?: import("./attribution").Attribution | null;
   created_at: string;
   event_type: string;
   path: string;

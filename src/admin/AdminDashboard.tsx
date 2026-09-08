@@ -1,23 +1,17 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { SITE_NAME } from "../site";
+import { SITE_NAME, CLINIC_TIME_ZONE } from "../site";
 import { fetchAnalyticsSnapshot, ignoreStaffVisitor } from "./analyticsService";
 import {
   ANALYTICS_PENDING_MESSAGE,
   EMPTY_ANALYTICS,
   type AnalyticsSnapshot,
-  type DailyVisit,
-  type DeviceStat,
   type HourStat,
-  type PageViewStat,
   type RecentActivity,
-  type TrafficSource,
 } from "./analyticsTypes";
+import { TrendChart } from "./TrendChart";
 import { useAuth } from "./AuthContext";
-import {
-  filterActivityByRange,
-  visitorsForRange,
-  type VisitorActivityRange,
-} from "../analytics/summary";
+import { recentActivity } from "../analytics/summary";
+import { buildReport, clinicDate, periodBounds, type Period, type Breakdown } from "../analytics/report";
 
 function displayValue(value: number | null) {
   if (value === null) {
@@ -30,7 +24,7 @@ function displayPercent(value: number | null) {
   if (value === null) {
     return "—";
   }
-  return `${value}%`;
+  return `${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 1 }).format(value)}%`;
 }
 
 function LineIcon({ children }: { children: ReactNode }) {
@@ -187,137 +181,13 @@ function StatList({
   );
 }
 
-function PercentBars({
-  items,
-}: {
-  items: { key: string; label: string; percent: number | null }[];
-}) {
-  return (
-    <ul className="admin-bar-list">
-      {items.map((item) => {
-        const percent = Math.min(100, Math.max(0, item.percent ?? 0));
-        return (
-          <li key={item.key}>
-            <div className="admin-bar-meta">
-              <span>{item.label}</span>
-              <span>{displayPercent(item.percent)}</span>
-            </div>
-            <div className="admin-lollipop" aria-hidden="true">
-              <span className="admin-lollipop-line" style={{ width: `${percent}%` }} />
-              <span
-                className="admin-lollipop-dot"
-                style={{ left: `${percent}%` }}
-              />
-            </div>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function TrafficList({ items }: { items: TrafficSource[] }) {
-  return (
-    <PercentBars
-      items={items.map((item) => ({
-        key: item.name,
-        label: item.name,
-        percent: item.percent,
-      }))}
-    />
-  );
-}
-
-function PageList({ items }: { items: PageViewStat[] }) {
-  return (
-    <PercentBars
-      items={items.map((item) => ({
-        key: item.path,
-        label: item.title,
-        percent: item.percent,
-      }))}
-    />
-  );
-}
-
-function DeviceList({ items }: { items: DeviceStat[] }) {
-  return (
-    <PercentBars
-      items={items.map((item) => ({
-        key: item.type,
-        label: item.label,
-        percent: item.percent,
-      }))}
-    />
-  );
-}
-
-function TrendChart({ points }: { points: DailyVisit[] }) {
-  const series =
-    points.length > 0
-      ? points
-      : Array.from({ length: 30 }, (_, index) => ({
-          date: String(index),
-          value: 0,
-        }));
-  const width = 640;
-  const height = 148;
-  const padX = 14;
-  const padY = 18;
-  const innerWidth = width - padX * 2;
-  const innerHeight = height - padY * 2;
-  const max = Math.max(1, ...series.map((point) => point.value));
-  const step = series.length > 1 ? innerWidth / (series.length - 1) : innerWidth;
-  const coords = series.map((point, index) => {
-    const x = padX + index * step;
-    const y = padY + innerHeight - (point.value / max) * innerHeight;
-    return { x, y, value: point.value };
-  });
-  const line = coords
-    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
-    .join(" ");
-  const barWidth = Math.max(2.2, step * 0.42);
-
-  return (
-    <svg
-      className="admin-chart-svg"
-      viewBox={`0 0 ${width} ${height}`}
-      role="img"
-      aria-label="Tendencia de visitas de los últimos 30 días"
-    >
-      {coords.map((point, index) => (
-        <rect
-          key={`bar-${series[index]?.date ?? index}`}
-          x={point.x - barWidth / 2}
-          y={point.y}
-          width={barWidth}
-          height={Math.max(2, padY + innerHeight - point.y)}
-          rx="1.2"
-          fill="currentColor"
-          opacity="0.12"
-        />
-      ))}
-      <path d={line} fill="none" stroke="currentColor" strokeWidth="2.1" />
-      {coords.map((point, index) => (
-        <circle
-          key={`dot-${series[index]?.date ?? index}`}
-          cx={point.x}
-          cy={point.y}
-          r="3.3"
-          fill="currentColor"
-        />
-      ))}
-    </svg>
-  );
-}
-
 function HourChart({ hours }: { hours: HourStat[] }) {
   const max = Math.max(1, ...hours.map((item) => item.value));
   return (
     <div
       className="admin-hours"
       role="img"
-      aria-label="Clics de WhatsApp de 9 a 18, horario de Argentina"
+      aria-label="Clics de WhatsApp de 8 a 22, horario de Argentina"
     >
       <div className="admin-hours-bars">
         {hours.map((item) => (
@@ -358,6 +228,7 @@ function formatWhen(iso: string) {
     return iso;
   }
   return new Intl.DateTimeFormat("es-AR", {
+    timeZone: CLINIC_TIME_ZONE,
     dateStyle: "short",
     timeStyle: "short",
   }).format(date);
@@ -401,7 +272,7 @@ function contactDetail(item: RecentActivity) {
   }
   const duration = formatDuration(item.durationMinutes);
   if (duration) {
-    parts.push(`${duration} en el sitio`);
+    parts.push(`${duration} hasta el clic (tiempo transcurrido)`);
   }
   if (item.pages.length === 1) {
     parts.push("1 página");
@@ -431,26 +302,6 @@ function activityDetail(item: RecentActivity) {
     }
   }
   return parts.join(" · ");
-}
-
-function visitorsRangeCopy(range: VisitorActivityRange, count: number | null) {
-  if (count === null) {
-    return "—";
-  }
-  const noun = count === 1 ? "visitante" : "visitantes";
-  if (range === "today") {
-    if (count === 0) {
-      return "Hoy no entró ningún visitante.";
-    }
-    if (count === 1) {
-      return "Hoy entró 1 visitante.";
-    }
-    return `Hoy entraron ${count} visitantes.`;
-  }
-  if (range === "7d") {
-    return `En los últimos 7 días entraron ${count} ${noun}.`;
-  }
-  return `En el último mes entraron ${count} ${noun}.`;
 }
 
 function ActivityList({
@@ -520,221 +371,110 @@ function ActivityList({
   );
 }
 
+function BreakdownTable({ title, items, pending, note }: { title: string; items: Breakdown[]; pending: boolean; note?: string }) {
+  return <StatList title={title} pending={pending} empty={!items.length}>
+    {note && <p className="admin-empty">{note}</p>}
+    <div className="admin-report-table-wrap" tabIndex={0} role="region" aria-label={title}>
+      <table className="admin-report-table"><thead><tr><th scope="col">Detalle</th><th scope="col">Visitantes</th><th scope="col">Contactos únicos</th><th scope="col">Clics</th><th scope="col">Conversión</th></tr></thead>
+      <tbody>{items.map(item => <tr key={item.name}><th scope="row">{item.name}</th><td>{item.visitors}</td><td>{item.contacts}</td><td>{item.clicks}</td><td>{displayPercent(item.conversion)}</td></tr>)}</tbody></table>
+    </div>
+  </StatList>;
+}
+
 export function AdminDashboard() {
   const { session, signOut } = useAuth();
   const [analytics, setAnalytics] = useState<AnalyticsSnapshot>(EMPTY_ANALYTICS);
-  const [visitorRange, setVisitorRange] = useState<VisitorActivityRange>("today");
-  const email = session?.user.email ?? "";
-  const pending = analytics.status !== "ready";
-  const visibleActivity = useMemo(
-    () => filterActivityByRange(analytics.recentActivity, visitorRange),
-    [analytics.recentActivity, visitorRange],
-  );
-  const visitorCount = visitorsForRange(analytics, visitorRange);
-  const whatsappPeak = peakWhatsAppCopy(analytics.whatsappHours);
+  const [period, setPeriod] = useState<Period>({ preset: "7d", from: clinicDate(), to: clinicDate() });
+  const [refresh, setRefresh] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [ignoring, setIgnoring] = useState(false);
+  const bounds = periodBounds(period);
+  const report = useMemo(() => buildReport(analytics.events ?? [], period), [analytics, period]);
+  const pending = loading || analytics.status !== "ready" || !bounds;
+  const visibleActivity = useMemo(() => recentActivity(report?.events ?? [], new Date()), [report]);
+  const periodLabel = bounds ? `${bounds.from} al ${bounds.to}` : "Rango inválido";
+  const whatsappPeak = peakWhatsAppCopy(report?.hours ?? []);
 
   useEffect(() => {
-    if (!session?.access_token) {
-      return;
-    }
+    if (!session?.access_token || !periodBounds(period)) return;
     let cancelled = false;
-    fetchAnalyticsSnapshot().then((snapshot) => {
-      if (!cancelled) {
-        setAnalytics(snapshot);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [session?.access_token]);
+    setLoading(true);
+    fetchAnalyticsSnapshot(period).then(snapshot => {
+      if (!cancelled) { setAnalytics(snapshot); setLoading(false); }
+    }).catch(() => { if (!cancelled) { setAnalytics({ ...EMPTY_ANALYTICS, message: "No se pudieron cargar las métricas." }); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, [session?.access_token, period, refresh]);
 
-  function hideVisitor(visitorId: string) {
-    void ignoreStaffVisitor(visitorId).then(() =>
-      fetchAnalyticsSnapshot().then(setAnalytics),
-    );
+  async function hideVisitor(visitorId: string) {
+    if (ignoring) return;
+    setIgnoring(true);
+    try { await ignoreStaffVisitor(visitorId); setRefresh(value => value + 1); }
+    finally { setIgnoring(false); }
   }
+  const metric = (value: number | null | undefined) => pending ? "—" : displayValue(value ?? null);
 
-  return (
-    <div className="admin-dashboard">
-      <header className="admin-topbar">
-        <div className="admin-brand">
-          <img src="/logo.png" alt="" width={40} height={40} />
-          <div>
-            <p className="admin-kicker">{SITE_NAME}</p>
-            <h1>Panel de analíticas</h1>
-          </div>
-        </div>
-        <div className="admin-session">
-          {email ? <p className="admin-session-email">{email}</p> : null}
-          <button type="button" className="admin-signout" onClick={() => void signOut()}>
-            <LogoutIcon />
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
-
-      <section className="admin-panel admin-chart">
-        <h2 role="status">{analytics.message}</h2>
-        <TrendChart points={analytics.dailyVisits} />
-      </section>
-
-      <section className="admin-metrics" aria-label="Indicadores principales">
-        <MetricCard
-          label="Visitantes de hoy"
-          value={displayValue(analytics.visitorsToday)}
-          pending={pending}
-          icon={<PeopleIcon />}
-        />
-        <MetricCard
-          label="Personas conectadas ahora"
-          value={displayValue(analytics.activeNow)}
-          pending={pending}
-          icon={<PersonIcon />}
-        />
-        <MetricCard
-          label="Clics en teléfono"
-          value={displayValue(analytics.phoneClicks)}
-          pending={pending}
-          icon={<PhoneIcon />}
-        />
-        <MetricCard
-          label="Clics en ubicación"
-          value={displayValue(analytics.locationClicks)}
-          pending={pending}
-          icon={<PinIcon />}
-        />
-        <MetricCard
-          label="Porcentaje de conversión"
-          value={displayPercent(analytics.conversionRate)}
-          pending={pending}
-          icon={<TrendIcon />}
-        />
-      </section>
-
-      <section className="admin-whatsapp" aria-labelledby="admin-whatsapp-title">
-        <h2 id="admin-whatsapp-title">WhatsApp</h2>
-        <div className="admin-metrics admin-whatsapp-metrics">
-          <MetricCard
-            label="Hoy"
-            value={displayValue(analytics.whatsappClicksToday)}
-            pending={pending}
-            icon={<WhatsAppIcon />}
-          />
-          <MetricCard
-            label="Últimos 7 días"
-            value={displayValue(analytics.whatsappClicksLast7Days)}
-            pending={pending}
-            icon={<WhatsAppIcon />}
-          />
-          <MetricCard
-            label="Mes pasado"
-            value={displayValue(analytics.whatsappClicksLastMonth)}
-            pending={pending}
-            icon={<WhatsAppIcon />}
-          />
-        </div>
-      </section>
-
-      <div className="admin-insight-grid">
-        <StatList
-          title="Conversiones por página"
-          pending={pending}
-          empty={analytics.conversionsByPage.length === 0}
-        >
-          <PageList items={analytics.conversionsByPage} />
-        </StatList>
-        <StatList
-          title="Horario de WhatsApp"
-          pending={pending}
-          empty={!analytics.whatsappHours.some((item) => item.value > 0)}
-        >
-          <>
-            {whatsappPeak ? (
-              <p className="admin-hours-peak">{whatsappPeak}</p>
-            ) : null}
-            <HourChart hours={analytics.whatsappHours} />
-          </>
-        </StatList>
+  return <div className="admin-dashboard">
+    <header className="admin-topbar">
+      <div className="admin-brand">
+        <a className="admin-home-link" href="/" aria-label="Ir al inicio"><img src="/logo.png" alt="" width={40} height={40}/></a>
+        <div><p className="admin-kicker">{SITE_NAME}</p><h1>Panel de analíticas</h1></div>
       </div>
+      <div className="admin-session"><p className="admin-session-email">{session?.user.email ?? ""}</p><button type="button" className="admin-signout" onClick={() => void signOut()}><LogoutIcon/>Cerrar sesión</button></div>
+    </header>
 
-      <div className="admin-grid">
-        <StatList
-          title="Fuentes de tráfico"
-          pending={pending}
-          empty={analytics.trafficSources.length === 0}
-        >
-          <TrafficList items={analytics.trafficSources} />
-        </StatList>
-        <StatList
-          title="Páginas y tratamientos más visitados"
-          pending={pending}
-          empty={analytics.topPages.length === 0}
-        >
-          <PageList items={analytics.topPages} />
-        </StatList>
-        <StatList
-          title="Tipo de dispositivo"
-          pending={pending}
-          empty={analytics.devices.length === 0}
-        >
-          <DeviceList items={analytics.devices} />
-        </StatList>
+    <section className="admin-panel admin-period" aria-label="Período de todas las métricas">
+      <div><h2>Resumen del período</h2><p className="admin-empty">Indicadores y desgloses del período · Argentina. Las referencias históricas se indican por separado.</p></div>
+      <div className="admin-range-actions" role="group" aria-label="Período">
+        {([['today', 'Hoy'], ['7d', '7 días'], ['30d', '1 mes'], ['custom', 'Personalizado']] as const).map(([preset, label]) => <button type="button" key={preset} aria-pressed={period.preset === preset} className={period.preset === preset ? 'is-active' : undefined} onClick={() => setPeriod(value => ({ ...value, preset }))}>{label}</button>)}
+        <button type="button" disabled={loading || !bounds} onClick={() => setRefresh(value => value + 1)}>Actualizar</button>
       </div>
+      {period.preset === 'custom' && <div className="admin-custom-dates">
+        <label>Desde<input type="date" value={period.from} max={period.to || clinicDate()} onChange={event => setPeriod(value => ({ ...value, from: event.target.value }))}/></label>
+        <label>Hasta<input type="date" value={period.to} min={period.from} max={clinicDate()} onChange={event => setPeriod(value => ({ ...value, to: event.target.value }))}/></label>
+      </div>}
+      {!bounds && <p className="admin-error" role="alert">Elegí fechas válidas, sin días futuros y hasta 366 días por consulta.</p>}
+      <p className="admin-data-status" role="status">{loading ? "Cargando métricas…" : analytics.status !== 'ready' ? analytics.message : `Período: ${periodLabel}`}</p>
+    </section>
 
-      <section className="admin-panel admin-activity">
-        <div className="admin-panel-heading">
-          <span className="admin-icon-tile">
-            <PeopleIcon />
-          </span>
-          <h2>Visitantes</h2>
-        </div>
-        <p className="admin-activity-lead">
-          Por defecto ves quiénes entraron hoy. Podés cargar hasta el último
-          mes. Un código identifica al mismo navegador si volvió y la localidad
-          es aproximada. No se guardan nombres, direcciones exactas ni direcciones IP completas.
-        </p>
-        <div className="admin-range-actions" role="group" aria-label="Período de visitantes">
-          <button
-            type="button"
-            className={visitorRange === "today" ? "is-active" : undefined}
-            aria-pressed={visitorRange === "today"}
-            disabled={pending}
-            onClick={() => setVisitorRange("today")}
-          >
-            Hoy
-          </button>
-          <button
-            type="button"
-            className={visitorRange === "7d" ? "is-active" : undefined}
-            aria-pressed={visitorRange === "7d"}
-            disabled={pending}
-            onClick={() => setVisitorRange("7d")}
-          >
-            Cargar últimos 7 días
-          </button>
-          <button
-            type="button"
-            className={visitorRange === "month" ? "is-active" : undefined}
-            aria-pressed={visitorRange === "month"}
-            disabled={pending}
-            onClick={() => setVisitorRange("month")}
-          >
-            Cargar último mes
-          </button>
-        </div>
-        {pending ? (
-          <p className="admin-empty">{ANALYTICS_PENDING_MESSAGE}</p>
-        ) : (
-          <>
-            <p className="admin-visitors-count">
-              {visitorsRangeCopy(visitorRange, visitorCount)}
-            </p>
-            {visibleActivity.length > 0 ? (
-              <ActivityList items={visibleActivity} onIgnore={hideVisitor} />
-            ) : null}
-          </>
-        )}
-      </section>
+    <section className="admin-metrics" aria-label="Indicadores principales">
+      <MetricCard label="Visitantes únicos" value={metric(report?.visitors)} pending={false} icon={<PeopleIcon/>}/>
+      <MetricCard label="Visitas / sesiones" value={metric(report?.sessions)} pending={false} icon={<VisitIcon/>}/>
+      <MetricCard label="Clics en WhatsApp" value={metric(report?.whatsapp)} pending={false} icon={<WhatsAppIcon/>}/>
+      <MetricCard label="Clics en teléfono" value={metric(report?.phone)} pending={false} icon={<PhoneIcon/>}/>
+      <MetricCard label="Clics en ubicación" value={metric(report?.location)} pending={false} icon={<PinIcon/>}/>
+      <MetricCard label="Porcentaje de conversión" value={pending ? "—" : displayPercent(report?.conversion ?? null)} pending={false} icon={<TrendIcon/>}/>
+    </section>
+    <p className="admin-measure-note"><strong>{metric(report?.contacts)} visitantes hicieron contacto.</strong> Conversión = visitantes con al menos un clic en WhatsApp, teléfono o ubicación ÷ visitantes únicos. Varios clics de la misma persona cuentan una vez. Un clic no confirma una consulta ni un turno.</p>
+    {!pending && report?.estimatedVisitors && <p className="admin-banner">Hay eventos sin identificador de visitante: se usa la sesión como aproximación. El total de visitantes y la conversión son estimados.</p>}
+    {!pending && report?.missingIdentity && <p className="admin-banner">Hay eventos sin visitante ni sesión: se incluyen en los clics, pero no en los visitantes ni contactos únicos. Esos totales son parciales.</p>}
+    <TrendChart points={report?.daily ?? []} pending={pending} periodLabel={periodLabel} uniqueVisitors={report?.visitors}/>
+
+    <section className="admin-panel"><h2>Cómo leer Google y Google Ads</h2><p className="admin-measure-note">Google Ads indica una señal publicitaria o etiquetas de pago. google.com indica una llegada probable desde el buscador sin esas señales; no garantiza que sea orgánica. syndicatedsearch representa el origen técnico syndicatedsearch.goog cuando no hay evidencia suficiente para clasificarlo como anuncio.</p></section>
+    <BreakdownTable title="Fuentes de tráfico" items={report?.sources ?? []} pending={pending} note="Un visitante puede volver desde distintas fuentes. No sumes las filas para obtener el total general."/>
+    <BreakdownTable title="Campañas" items={report?.campaigns ?? []} pending={pending} note="Solo se muestran campañas registradas en las etiquetas de entrada. El gasto y el costo por paciente todavía no están disponibles."/>
+    <div className="admin-insight-grid">
+      <BreakdownTable title="Páginas de entrada" items={report?.entries ?? []} pending={pending} note="Primera página disponible de cada sesión. Si la sesión empezó antes del historial cargado, la entrada puede ser parcial."/>
+      <BreakdownTable title="Clics de contacto por página" items={report?.pages ?? []} pending={pending} note="La conversión de cada página usa sus visitantes. Una persona puede figurar en varias páginas."/>
     </div>
-  );
+    <div className="admin-insight-grid">
+      <BreakdownTable title="Tipo de dispositivo" items={report?.devices ?? []} pending={pending}/>
+      <BreakdownTable title="Localidades" items={report?.locations ?? []} pending={pending} note="Ubicación aproximada; puede corresponder al proveedor de internet."/>
+    </div>
+    <div className="admin-insight-grid">
+      <StatList title="Páginas y tratamientos más visitados" pending={pending} empty={!report?.pageViews.length}><ul className="admin-page-counts">{report?.pageViews.map(page => <li key={page.path}><span>{page.title}</span><strong>{page.views} vistas</strong></li>)}</ul></StatList>
+      <StatList title="Horario de WhatsApp" pending={pending} empty={!report?.hours.some(hour => hour.value > 0)}>{whatsappPeak && <p className="admin-hours-peak">{whatsappPeak}</p>}<HourChart hours={report?.hours ?? []}/></StatList>
+    </div>
+
+    <section className="admin-whatsapp" aria-labelledby="admin-whatsapp-title"><h2 id="admin-whatsapp-title">WhatsApp</h2><p className="admin-empty">Referencia histórica fija, independiente del período seleccionado.</p><div className="admin-metrics admin-whatsapp-metrics">
+      <MetricCard label="Hoy" value={metric(analytics.whatsappClicksToday)} pending={false} icon={<WhatsAppIcon/>}/>
+      <MetricCard label="Últimos 7 días" value={metric(analytics.whatsappClicksLast7Days)} pending={false} icon={<WhatsAppIcon/>}/>
+      <MetricCard label="Mes pasado" value={metric(analytics.whatsappClicksLastMonth)} pending={false} icon={<WhatsAppIcon/>}/>
+    </div></section>
+    <p className="admin-live-note"><PersonIcon/>Actividad en los últimos 5 minutos: {metric(analytics.activeNow)} sesiones. No confirma que sigan conectadas. Se actualiza al pulsar Actualizar.</p>
+
+    <section className="admin-panel admin-activity" aria-busy={ignoring}>
+      <h2>Visitantes</h2><p className="admin-activity-lead">Actividad del período seleccionado. Un código identifica al mismo navegador si volvió. La localidad es aproximada y el tiempo hasta el clic no equivale al tiempo activo de lectura. No se guardan nombres ni datos clínicos.</p>
+      {pending ? <p className="admin-empty">{loading ? 'Cargando…' : analytics.message}</p> : <><p className="admin-visitors-count">{report?.visitors ?? 0} visitantes · {report?.sessions ?? 0} sesiones · {report?.contacts ?? 0} contactos únicos</p>{visibleActivity.length ? <ActivityList items={visibleActivity} onIgnore={id => void hideVisitor(id)}/> : <p className="admin-empty">Sin actividad en este período.</p>}</>}
+    </section>
+  </div>;
 }
