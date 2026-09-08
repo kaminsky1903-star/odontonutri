@@ -389,6 +389,21 @@ function BreakdownTable({ title, items, pending, note, periodControls }: { title
 
 type QuickPeriod = "today" | "7d" | "30d";
 type PanelId = "visitors" | "sessions" | "whatsapp" | "phone" | "location" | "conversion" | "trend" | "sources" | "entries" | "pages" | "devices" | "locations" | "pageViews" | "hours" | "activity";
+const PANEL_PERIODS_STORAGE_KEY = "odontonutri_admin_panel_periods_v1";
+const DEFAULT_PANEL_PERIODS: Record<PanelId, QuickPeriod> = { visitors: "today", sessions: "today", whatsapp: "today", phone: "today", location: "today", conversion: "today", trend: "7d", sources: "30d", entries: "today", pages: "30d", devices: "30d", locations: "30d", pageViews: "30d", hours: "30d", activity: "today" };
+
+function savedPanelPeriods(): Record<PanelId, QuickPeriod> {
+  const saved = { ...DEFAULT_PANEL_PERIODS };
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(PANEL_PERIODS_STORAGE_KEY) ?? "null");
+    if (!value || typeof value !== "object") return saved;
+    for (const panel of Object.keys(saved) as PanelId[]) {
+      const period = (value as Record<string, unknown>)[panel];
+      if (period === "today" || period === "7d" || period === "30d") saved[panel] = period;
+    }
+  } catch { /* The panel works without local storage. */ }
+  return saved;
+}
 
 function quickPeriod(preset: QuickPeriod): Period {
   const today = clinicDate();
@@ -405,7 +420,7 @@ function PeriodShortcuts({ active, onSelect }: { active: QuickPeriod; onSelect: 
 export function AdminDashboard() {
   const { session, signOut } = useAuth();
   const [analytics, setAnalytics] = useState<AnalyticsSnapshot>(EMPTY_ANALYTICS);
-  const [panelPeriods, setPanelPeriods] = useState<Record<PanelId, QuickPeriod>>(() => ({ visitors: "7d", sessions: "7d", whatsapp: "7d", phone: "7d", location: "7d", conversion: "7d", trend: "7d", sources: "7d", entries: "7d", pages: "7d", devices: "7d", locations: "7d", pageViews: "7d", hours: "7d", activity: "7d" }));
+  const [panelPeriods, setPanelPeriods] = useState<Record<PanelId, QuickPeriod>>(savedPanelPeriods);
   const [refresh, setRefresh] = useState(0);
   const [loading, setLoading] = useState(true);
   const [ignoring, setIgnoring] = useState(false);
@@ -417,6 +432,10 @@ export function AdminDashboard() {
   const visibleActivity = useMemo(() => recentActivity(activityReport?.events ?? [], new Date()), [activityReport]);
   const whatsappPeak = peakWhatsAppCopy(reportFor("hours")?.hours ?? []);
   const periodControls = (panel: PanelId) => <PeriodShortcuts active={panelPeriods[panel]} onSelect={preset => setPanelPeriods(value => ({ ...value, [panel]: preset }))}/>;
+
+  useEffect(() => {
+    try { localStorage.setItem(PANEL_PERIODS_STORAGE_KEY, JSON.stringify(panelPeriods)); } catch { /* The panel works without local storage. */ }
+  }, [panelPeriods]);
 
   useEffect(() => {
     if (!session?.access_token) return;
