@@ -126,6 +126,15 @@ function AppleLineIcon() {
   );
 }
 
+function LeafLineIcon() {
+  return (
+    <LineIcon>
+      <path d="M19.5 4.5c-7.2.2-11.7 3.5-12.1 9.2-.2 2.8 1.6 5.2 4.4 5.5 5.7.6 8-6.5 7.7-14.7Z" />
+      <path d="M5 20c2.2-4.8 5.7-8.2 10.5-10.5" />
+    </LineIcon>
+  );
+}
+
 function ArrowLineIcon() {
   return (
     <LineIcon>
@@ -1082,7 +1091,7 @@ function DentistryMisServicios() {
         <p className="odonto-services-lead">{DENTISTRY_SERVICES_LEAD}</p>
       </div>
 
-      <article className="odonto-featured">
+      <article id="implantes-dentales" className="odonto-featured">
         <div className="odonto-featured-visual">
           <img
             src={featured.image}
@@ -1174,6 +1183,112 @@ function DentistryMisServicios() {
           ))}
         </ul>
       </div>
+
+      <section id="mi-espacio" className="clinic-space" aria-labelledby="clinic-space-title">
+        <div className="clinic-space-heading">
+          <div className="clinic-space-intro">
+            <p className="clinic-space-kicker">Mi espacio</p>
+            <h2 id="clinic-space-title">Un lugar pensado para tu salud bucal</h2>
+            <p>
+              Te recibimos en un consultorio moderno, cómodo y equipado con
+              tecnología, donde la atención personalizada y la calidez son parte
+              del tratamiento.
+            </p>
+          </div>
+        </div>
+
+        <ul className="clinic-space-features" aria-label="Características del consultorio">
+          <li><span><ToothLineIcon /></span><strong>Equipamiento moderno</strong></li>
+          <li><span><TeamLineIcon /></span><strong>Atención personalizada</strong></li>
+          <li><span><ShieldCheckLineIcon /></span><strong>Ambiente seguro y confortable</strong></li>
+          <li><span><LeafLineIcon /></span><strong>Compromiso con tu bienestar</strong></li>
+        </ul>
+
+        <figure className="clinic-space-main-photo">
+          <img
+            src="/consultorio-odontologico.webp"
+            alt="Consultorio odontológico equipado"
+            width={1535}
+            height={1024}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>
+            <div>
+              <h3>Consultorio equipado</h3>
+              <p>
+                Contamos con tecnología y materiales de última generación para
+                brindarte tratamientos seguros, precisos y predecibles.
+              </p>
+            </div>
+            <span className="clinic-space-card-arrow" aria-hidden="true">
+              <ArrowLineIcon />
+            </span>
+          </figcaption>
+        </figure>
+
+        <div className="clinic-space-secondary">
+          <figure>
+            <img
+              src="/espacio-consulta.webp"
+              alt="Espacio de consulta de la clínica"
+              width={1920}
+              height={1440}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>
+              <div>
+                <h3>Espacio de consulta</h3>
+                <p>
+                  Un ambiente cómodo para escucharte, resolver tus dudas y
+                  planificar juntos tu tratamiento.
+                </p>
+              </div>
+              <span className="clinic-space-card-arrow" aria-hidden="true">
+                <ArrowLineIcon />
+              </span>
+            </figcaption>
+          </figure>
+          <figure>
+            <img
+              src="/recepcion-clinica.webp"
+              alt="Recepción de Odontología y Nutrición"
+              width={1920}
+              height={1440}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>
+              <div>
+                <h3>Te damos la bienvenida</h3>
+                <p>
+                  Desde el primer momento vas a encontrar un trato cercano y
+                  profesional, en un espacio pensado para que te sientas bien.
+                </p>
+              </div>
+              <span className="clinic-space-card-arrow" aria-hidden="true">
+                <ArrowLineIcon />
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+
+        <div className="clinic-space-cta">
+          <span className="clinic-space-cta-icon" aria-hidden="true">
+            <CalendarLineIcon />
+          </span>
+          <div>
+            <h3>¿Querés conocernos?</h3>
+            <p>Agendá tu consulta y viví la experiencia de un cuidado diferente.</p>
+          </div>
+          <a href={WHATSAPP_PAGE} target="_blank" rel="noopener noreferrer">
+            <WhatsAppIcon />
+            Solicitar turno
+            <ArrowLineIcon />
+          </a>
+        </div>
+      </section>
     </section>
   );
 }
@@ -1209,7 +1324,7 @@ function DentistryPage() {
               Agendá tu consulta
               <ArrowLineIcon />
             </a>
-            <a className="nutri-hero-secondary" href="#tratamientos-odontologia">
+            <a className="nutri-hero-secondary" href="#implantes-dentales">
               Ver servicios
               <ArrowDownLineIcon />
             </a>

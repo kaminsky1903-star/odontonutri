@@ -523,7 +523,7 @@ describe("App", () => {
     ).toHaveAttribute("href", WHATSAPP_PAGE);
     expect(
       screen.getByRole("link", { name: "Ver servicios" }),
-    ).toHaveAttribute("href", "#tratamientos-odontologia");
+    ).toHaveAttribute("href", "#implantes-dentales");
     expect(document.getElementById("tratamientos-odontologia")).toBeTruthy();
     expect(
       screen.getByRole("region", { name: "Volvé a sonreír con confianza." }),
@@ -587,7 +587,12 @@ describe("App", () => {
     expect(css).toMatch(
       /\.dentistry-hero-band[\s\S]*?background:\s*var\(--process-bg\)/,
     );
-
+    expect(css).toMatch(
+      /@media \(width <= 840px\)[\s\S]*?\.dentistry-hero-band p \{\s*display:\s*none/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 840px\)[\s\S]*?\.dentistry-hero-band li \{[\s\S]*?min-height:\s*4\.25rem/,
+    );
     const servicesSection = document.getElementById("tratamientos-odontologia");
     expect(servicesSection).toHaveClass("odonto-services");
     const services = within(servicesSection as HTMLElement);
@@ -601,6 +606,13 @@ describe("App", () => {
     expect(
       services.getByRole("heading", { level: 3, name: "Implantes Dentales" }),
     ).toBeInTheDocument();
+    expect(document.querySelector(".dentistry-hero .nutri-hero-secondary")).toHaveAttribute(
+      "href",
+      "#implantes-dentales",
+    );
+    expect(document.getElementById("implantes-dentales")).toHaveClass(
+      "odonto-featured",
+    );
     expect(
       services.queryByRole("heading", { name: "Tratamientos avanzados" }),
     ).toBeNull();
@@ -629,7 +641,10 @@ describe("App", () => {
       /@media \(width <= 767px\)[\s\S]*?\.odonto-featured-visual img \{\s*position:\s*static/,
     );
     expect(css).toMatch(
-      /@media \(width <= 767px\)[\s\S]*?\.odonto-advanced-visual img \{\s*position:\s*static/,
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-advanced-card \{\s*grid-template-columns:\s*7rem minmax\(0, 1fr\)/,
+    );
+    expect(css).toMatch(
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-common-card \{\s*grid-template-columns:\s*7rem minmax\(0, 1fr\)/,
     );
     expect(css).toMatch(
       /@media \(width <= 840px\)[\s\S]*?\.hero-photo \{\s*position:\s*relative/,
@@ -652,8 +667,33 @@ describe("App", () => {
         services.getByRole("heading", { level: 3, name: treatment.title }),
       ).toBeInTheDocument();
     }
+    const clinicSpace = services.getByRole("heading", {
+      level: 2,
+      name: "Un lugar pensado para tu salud bucal",
+    }).closest(".clinic-space");
+    expect(clinicSpace).not.toBeNull();
+    const clinicSpaceView = within(clinicSpace as HTMLElement);
+    expect(clinicSpaceView.getByAltText("Consultorio odontológico equipado")).toHaveAttribute(
+      "src",
+      "/consultorio-odontologico.webp",
+    );
+    expect(clinicSpaceView.getByAltText("Espacio de consulta de la clínica")).toHaveAttribute(
+      "src",
+      "/espacio-consulta.webp",
+    );
+    expect(clinicSpaceView.getByAltText("Recepción de Odontología y Nutrición")).toHaveAttribute(
+      "src",
+      "/recepcion-clinica.webp",
+    );
+    expect(clinicSpaceView.getByRole("link", { name: /Solicitar turno/ })).toHaveAttribute(
+      "href",
+      WHATSAPP_PAGE,
+    );
     expect(
-      services.getByRole("link", { name: "Solicitar turno" }),
+      within(document.getElementById("implantes-dentales") as HTMLElement).getByRole(
+        "link",
+        { name: "Solicitar turno" },
+      ),
     ).toHaveAttribute(
       "href",
       whatsappPageWithMessage(DENTISTRY_FEATURED_TREATMENT.message),

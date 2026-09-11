@@ -26,6 +26,17 @@ const NOT_FOUND_HTML = `<!doctype html>
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // Vite's extensionless runtime modules must reach its asset middleware.
+    if (
+      import.meta.env.DEV &&
+      (url.pathname.startsWith("/@vite/") ||
+        url.pathname === "/@react-refresh" ||
+        url.pathname.startsWith("/@id/") ||
+        url.pathname.startsWith("/@fs/")) &&
+      env?.ASSETS
+    ) {
+      return env.ASSETS.fetch(request);
+    }
     const canonical = canonicalPublicUrl(url, request);
     if (canonical) {
       return Response.redirect(canonical, 301);

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ADMIN_ROBOTS,
   HOME_METADATA,
@@ -73,6 +73,24 @@ function assetsEnv() {
 }
 
 describe("worker", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it.each(["/@vite/client", "/@react-refresh"])(
+    "forwards %s to Vite only during development",
+    async (path) => {
+      const env = assetsEnv();
+      vi.stubEnv("DEV", true);
+      await fetchWorker(`http://localhost:5173${path}`, env);
+      expect(env.fetched).toEqual([path]);
+
+      env.fetched.length = 0;
+      vi.stubEnv("DEV", false);
+      const response = await fetchWorker(`https://www.odontonutri.com${path}`, env);
+      expect(response.status).toBe(404);
+      expect(env.fetched).toEqual([]);
+    },
+  );
+
   it("redirects the apex domain to https www and keeps the query string", async () => {
     const response = await fetchWorker("https://odontonutri.com/visita?utm=ig");
 
