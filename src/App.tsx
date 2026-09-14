@@ -1141,6 +1141,7 @@ function DentistryMisServicios() {
         <p className="odonto-services-lead">{DENTISTRY_SERVICES_LEAD}</p>
       </div>
 
+      <div className="odonto-treatment-catalog">
       <article id="implantes-dentales" className="odonto-featured">
         <div className="odonto-featured-visual">
           <img
@@ -1179,6 +1180,15 @@ function DentistryMisServicios() {
               Solicitar turno
             </a>
           </div>
+          <a
+            className="odonto-mobile-go"
+            href={whatsappPageWithMessage(featured.message)}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Consultar ${featured.title} por WhatsApp`}
+          >
+            <ArrowLineIcon />
+          </a>
         </div>
       </article>
 
@@ -1201,6 +1211,15 @@ function DentistryMisServicios() {
                 <div className="odonto-advanced-body">
                   <h3>{treatment.title}</h3>
                   <p>{treatment.description}</p>
+                  <a
+                    className="odonto-mobile-go"
+                    href={whatsappPageWithMessage(treatment.message)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Consultar ${treatment.title} por WhatsApp`}
+                  >
+                    <ArrowLineIcon />
+                  </a>
                 </div>
               </article>
             </li>
@@ -1227,11 +1246,21 @@ function DentistryMisServicios() {
                 <div className="odonto-common-body">
                   <h3>{treatment.title}</h3>
                   <p>{treatment.description}</p>
+                  <a
+                    className="odonto-mobile-go"
+                    href={whatsappPageWithMessage(treatment.message)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Consultar ${treatment.title} por WhatsApp`}
+                  >
+                    <ArrowLineIcon />
+                  </a>
                 </div>
               </article>
             </li>
           ))}
         </ul>
+      </div>
       </div>
 
       <section id="mi-espacio" className="clinic-space" aria-labelledby="clinic-space-title">

@@ -1005,6 +1005,10 @@ main {
   stroke-width: 1.5;
 }
 
+.odonto-mobile-go {
+  display: none;
+}
+
 .odonto-advanced,
 .odonto-common {
   margin-top: 1.65rem;
@@ -1177,115 +1181,168 @@ main {
     margin-bottom: 2.15rem;
   }
 
-  .odonto-featured {
-    grid-template-columns: 1fr;
-    height: auto;
-    border-radius: 1.35rem;
+  .odonto-treatment-catalog {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-items: stretch;
   }
 
-  .odonto-featured-visual {
+  .odonto-advanced,
+  .odonto-common,
+  .odonto-advanced-grid,
+  .odonto-common-grid {
+    display: contents;
+  }
+
+  .odonto-advanced-grid > li,
+  .odonto-common-grid > li {
+    display: flex;
+    min-width: 0;
+  }
+
+  .odonto-featured,
+  .odonto-advanced-card,
+  .odonto-common-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgb(28 36 32 / 7%);
+  }
+
+  .odonto-featured-visual,
+  .odonto-advanced-visual,
+  .odonto-common-visual {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
     aspect-ratio: 4 / 3;
-    height: auto;
   }
 
-  .odonto-featured-visual img {
+  .odonto-featured-visual img,
+  .odonto-advanced-visual img,
+  .odonto-common-visual img {
     position: static;
     inset: auto;
     width: 100%;
     height: auto;
     aspect-ratio: 4 / 3;
+    object-fit: cover;
   }
 
-  .odonto-featured-body {
-    padding: 1.35rem 1.2rem 1.5rem;
+  .odonto-featured-body,
+  .odonto-advanced-body,
+  .odonto-common-body {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    padding: 0.7rem;
   }
 
-  .odonto-featured-title {
-    font-size: clamp(2.125rem, 8.5vw, 2.4rem);
+  .odonto-featured-badge,
+  .odonto-featured-benefits,
+  .odonto-featured-actions {
+    display: none;
   }
 
-  .odonto-advanced-grid,
-  .odonto-common-grid {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-
-  .odonto-advanced,
-  .odonto-common {
-    margin-top: 1.5rem;
-  }
-
-  .odonto-advanced-card {
-    grid-template-columns: 7rem minmax(0, 1fr);
-    height: 7.5rem;
-    min-height: 7.5rem;
-    border-radius: 1rem;
-  }
-
-  .odonto-advanced-visual {
-    aspect-ratio: auto;
-    height: auto;
-  }
-
-  .odonto-advanced-visual img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    aspect-ratio: auto;
-  }
-
-  .odonto-advanced-body {
-    padding: 0.75rem 0.85rem;
-  }
-
-  .odonto-advanced-body h3 {
-    font-size: 1rem;
+  .odonto-featured-title,
+  .odonto-advanced-body h3,
+  .odonto-common-body h3 {
+    margin: 0;
+    color: #0e4937;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     line-height: 1.25;
   }
 
-  .odonto-advanced-body p {
-    display: -webkit-box;
-    margin-top: 0.3rem;
-    overflow: hidden;
-    font-size: 0.78rem;
-    line-height: 1.38;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+  .odonto-featured-title::after {
+    display: none;
   }
 
-  .odonto-common-card {
-    grid-template-columns: 7rem minmax(0, 1fr);
-    grid-template-rows: 1fr;
-    height: 7.5rem;
-    min-height: 7.5rem;
-    border-radius: 1rem;
-  }
-
-  .odonto-common-visual {
-    aspect-ratio: auto;
-    height: auto;
-  }
-
-  .odonto-common-visual img {
-    position: absolute;
-    inset: 0;
-    height: 100%;
-    aspect-ratio: auto;
-  }
-
-  .odonto-common-body {
-    padding: 0.75rem 0.85rem;
-  }
-
-  .odonto-common-body h3 {
-    font-size: 1rem;
-  }
-
+  .odonto-featured-text,
+  .odonto-advanced-body p,
   .odonto-common-body p {
-    margin-top: 0.3rem;
-    font-size: 0.78rem;
-    line-height: 1.38;
+    display: -webkit-box;
+    margin: 0.3rem 0 0;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.76rem;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .odonto-mobile-go {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
+    width: 32px;
+    height: 32px;
+    margin-top: auto;
+    border-radius: 50%;
+    background: #0e4937;
+    color: #fff;
+  }
+
+  .odonto-mobile-go svg {
+    width: 1rem;
+    height: 1rem;
+    stroke-width: 1.45;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr;
+    height: auto;
+    border-radius: 1.35rem;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-body {
+    padding: 1.35rem 1.2rem 1.5rem;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-badge {
+    display: inline-flex;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-benefits {
+    display: grid;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-actions {
+    display: flex;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-title {
+    color: var(--accent);
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: clamp(2.125rem, 8.5vw, 2.4rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-title::after {
+    display: block;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-featured-text {
+    display: block;
+    margin: 0.75rem 0 0;
+    overflow: visible;
+    font-size: 1.02rem;
+    line-height: 1.55;
+    -webkit-line-clamp: unset;
+  }
+
+  .odonto-treatment-catalog > .odonto-featured .odonto-mobile-go {
+    display: none;
   }
 }
 

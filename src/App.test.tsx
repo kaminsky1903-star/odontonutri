@@ -653,13 +653,13 @@ describe("App", () => {
       /\.odonto-common-visual img \{\s*position:\s*static/,
     );
     expect(css).toMatch(
-      /@media \(width <= 767px\)[\s\S]*?\.odonto-featured-visual img \{\s*position:\s*static/,
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-treatment-catalog \{[\s\S]*?grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/,
     );
     expect(css).toMatch(
-      /@media \(width <= 767px\)[\s\S]*?\.odonto-advanced-card \{\s*grid-template-columns:\s*7rem minmax\(0, 1fr\)/,
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-featured,[\s\S]*?\.odonto-common-card \{[\s\S]*?flex-direction:\s*column/,
     );
     expect(css).toMatch(
-      /@media \(width <= 767px\)[\s\S]*?\.odonto-common-card \{\s*grid-template-columns:\s*7rem minmax\(0, 1fr\)/,
+      /@media \(width <= 767px\)[\s\S]*?\.odonto-mobile-go \{[\s\S]*?display:\s*inline-flex/,
     );
     expect(css).toMatch(
       /@media \(width <= 840px\)[\s\S]*?\.hero-photo \{\s*position:\s*relative/,
@@ -721,8 +721,10 @@ describe("App", () => {
       ...DENTISTRY_COMMON_TREATMENTS,
     ]) {
       expect(
-        services.queryByRole("link", { name: new RegExp(treatment.title) }),
-      ).toBeNull();
+        services.getByRole("link", {
+          name: `Consultar ${treatment.title} por WhatsApp`,
+        }),
+      ).toHaveAttribute("href", whatsappPageWithMessage(treatment.message));
     }
     const hero = screen.getByRole("region", {
       name: "Volvé a sonreír con confianza.",
