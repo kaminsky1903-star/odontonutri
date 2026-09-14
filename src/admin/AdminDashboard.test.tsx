@@ -71,6 +71,47 @@ describe("admin dashboard session", () => {
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeEnabled();
   });
 
+  it("distinguishes Google Ads from common Google search", async () => {
+    const createdAt = new Date().toISOString();
+    queryResult.current = {
+      data: [
+        {
+          created_at: createdAt,
+          event_type: "visit",
+          path: "/odontologia",
+          session_id: "11111111-1111-4111-8111-111111111111",
+          visitor_id: "11111111-1111-4111-8111-111111111111",
+          referrer_host: "google.com",
+          device_type: "mobile",
+        },
+        {
+          created_at: createdAt,
+          event_type: "visit",
+          path: "/odontologia",
+          session_id: "22222222-2222-4222-8222-222222222222",
+          visitor_id: "22222222-2222-4222-8222-222222222222",
+          referrer_host: "google.com",
+          device_type: "mobile",
+          traffic_attribution: {
+            version: 1,
+            source: "google",
+            medium: "cpc",
+            campaign: "Odontología",
+            google_click: "gclid",
+            google_ad_marker: null,
+          },
+        },
+      ],
+      error: null,
+    };
+
+    render(<AdminApp />);
+
+    expect((await screen.findAllByText("Google Ads (anuncio pago)")).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Google (buscador común)").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Google Ads identifica visitas con marcador de anuncio/)).toBeInTheDocument();
+  });
+
   it("lets the clinic hide their own device from visitors", async () => {
     queryResult.current = {
       data: [
