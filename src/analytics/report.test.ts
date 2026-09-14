@@ -16,7 +16,7 @@ describe("period metrics", () => {
     ], period, now)!;
     expect(result).toMatchObject({ visitors: 2, sessions: 3, contacts: 1, whatsapp: 2, conversion: 50 });
     expect(result.daily.slice(-2).map(day => [day.value, day.contacts])).toEqual([[1, 0], [2, 1]]);
-    expect(result.sources[0]).toMatchObject({ name: "Google (buscador común)", visitors: 2, contacts: 1, conversion: 50 });
+    expect(result.sources[0]).toMatchObject({ name: "Google (origen sin distinguir)", visitors: 2, contacts: 1, conversion: 50 });
   });
 
   it("uses Argentine calendar days and applies the same range to every breakdown", () => {
@@ -79,7 +79,7 @@ describe("period metrics", () => {
 
 describe("Google attribution", () => {
   it("groups Google traffic consistently and detects ad markers", () => {
-    expect(trafficChannel(event())).toBe("Google (buscador común)");
+    expect(trafficChannel(event())).toBe("Google (origen sin distinguir)");
     expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("") }))).toBe("Google (buscador común)");
     for (const key of ["gclid", "gbraid", "wbraid"]) {
       const data = attributionFromSearch(`?${key}=secret-click-id`);
@@ -93,6 +93,7 @@ describe("Google attribution", () => {
     }
     expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("?utm_source=google&utm_medium=cpc") }))).toBe("Google Ads (anuncio pago)");
     expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("?utm_source=google") }))).toBe("Google (buscador común)");
+    expect(trafficChannel(event({ traffic_attribution: { ...attributionFromSearch(""), version: 1 } }))).toBe("Google (origen sin distinguir)");
     expect(trafficChannel(event({ referrer_host: "syndicatedsearch.goog" }))).toBe("syndicatedsearch");
     expect(trafficChannel(event({ referrer_host: "google.com.evil.test" }))).not.toContain("orgánico");
   });

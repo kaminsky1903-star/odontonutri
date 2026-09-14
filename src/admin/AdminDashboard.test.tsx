@@ -83,6 +83,14 @@ describe("admin dashboard session", () => {
           visitor_id: "11111111-1111-4111-8111-111111111111",
           referrer_host: "google.com",
           device_type: "mobile",
+          traffic_attribution: {
+            version: 2,
+            source: null,
+            medium: null,
+            campaign: null,
+            google_click: null,
+            google_ad_marker: null,
+          },
         },
         {
           created_at: createdAt,
@@ -93,7 +101,7 @@ describe("admin dashboard session", () => {
           referrer_host: "google.com",
           device_type: "mobile",
           traffic_attribution: {
-            version: 1,
+            version: 2,
             source: "google",
             medium: "cpc",
             campaign: "Odontología",
