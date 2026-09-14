@@ -3429,6 +3429,10 @@ h1 {
   min-width: 0;
 }
 
+.google-reviews-dentistry .review-item-mobile-extra {
+  display: none;
+}
+
 .review-card {
   position: relative;
   display: flex;
@@ -3625,6 +3629,10 @@ h1 {
   font-size: 11px;
 }
 
+.reviews-pagination {
+  display: none;
+}
+
 @media (width <= 1180px) and (width > 900px) {
   .reviews-cards {
     width: 96%;
@@ -3701,8 +3709,37 @@ h1 {
     display: none;
   }
 
+  .google-reviews-dentistry .reviews-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 1.25rem;
+    margin-top: -0.2rem;
+  }
+
+  .google-reviews-dentistry .reviews-pagination button {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(23 72 55 / 24%);
+    cursor: pointer;
+    transition: width 180ms ease, background-color 180ms ease;
+  }
+
+  .google-reviews-dentistry .reviews-pagination button.is-active {
+    width: 1.35rem;
+    background: #174837;
+  }
+
   .google-reviews-dentistry .review-item {
     scroll-snap-align: start;
+  }
+
+  .google-reviews-dentistry .review-item-mobile-extra {
+    display: block;
   }
 
   .google-reviews-dentistry .review-item-featured {

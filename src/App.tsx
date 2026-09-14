@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AdminApp } from "./admin/AdminApp";
 import { applyAnalyticsOptOutFromSearch } from "./analytics/session";
 import { usePublicAnalytics } from "./analytics/usePublicAnalytics";
@@ -1120,6 +1120,55 @@ function GoogleReviews({
   titleId?: string;
   enhancedAvatars?: boolean;
 }) {
+  const cardsRef = useRef<HTMLUListElement>(null);
+  const [activeReview, setActiveReview] = useState(0);
+
+  useEffect(() => {
+    if (!enhancedAvatars) return;
+    const cards = cardsRef.current;
+    if (!cards) return;
+
+    const orderedCards = () =>
+      Array.from(cards.children)
+        .filter((item): item is HTMLElement => item instanceof HTMLElement)
+        .sort((left, right) => left.offsetLeft - right.offsetLeft);
+
+    const updateActiveReview = () => {
+      const viewportCenter = cards.scrollLeft + cards.clientWidth / 2;
+      const items = orderedCards();
+      let closest = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      items.forEach((item, index) => {
+        const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+        const distance = Math.abs(viewportCenter - itemCenter);
+        if (distance < closestDistance) {
+          closest = index;
+          closestDistance = distance;
+        }
+      });
+      setActiveReview(closest);
+    };
+
+    updateActiveReview();
+    cards.addEventListener("scroll", updateActiveReview, { passive: true });
+    window.addEventListener("resize", updateActiveReview);
+    return () => {
+      cards.removeEventListener("scroll", updateActiveReview);
+      window.removeEventListener("resize", updateActiveReview);
+    };
+  }, [enhancedAvatars, reviews]);
+
+  const goToReview = (index: number) => {
+    const cards = cardsRef.current;
+    if (!cards) return;
+    const items = Array.from(cards.children)
+      .filter((item): item is HTMLElement => item instanceof HTMLElement)
+      .sort((left, right) => left.offsetLeft - right.offsetLeft);
+    const item = items[index];
+    if (!item) return;
+    cards.scrollTo({ left: item.offsetLeft - 4, behavior: "smooth" });
+  };
+
   return (
     <section
       className={
@@ -1140,14 +1189,14 @@ function GoogleReviews({
             <span className="reviews-title-accent">Confianza real.</span>
           </h2>
         </div>
-        <ul className="reviews-cards">
-          {reviews.map((review) => (
+        <ul className="reviews-cards" ref={cardsRef}>
+          {reviews.map((review, reviewIndex) => (
             <li
               key={review.name}
               className={
-                review.featured
+                `${review.featured
                   ? "review-item review-item-featured"
-                  : "review-item"
+                  : "review-item"}${enhancedAvatars && reviewIndex >= 3 ? " review-item-mobile-extra" : ""}`
               }
             >
               <article
@@ -1213,6 +1262,20 @@ function GoogleReviews({
             </li>
           ))}
         </ul>
+        {enhancedAvatars && reviews.length > 1 && (
+          <nav className="reviews-pagination" aria-label="Reseñas odontológicas">
+            {reviews.map((review, index) => (
+              <button
+                key={review.name}
+                type="button"
+                className={index === activeReview ? "is-active" : undefined}
+                aria-label={`Ver reseña ${index + 1} de ${reviews.length}`}
+                aria-current={index === activeReview ? "true" : undefined}
+                onClick={() => goToReview(index)}
+              />
+            ))}
+          </nav>
+        )}
       </div>
     </section>
   );

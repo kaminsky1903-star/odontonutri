@@ -217,6 +217,40 @@ export const DENTISTRY_GOOGLE_REVIEWS: readonly Review[] = [
     meta: "Reseña en Google",
     featured: false,
   },
+  {
+    name: "silvana g",
+    image: "/review-silvana-g.webp",
+    initials: "SG",
+    quote:
+      "Excelente atencion, muy proficionales y atentos. Instalaciones impecables y trato humano excepcional. Totalmente recomendable.",
+    meta: "Reseña en Google",
+    featured: false,
+  },
+  {
+    name: "Emma Gonzalez",
+    image: "/review-emma-gonzalez.webp",
+    initials: "EG",
+    quote: "Muy buena atención. Recomiendo a los profesionales. 😁",
+    meta: "Reseña en Google",
+    featured: false,
+  },
+  {
+    name: "dima kor",
+    image: "/review-dima-kor.webp",
+    initials: "DK",
+    quote:
+      "Excelente servicio, buena atención, me salvó un molar que en otro lado me dijeron que avía que arrancarlo.",
+    meta: "5 opiniones",
+    featured: false,
+  },
+  {
+    name: "Carlos Adrián Selmer",
+    image: "/review-carlos-selmer.webp",
+    initials: "CS",
+    quote: "Excelente atención y servicio, totalmente recomendable 💪",
+    meta: "3 opiniones",
+    featured: false,
+  },
 ] as const;
 
 export const MAP_QUERY =

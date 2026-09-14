@@ -541,6 +541,15 @@ describe("App", () => {
       }
     }
     expect(
+      screen.getByRole("navigation", { name: "Reseñas odontológicas" }),
+    ).toHaveClass("reviews-pagination");
+    expect(
+      screen.getAllByRole("button", { name: /Ver reseña \d+ de \d+/ }),
+    ).toHaveLength(DENTISTRY_GOOGLE_REVIEWS.length);
+    expect(
+      document.querySelectorAll(".review-item-mobile-extra"),
+    ).toHaveLength(DENTISTRY_GOOGLE_REVIEWS.length - 3);
+    expect(
       screen.getByRole("region", { name: "Volvé a sonreír con confianza." }),
     ).toHaveClass("dentistry-hero", "page-container");
     expect(
