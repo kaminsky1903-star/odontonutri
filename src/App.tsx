@@ -983,6 +983,122 @@ function NutritionServices() {
   );
 }
 
+function NutritionClinicSpace() {
+  return (
+    <section
+      id="mi-espacio-nutricion"
+      className="clinic-space clinic-space-nutrition page-container"
+      aria-labelledby="nutrition-space-title"
+    >
+      <div className="clinic-space-heading">
+        <div className="clinic-space-intro">
+          <p className="clinic-space-kicker">Mi espacio</p>
+          <h2 id="nutrition-space-title">Un lugar pensado para tu bienestar</h2>
+          <p>
+            Te recibimos en un espacio moderno, cómodo y cálido, donde la
+            nutrición se vive de forma personalizada, con acompañamiento
+            profesional y un enfoque integral en tu salud.
+          </p>
+        </div>
+      </div>
+
+      <ul className="clinic-space-features" aria-label="Características del consultorio nutricional">
+        <li><span><AppleLineIcon /></span><strong>Plan nutricional personalizado</strong></li>
+        <li><span><TeamLineIcon /></span><strong>Acompañamiento continuo</strong></li>
+        <li><span><LeafLineIcon /></span><strong>Ambiente cómodo y confidencial</strong></li>
+        <li><span><HeartHandsIcon /></span><strong>Compromiso con tu salud</strong></li>
+      </ul>
+
+      <figure className="clinic-space-main-photo">
+        <img
+          src="/consultorio-nutricional.webp"
+          alt="Consultorio nutricional privado y confortable"
+          width={2048}
+          height={1536}
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>
+          <div>
+            <h3>Consultorio nutricional</h3>
+            <p>
+              Un espacio privado y confortable para escucharte, evaluar tus
+              necesidades y diseñar juntos un plan realista y sostenible.
+            </p>
+          </div>
+          <span className="clinic-space-card-arrow" aria-hidden="true">
+            <ArrowLineIcon />
+          </span>
+        </figcaption>
+      </figure>
+
+      <div className="clinic-space-secondary">
+        <figure>
+          <img
+            src="/recepcion-nutricion.webp"
+            alt="Recepción de Odontología y Nutrición"
+            width={2048}
+            height={1536}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>
+            <div>
+              <h3>Te damos la bienvenida</h3>
+              <p>
+                Desde el primer momento vas a encontrar un trato cercano y
+                profesional, en un espacio pensado para que te sientas bien.
+              </p>
+            </div>
+            <span className="clinic-space-card-arrow" aria-hidden="true">
+              <ArrowLineIcon />
+            </span>
+          </figcaption>
+        </figure>
+        <figure>
+          <img
+            src="/herramientas-nutricion.webp"
+            alt="Herramientas para evaluación y seguimiento nutricional"
+            width={1448}
+            height={1086}
+            loading="lazy"
+            decoding="async"
+          />
+          <figcaption>
+            <div>
+              <h3>Herramientas para tu progreso</h3>
+              <p>
+                Realizamos mediciones antropométricas y controles periódicos
+                para conocer tu punto de partida y acompañar tus avances de
+                manera clara y personalizada.
+              </p>
+            </div>
+            <span className="clinic-space-card-arrow" aria-hidden="true">
+              <ArrowLineIcon />
+            </span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div className="clinic-space-cta">
+        <span className="clinic-space-cta-icon" aria-hidden="true">
+          <CalendarLineIcon />
+        </span>
+        <div>
+          <h3>¿Querés conocernos?</h3>
+          <p>Agendá tu consulta y empezá a construir hábitos que te hagan bien.</p>
+        </div>
+        <a href={WHATSAPP_NUTRITION_PAGE} target="_blank" rel="noopener noreferrer">
+          <WhatsAppIcon />
+          Solicitar turno
+          <ArrowLineIcon />
+        </a>
+      </div>
+
+    </section>
+  );
+}
+
 function ReviewStars() {
   return (
     <span className="review-stars" aria-label="5 estrellas">
@@ -1486,6 +1602,7 @@ export default function App() {
           <NutritionHero />
           <NutritionServices />
           <GoogleReviews />
+          <NutritionClinicSpace />
           <VisitCard />
           <ClinicMap />
         </main>

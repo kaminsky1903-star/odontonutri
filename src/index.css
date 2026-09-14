@@ -1741,6 +1741,40 @@ main {
   }
 }
 
+.clinic-space-nutrition {
+  margin-top: 0;
+  padding-top: 1rem;
+  padding-bottom: clamp(1rem, 3vw, 2.5rem);
+}
+
+.clinic-space-nutrition .clinic-space-heading {
+  display: block;
+}
+
+.clinic-space-nutrition .clinic-space-main-photo > img {
+  object-position: center 58%;
+}
+
+.clinic-space-nutrition .clinic-space-secondary figure:first-child img {
+  object-position: center 55%;
+}
+
+@media (width <= 767px) {
+  .clinic-space-nutrition {
+    margin-top: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .clinic-space-nutrition .clinic-space-heading {
+    display: block;
+  }
+
+  .clinic-space-nutrition .clinic-space-main-photo > img {
+    object-position: center 58%;
+  }
+}
+
 .dentistry-plan h2 {
   margin: 0;
   font-family: "Playfair Display", Georgia, serif;
