@@ -1011,10 +1011,10 @@ function NutritionClinicSpace() {
 
       <figure className="clinic-space-main-photo">
         <img
-          src="/consultorio-nutricional.webp"
+          src="/espacio-consulta.webp"
           alt="Consultorio nutricional privado y confortable"
-          width={2048}
-          height={1536}
+          width={1920}
+          height={1440}
           loading="lazy"
           decoding="async"
         />
@@ -1035,10 +1035,10 @@ function NutritionClinicSpace() {
       <div className="clinic-space-secondary">
         <figure>
           <img
-            src="/recepcion-nutricion.webp"
+            src="/recepcion-clinica.webp"
             alt="Recepción de Odontología y Nutrición"
-            width={2048}
-            height={1536}
+            width={1920}
+            height={1440}
             loading="lazy"
             decoding="async"
           />
