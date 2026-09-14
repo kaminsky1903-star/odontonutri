@@ -822,7 +822,7 @@ main {
 
 .odonto-services {
   --process-bg: #0e4937;
-  padding-block: 5rem 5.625rem;
+  padding-block: 2.5rem 5.625rem;
   scroll-margin-top: 5.5rem;
 }
 
@@ -1291,7 +1291,7 @@ main {
 
 .clinic-space {
   position: relative;
-  margin-top: 3.5rem;
+  margin-top: 1rem;
   padding-top: clamp(2.5rem, 5vw, 4.5rem);
 }
 
@@ -1523,7 +1523,7 @@ main {
 @media (width <= 767px) {
   .clinic-space {
     margin-top: 1.75rem;
-    padding-top: 2rem;
+    padding-top: 1rem;
   }
 
   .clinic-space-heading {
@@ -3615,15 +3615,13 @@ h1 {
   }
 
   .google-reviews-dentistry .review-item-featured {
-    order: 0;
+    order: -1;
   }
 
   .google-reviews-dentistry .review-card,
   .google-reviews-dentistry .review-card-featured {
     height: 100%;
-    box-shadow:
-      0 2px 5px rgb(31 66 51 / 5%),
-      0 10px 26px rgb(31 66 51 / 9%);
+    box-shadow: none;
   }
 
   .google-reviews-dentistry .review-card-featured .review-stars svg {
