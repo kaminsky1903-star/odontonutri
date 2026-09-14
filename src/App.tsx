@@ -8,6 +8,8 @@ import {
   DENTISTRY_ADVANCED_TREATMENTS,
   DENTISTRY_COMMON_TREATMENTS,
   DENTISTRY_FEATURED_TREATMENT,
+  DENTISTRY_GOOGLE_REVIEWS,
+  type Review,
   INSTAGRAM_URL,
   MAP_QUERY,
   PHONE_LABEL,
@@ -993,22 +995,37 @@ function ReviewStars() {
   );
 }
 
-function GoogleReviews() {
+function GoogleReviews({
+  reviews = GOOGLE_REVIEWS,
+  titleId = "resenas-title",
+  enhancedAvatars = false,
+}: {
+  reviews?: readonly Review[];
+  titleId?: string;
+  enhancedAvatars?: boolean;
+}) {
   return (
-    <section className="google-reviews" aria-labelledby="resenas-title">
+    <section
+      className={
+        enhancedAvatars
+          ? "google-reviews google-reviews-dentistry"
+          : "google-reviews"
+      }
+      aria-labelledby={titleId}
+    >
       <p className="reviews-watermark" aria-hidden="true">
         RESEÑAS
       </p>
       <div className="reviews-container">
         <div className="reviews-header">
           <p className="reviews-kicker">Experiencias de pacientes</p>
-          <h2 id="resenas-title" className="reviews-title">
+          <h2 id={titleId} className="reviews-title">
             <span>Historias reales.</span>
             <span className="reviews-title-accent">Confianza real.</span>
           </h2>
         </div>
         <ul className="reviews-cards">
-          {GOOGLE_REVIEWS.map((review) => (
+          {reviews.map((review) => (
             <li
               key={review.name}
               className={
@@ -1030,14 +1047,47 @@ function GoogleReviews() {
                 <ReviewStars />
                 <p className="review-quote">{review.quote}</p>
                 <div className="review-author">
-                  <img
-                    src={review.image}
-                    alt={review.name}
-                    width={review.featured ? 40 : 32}
-                    height={review.featured ? 40 : 32}
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  {enhancedAvatars ? (
+                    <span
+                      className={`review-avatar-wrap${review.localGuide ? " review-avatar-wrap-local-guide" : ""}${review.embeddedGuide ? " review-avatar-wrap-embedded-guide" : ""}`}
+                    >
+                      {review.image ? (
+                        <img
+                          src={review.image}
+                          alt={review.name}
+                          width={review.featured ? 52 : 42}
+                          height={review.featured ? 52 : 42}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span className="review-avatar" aria-label={review.name}>
+                          {review.initials}
+                        </span>
+                      )}
+                      {review.localGuide && (
+                        <img
+                          className="review-local-guide"
+                          src="/local-guide-badge-v3.webp"
+                          alt=""
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                  ) : review.image ? (
+                    <img
+                      src={review.image}
+                      alt={review.name}
+                      width={review.featured ? 40 : 32}
+                      height={review.featured ? 40 : 32}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span className="review-avatar" aria-label={review.name}>
+                      {review.initials}
+                    </span>
+                  )}
                   <div>
                     <strong>{review.name}</strong>
                     <span>{review.meta}</span>
@@ -1359,6 +1409,12 @@ function DentistryPage() {
           ))}
         </ul>
       </section>
+
+      <GoogleReviews
+        reviews={DENTISTRY_GOOGLE_REVIEWS}
+        titleId="resenas-odontologia-title"
+        enhancedAvatars
+      />
 
       <DentistryMisServicios />
 

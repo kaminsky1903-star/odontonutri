@@ -142,10 +142,24 @@ export const DENTISTRY_COMMON_TREATMENTS = [
   },
 ] as const;
 
-export const GOOGLE_REVIEWS = [
+export type Review = {
+  name: string;
+  image?: string;
+  initials: string;
+  localGuide?: boolean;
+  embeddedGuide?: boolean;
+  quote: string;
+  meta: string;
+  featured: boolean;
+};
+
+export type GoogleReview = Review & { image: string };
+
+export const GOOGLE_REVIEWS: readonly GoogleReview[] = [
   {
     name: "Martin Zudaire",
     image: "/martin-zudaire.webp",
+    initials: "MZ",
     quote:
       "Muy buena atención de la nutricionista. Me explicó todo súper claro y armamos un plan que realmente se adapta a mis horarios y a lo que como normalmente. Nada imposible de seguir. Muy recomendable.",
     meta: "2 reseñas",
@@ -154,6 +168,9 @@ export const GOOGLE_REVIEWS = [
   {
     name: "Facundo Francisco Feltrin",
     image: "/facundo-feltrin.webp",
+    initials: "FF",
+    localGuide: true,
+    embeddedGuide: true,
     quote:
       "Estefanía me dio una dieta equilibrada para mejorar musculación con un presupuesto más al bolsillo del día a día. Genial!",
     meta: "Local Guide · 30 reseñas · 17 fotos",
@@ -162,9 +179,42 @@ export const GOOGLE_REVIEWS = [
   {
     name: "Lucio Perez",
     image: "/lucio-perez.webp",
+    initials: "LP",
+    localGuide: true,
+    embeddedGuide: true,
     quote:
       "Excelente la nutri. Te explica todo bárbaro y te arma un plan realista, sin pedirte cosas raras como me pasó con otros. La re recomiendo.",
     meta: "Local Guide · 12 reseñas · 19 fotos",
+    featured: false,
+  },
+] as const;
+
+export const DENTISTRY_GOOGLE_REVIEWS: readonly Review[] = [
+  {
+    name: "MaestroMayor",
+    image: "/review-maestromayor-v3.webp",
+    initials: "MM",
+    localGuide: true,
+    quote: "Al fin encontré un odontólogo que resuelve en el momento. Muy amables.",
+    meta: "Local Guide · 343 opiniones · 375 fotos",
+    featured: false,
+  },
+  {
+    name: "Andres Saenz",
+    image: "/review-andres-saenz.webp",
+    initials: "A",
+    quote:
+      "Excelente atención. El equipo es muy profesional, amable y puntual. Me explicaron cada paso del tratamiento con claridad.",
+    meta: "Reseña en Google",
+    featured: true,
+  },
+  {
+    name: "Elis Di Palma",
+    image: "/review-elis-di-palma.webp",
+    initials: "E",
+    quote:
+      "Excelente atención, el doctor te explica todo y la chica de recepción muy amable, el consultorio muy lindo, recomendado 100%.",
+    meta: "Reseña en Google",
     featured: false,
   },
 ] as const;

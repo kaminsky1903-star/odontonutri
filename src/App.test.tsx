@@ -9,6 +9,7 @@ import {
     DENTISTRY_ADVANCED_TREATMENTS,
     DENTISTRY_COMMON_TREATMENTS,
     DENTISTRY_FEATURED_TREATMENT,
+    DENTISTRY_GOOGLE_REVIEWS,
     DENTISTRY_SERVICES_LEAD,
     GOOGLE_REVIEWS,
     INSTAGRAM_URL,
@@ -475,7 +476,7 @@ describe("App", () => {
     expect(css).toMatch(/height:\s*252px/);
     expect(css).not.toMatch(/translateY\(-28px\)/);
     expect(css).toMatch(/\.review-author[\s\S]*?margin-top:\s*auto/);
-    expect(css).toMatch(/\.review-author img[\s\S]*?object-fit:\s*cover/);
+    expect(css).toMatch(/\.review-author > img[\s\S]*?object-fit:\s*cover/);
     expect(css).toMatch(/\.review-item-featured[\s\S]*?order:\s*-1/);
     expect(css).toMatch(/\.reviews-watermark[\s\S]*?Playfair Display/);
     expect(section?.querySelector(".reviews-watermark")?.textContent?.trim()).toBe(
@@ -489,12 +490,7 @@ describe("App", () => {
     );
   });
 
-  it("keeps Google reviews off the home and Odontología pages", () => {
-    render(<App />);
-    expect(screen.queryByText("Reseñas de Google")).not.toBeInTheDocument();
-
-    cleanup();
-    window.history.replaceState(null, "", "/odontologia");
+  it("keeps Google reviews off the home page", () => {
     render(<App />);
     expect(screen.queryByText("Reseñas de Google")).not.toBeInTheDocument();
   });
@@ -525,6 +521,25 @@ describe("App", () => {
       screen.getByRole("link", { name: "Ver servicios" }),
     ).toHaveAttribute("href", "#implantes-dentales");
     expect(document.getElementById("tratamientos-odontologia")).toBeTruthy();
+    const reviews = document.getElementById("resenas-odontologia-title");
+    expect(reviews).toBeTruthy();
+    expect(
+      document.querySelector(".dentistry-hero")!.compareDocumentPosition(reviews!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      reviews!.compareDocumentPosition(document.getElementById("tratamientos-odontologia")!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    for (const review of DENTISTRY_GOOGLE_REVIEWS) {
+      expect(screen.getByText(review.quote)).toBeInTheDocument();
+      expect(screen.getAllByText(review.meta).length).toBeGreaterThan(0);
+      if (review.image) {
+        expect(screen.getByAltText(review.name)).toHaveAttribute("src", review.image);
+      } else {
+        expect(screen.getByLabelText(review.name)).toHaveClass("review-avatar");
+      }
+    }
     expect(
       screen.getByRole("region", { name: "Volvé a sonreír con confianza." }),
     ).toHaveClass("dentistry-hero", "page-container");
