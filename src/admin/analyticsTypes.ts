@@ -50,6 +50,7 @@ export type HourStat = {
 
 export type AnalyticsSnapshot = {
   events?: import("../analytics/types").AnalyticsEvent[];
+  attributionStatus: "unknown" | "ready" | "missing";
   status: "pending" | "ready";
   message: string;
   visitorsToday: number | null;
@@ -72,6 +73,7 @@ export type AnalyticsSnapshot = {
 };
 
 export const EMPTY_ANALYTICS: AnalyticsSnapshot = {
+  attributionStatus: "unknown",
   status: "pending",
   message: ANALYTICS_PENDING_MESSAGE,
   visitorsToday: null,

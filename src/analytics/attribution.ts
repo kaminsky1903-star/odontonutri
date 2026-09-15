@@ -34,14 +34,32 @@ export function attributionFromSearch(search: string): Attribution {
 // Store only the presence/type of an advertising identifier, never its raw value.
 export function sessionAttribution(): Attribution {
   const key = "odontonutri_analytics_attribution_v2";
+  const current = attributionFromSearch(window.location.search);
   try {
     const existing = sessionStorage.getItem(key);
     if (existing) {
       const parsed = readAttribution(JSON.parse(existing));
-      if (parsed) return parsed;
+      if (parsed) {
+        const hasCurrentSignal = Boolean(
+          current.source || current.medium || current.campaign ||
+          current.google_click || current.google_ad_marker,
+        );
+        if (!hasCurrentSignal) return parsed;
+        const updated = {
+          ...parsed,
+          ...current,
+          source: current.source ?? parsed.source,
+          medium: current.medium ?? parsed.medium,
+          campaign: current.campaign ?? parsed.campaign,
+          google_click: current.google_click ?? parsed.google_click,
+          google_ad_marker: current.google_ad_marker ?? parsed.google_ad_marker,
+        };
+        sessionStorage.setItem(key, JSON.stringify(updated));
+        return updated;
+      }
     }
   } catch { /* Storage is optional. */ }
-  const result = attributionFromSearch(window.location.search);
+  const result = current;
   try { sessionStorage.setItem(key, JSON.stringify(result)); } catch { /* Continue without persistence. */ }
   return result;
 }
@@ -50,14 +68,18 @@ function isGoogle(host: string | null) {
   return Boolean(host && /^(?:[a-z0-9-]+\.)?google\.(?:com|com\.ar|com\.uy|com\.br|cl|es|co\.uk|com\.mx)$/.test(host));
 }
 
+function isGoogleAdHost(host: string | null) {
+  return Boolean(host && /^(?:[a-z0-9-]+\.)*(?:googleadservices\.com|doubleclick\.net|googlesyndication\.com)$/.test(host));
+}
+
 export function trafficChannel(event: AnalyticsEvent): string {
   const data = readAttribution(event.traffic_attribution);
   const source = normalizeTrafficHost(data?.source);
   const host = normalizeTrafficHost(event.referrer_host);
-  if (data?.google_click || data?.google_ad_marker || (isGoogle(source) && /^(cpc|ppc|paid|paidsearch|paid_search|display|cpm)$/i.test(data?.medium ?? ""))) return "Google Ads (anuncio pago)";
+  if (data?.google_click || data?.google_ad_marker || isGoogleAdHost(source) || isGoogleAdHost(host) || (isGoogle(source) && /^(cpc|ppc|paid|paidsearch|paid_search|display|cpm)$/i.test(data?.medium ?? ""))) return "Google Ads";
   if (host === "syndicatedsearch.goog") return "syndicatedsearch";
   if (isGoogle(source) || isGoogle(host)) {
-    return data?.version === 2 ? "Google (buscador común)" : "Google (origen sin distinguir)";
+    return data?.version === 2 ? "Google orgánico" : "Google sin identificar (histórico)";
   }
   return displayTrafficName(source || host);
 }

@@ -18,13 +18,13 @@
 Se prepara una columna adicional `traffic_attribution` en `analytics_events`. Guarda versión, utm_source, utm_medium, utm_campaign y presencia/tipo de gclid, gbraid o wbraid. No guarda los valores de esos identificadores publicitarios. No cambia visitor_id, session_id ni las exclusiones de dispositivos.
 
 - Google Ads: señal publicitaria de Google o fuente Google con medio de pago.
-- `google.com`: nuevo registro con referente Google y sin etiquetas de campaña ni señal publicitaria. Es tráfico orgánico probable, pero no demuestra ausencia de publicidad.
-- Google sin determinar: registros históricos o evidencia insuficiente.
+- Google orgánico: nuevo registro con referente Google y sin etiquetas de campaña ni señal publicitaria. La clasificación depende de que los anuncios conserven el etiquetado automático o sus UTM.
+- Google sin identificar (histórico): registros anteriores o evidencia insuficiente.
 - syndicatedsearch.goog se muestra como `syndicatedsearch`; internamente conserva el origen técnico y no se clasifica como anuncio salvo que haya una señal publicitaria explícita.
 
 ## Antes de publicar
 
-1. Revisar y aplicar `supabase/migrations/20260908100000_analytics_traffic_attribution.sql` en Supabase. Esta tarea solo preparó el archivo; no ejecutó la migración.
+1. La migración `supabase/migrations/20260908100000_analytics_traffic_attribution.sql` se aplicó en producción el 15/09/2026.
 2. Confirmar el etiquetado automático de Google Ads y las UTM de las campañas. No se modificó la cuenta de anuncios.
 3. Configurar las variables locales indicadas en `.env.example` para probar una sesión real. La demo en `_site_probe/` está excluida de Git y usa datos ficticios; no está conectada a Supabase.
 4. Ejecutar tests, typecheck y build, y publicar solo con autorización.

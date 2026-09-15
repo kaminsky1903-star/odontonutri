@@ -71,7 +71,7 @@ describe("admin dashboard session", () => {
     expect(screen.getByRole("button", { name: "Cerrar sesión" })).toBeEnabled();
   });
 
-  it("distinguishes Google Ads from common Google search", async () => {
+  it("distinguishes Google Ads from organic Google search", async () => {
     const createdAt = new Date().toISOString();
     queryResult.current = {
       data: [
@@ -115,9 +115,9 @@ describe("admin dashboard session", () => {
 
     render(<AdminApp />);
 
-    expect((await screen.findAllByText("Google Ads (anuncio pago)")).length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Google (buscador común)").length).toBeGreaterThan(0);
-    expect(screen.getByText(/Google Ads identifica visitas con marcador de anuncio/)).toBeInTheDocument();
+    expect((await screen.findAllByText("Google Ads")).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Google orgánico").length).toBeGreaterThan(0);
+    expect(screen.getByText(/Google Ads: llegó con una señal de anuncio/)).toBeInTheDocument();
   });
 
   it("lets the clinic hide their own device from visitors", async () => {

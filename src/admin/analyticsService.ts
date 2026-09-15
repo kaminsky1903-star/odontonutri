@@ -140,6 +140,9 @@ export async function fetchAnalyticsSnapshot(period?: Period): Promise<Analytics
       return { data: rows, error: null };
     };
     const [first, staffIds] = await Promise.all([query(FULL_COLUMNS + ", traffic_attribution"), fetchStaffVisitorIds()]);
+    const attributionStatus = first.error && ["42703", "PGRST204"].includes(first.error.code)
+      ? "missing" as const
+      : "ready" as const;
     let result = first;
     for (const columns of [FULL_COLUMNS, CITY_COLUMNS, BASE_COLUMNS]) {
       if (!result.error) break;
@@ -149,7 +152,7 @@ export async function fetchAnalyticsSnapshot(period?: Period): Promise<Analytics
     if (result.error) return { ...EMPTY_ANALYTICS, message: "No se pudieron cargar las métricas. Intentá actualizar." };
     const ignored = new Set([...readIgnoredVisitorIds(), ...staffIds]);
     const events = withoutIgnoredVisitors(asEvents(result.data), ignored);
-    return { ...summarizeAnalyticsEvents(events, now), events };
+    return { ...summarizeAnalyticsEvents(events, now), events, attributionStatus };
   } catch {
     return { ...EMPTY_ANALYTICS, message: "No se pudieron cargar las métricas completas. Intentá actualizar." };
   }

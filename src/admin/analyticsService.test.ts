@@ -171,6 +171,7 @@ it("falls back to the existing schema without inventing attribution", async () =
   } });
   const result = await fetchAnalyticsSnapshot();
   expect(result.status).toBe("ready");
+  expect(result.attributionStatus).toBe("missing");
   expect(columns).toHaveLength(2);
   expect(result.events?.[0].traffic_attribution).toBeNull();
 });

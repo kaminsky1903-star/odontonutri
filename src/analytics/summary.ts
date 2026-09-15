@@ -466,6 +466,7 @@ export function summarizeAnalyticsEvents(
       : Math.round((converted.size / visitors.size) * 100);
 
   return {
+    attributionStatus: "unknown",
     status: "ready",
     message: READY_MESSAGE,
     visitorsToday: uniqueSessions(todayEvents).size,

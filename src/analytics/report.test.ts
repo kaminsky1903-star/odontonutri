@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildReport, periodBounds, type Period } from "./report";
-import { attributionFromSearch, trafficChannel } from "./attribution";
+import { attributionFromSearch, sessionAttribution, trafficChannel } from "./attribution";
 import type { AnalyticsEvent } from "./types";
 
 const now = new Date("2026-09-08T15:00:00Z");
@@ -16,7 +16,7 @@ describe("period metrics", () => {
     ], period, now)!;
     expect(result).toMatchObject({ visitors: 2, sessions: 3, contacts: 1, whatsapp: 2, conversion: 50 });
     expect(result.daily.slice(-2).map(day => [day.value, day.contacts])).toEqual([[1, 0], [2, 1]]);
-    expect(result.sources[0]).toMatchObject({ name: "Google (origen sin distinguir)", visitors: 2, contacts: 1, conversion: 50 });
+    expect(result.sources[0]).toMatchObject({ name: "Google sin identificar (histórico)", visitors: 2, contacts: 1, conversion: 50 });
   });
 
   it("uses Argentine calendar days and applies the same range to every breakdown", () => {
@@ -56,7 +56,7 @@ describe("period metrics", () => {
       event({ created_at: "2026-09-01T13:00:00Z", path: "/nutricion", traffic_attribution: attributionFromSearch("?utm_source=google&utm_medium=cpc&utm_campaign=Nutricion") }),
       event({ event_type: "whatsapp_click", path: "/odontologia", visitor_id: null }),
     ], period, now)!;
-    expect(result.sources[0].name).toBe("Google Ads (anuncio pago)");
+    expect(result.sources[0].name).toBe("Google Ads");
     expect(result.entries[0].name).toBe("Nutrición");
     expect(result.pages[0].name).toBe("Odontología");
   });
@@ -79,22 +79,37 @@ describe("period metrics", () => {
 
 describe("Google attribution", () => {
   it("groups Google traffic consistently and detects ad markers", () => {
-    expect(trafficChannel(event())).toBe("Google (origen sin distinguir)");
-    expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("") }))).toBe("Google (buscador común)");
+    expect(trafficChannel(event())).toBe("Google sin identificar (histórico)");
+    expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("") }))).toBe("Google orgánico");
     for (const key of ["gclid", "gbraid", "wbraid"]) {
       const data = attributionFromSearch(`?${key}=secret-click-id`);
       expect(JSON.stringify(data)).not.toContain("secret-click-id");
-      expect(trafficChannel(event({ referrer_host: null, traffic_attribution: data }))).toBe("Google Ads (anuncio pago)");
+      expect(trafficChannel(event({ referrer_host: null, traffic_attribution: data }))).toBe("Google Ads");
     }
     for (const key of ["gad_source", "gad_campaignid"]) {
       const data = attributionFromSearch(`?${key}=private-ad-value`);
       expect(JSON.stringify(data)).not.toContain("private-ad-value");
-      expect(trafficChannel(event({ referrer_host: null, traffic_attribution: data }))).toBe("Google Ads (anuncio pago)");
+      expect(trafficChannel(event({ referrer_host: null, traffic_attribution: data }))).toBe("Google Ads");
     }
-    expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("?utm_source=google&utm_medium=cpc") }))).toBe("Google Ads (anuncio pago)");
-    expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("?utm_source=google") }))).toBe("Google (buscador común)");
-    expect(trafficChannel(event({ traffic_attribution: { ...attributionFromSearch(""), version: 1 } }))).toBe("Google (origen sin distinguir)");
+    for (const host of ["googleadservices.com", "googleads.g.doubleclick.net", "pagead2.googlesyndication.com"]) {
+      expect(trafficChannel(event({ referrer_host: host, traffic_attribution: attributionFromSearch("") }))).toBe("Google Ads");
+    }
+    expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("?utm_source=google&utm_medium=cpc") }))).toBe("Google Ads");
+    expect(trafficChannel(event({ traffic_attribution: attributionFromSearch("?utm_source=google") }))).toBe("Google orgánico");
+    expect(trafficChannel(event({ traffic_attribution: { ...attributionFromSearch(""), version: 1 } }))).toBe("Google sin identificar (histórico)");
     expect(trafficChannel(event({ referrer_host: "syndicatedsearch.goog" }))).toBe("syndicatedsearch");
     expect(trafficChannel(event({ referrer_host: "google.com.evil.test" }))).not.toContain("orgánico");
+  });
+
+  it("updates an existing browser session when a Google Ads marker arrives later", () => {
+    sessionStorage.setItem(
+      "odontonutri_analytics_attribution_v2",
+      JSON.stringify(attributionFromSearch("")),
+    );
+    window.history.replaceState(null, "", "/?gclid=private-click-id");
+    expect(sessionAttribution().google_click).toBe("gclid");
+    expect(sessionStorage.getItem("odontonutri_analytics_attribution_v2")).not.toContain("private-click-id");
+    sessionStorage.clear();
+    window.history.replaceState(null, "", "/");
   });
 });

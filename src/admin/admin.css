@@ -167,6 +167,17 @@ body:has(.admin-shell) {
   border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
+.admin-attribution-alert {
+  margin: 0;
+  border: 1px solid #d7a08f;
+  line-height: 1.5;
+}
+
+.admin-attribution-alert strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
 .admin-dashboard {
   width: min(100%, 1080px);
   margin-inline: auto;
@@ -625,6 +636,28 @@ body:has(.admin-shell) {
 .admin-activity-action-icon svg {
   width: 1.05rem;
   height: 1.05rem;
+}
+
+.admin-source {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 0.22rem 0.55rem;
+  font-weight: 650;
+}
+
+.admin-source.is-google-ads {
+  background: #e8f2ff;
+  color: #1459a6;
+}
+
+.admin-source.is-google-organic {
+  background: #e8f5ec;
+  color: #17633a;
+}
+
+.admin-source.is-google-unknown {
+  background: #f5eee2;
+  color: #75521f;
 }
 
 .admin-activity-detail {

@@ -310,6 +310,13 @@ function activityDetail(item: RecentActivity) {
   return parts.join(" · ");
 }
 
+function sourceClass(source: string) {
+  if (source === "Google Ads") return "is-google-ads";
+  if (source === "Google orgánico") return "is-google-organic";
+  if (source.startsWith("Google sin identificar")) return "is-google-unknown";
+  return "";
+}
+
 function ActivityList({
   items,
   onIgnore,
@@ -345,7 +352,7 @@ function ActivityList({
                   <strong>{item.action}</strong>
                 </span>
                 <span>{item.page}</span>
-                <span>{item.source}</span>
+                <span className={`admin-source ${sourceClass(item.source)}`.trim()}>{item.source}</span>
                 <span className="admin-activity-location">
                   {item.location ? (
                     <>
@@ -473,7 +480,8 @@ export function AdminDashboard() {
       <MetricCard label="Porcentaje de conversión" value={pending ? "—" : displayPercent(reportFor("conversion")?.conversion ?? null)} pending={false} icon={<TrendIcon/>} periodControls={periodControls("conversion")}/>
     </section>
     <TrendChart points={chartReport?.daily ?? []} pending={pending} periodLabel={panelPeriods.trend === "today" ? "Últimos 7 días" : panelPeriods.trend === "7d" ? "7 días" : "1 mes"} uniqueVisitors={chartReport?.visitors} periodControls={periodControls("trend")}/>
-    <BreakdownTable title="Fuentes de tráfico" items={reportFor("sources")?.sources ?? []} pending={pending} periodControls={periodControls("sources")} note="Google Ads identifica visitas con marcador de anuncio o UTM de pago. Google (buscador común) corresponde a visitas nuevas desde Google sin una señal publicitaria. Google (origen sin distinguir) reúne datos anteriores que no permiten separar Ads del buscador. Un visitante puede volver desde distintas fuentes; no sumes las filas para obtener el total general."/>
+    {analytics.attributionStatus === "missing" && <p className="admin-error admin-attribution-alert" role="alert"><strong>La separación entre Google y Google Ads está inactiva.</strong> Falta habilitar el registro de atribución en la base de datos. Hasta resolverlo, las visitas de Google se muestran como “sin identificar”.</p>}
+    <BreakdownTable title="Fuentes de tráfico" items={reportFor("sources")?.sources ?? []} pending={pending} periodControls={periodControls("sources")} note="Google Ads: llegó con una señal de anuncio o una UTM de pago. Google orgánico: llegó desde el buscador sin señal publicitaria. Google sin identificar (histórico): el registro no contiene información suficiente para separarlo. Un visitante puede volver desde distintas fuentes; no sumes las filas para obtener el total general."/>
     <div className="admin-insight-grid">
       <BreakdownTable title="Páginas de entrada" items={reportFor("entries")?.entries ?? []} pending={pending} periodControls={periodControls("entries")} note="Primera página disponible de cada sesión. Si la sesión empezó antes del historial cargado, la entrada puede ser parcial."/>
       <BreakdownTable title="Clics de contacto por página" items={reportFor("pages")?.pages ?? []} pending={pending} periodControls={periodControls("pages")} note="La conversión de cada página usa sus visitantes. Una persona puede figurar en varias páginas."/>
