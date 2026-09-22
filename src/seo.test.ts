@@ -187,8 +187,9 @@ describe("search appearance", () => {
 
     expect(page).toContain("<h1>Abriendo WhatsApp…</h1>");
     expect(page).toContain(`href="${SITE_URL}whatsapp.html"`);
-    expect(page).toContain("URLSearchParams(window.location.search).get(\"text\")");
-    expect(page).toContain("https://wa.me/541161370040?text=");
+    expect(page).not.toContain("URLSearchParams(window.location.search)");
+    expect(page).not.toContain("https://wa.me/541161370040?text=");
+    expect(page).toContain('var destination = "https://wa.link/g6wqj3"');
     expect(page).toContain(
       'gtag("config", "G-SFZ22LKWP4", { send_page_view: false })',
     );

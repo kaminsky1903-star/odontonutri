@@ -156,10 +156,7 @@
     </main>
     <script>
       (function () {
-        var text = new URLSearchParams(window.location.search).get("text");
-        var destination = text
-          ? "https://wa.me/541161370040?text=" + encodeURIComponent(text)
-          : "https://wa.link/g6wqj3";
+        var destination = "https://wa.link/g6wqj3";
         var redirected = false;
         var fallback = document.querySelector(".fallback a");
 

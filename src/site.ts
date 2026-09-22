@@ -10,10 +10,10 @@ export const WHATSAPP_PAGE = "/whatsapp.html";
 export const ADMIN_PATH = "/admin";
 export const WHATSAPP_NUTRITION_MESSAGE =
   "Hola, quisiera agendar una consulta de nutrición.";
-export const WHATSAPP_NUTRITION_PAGE = `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`;
+export const WHATSAPP_NUTRITION_PAGE = WHATSAPP_PAGE;
 
-export function whatsappPageWithMessage(message: string) {
-  return `${WHATSAPP_PAGE}?text=${encodeURIComponent(message)}`;
+export function whatsappPageWithMessage(_message: string) {
+  return WHATSAPP_PAGE;
 }
 
 export const NUTRITION_SERVICES = [
@@ -251,6 +251,18 @@ export const DENTISTRY_GOOGLE_REVIEWS: readonly Review[] = [
     meta: "3 opiniones",
     featured: false,
   },
+] as const;
+
+export const HOME_GOOGLE_REVIEWS: readonly Review[] = [
+  { ...DENTISTRY_GOOGLE_REVIEWS[2], featured: false },
+  { ...GOOGLE_REVIEWS[1], featured: true },
+  { ...DENTISTRY_GOOGLE_REVIEWS[1], featured: false },
+  ...DENTISTRY_GOOGLE_REVIEWS
+    .filter((_, index) => index !== 1 && index !== 2)
+    .map((review) => ({ ...review, featured: false })),
+  ...GOOGLE_REVIEWS
+    .filter((_, index) => index !== 1)
+    .map((review) => ({ ...review, featured: false })),
 ] as const;
 
 export const MAP_QUERY =

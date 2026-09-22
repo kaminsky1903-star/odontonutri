@@ -46,12 +46,8 @@ describe("site constants", () => {
     expect(WHATSAPP_NUTRITION_MESSAGE).toBe(
       "Hola, quisiera agendar una consulta de nutrición.",
     );
-    expect(WHATSAPP_NUTRITION_PAGE).toBe(
-      `${WHATSAPP_PAGE}?text=${encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE)}`,
-    );
-    expect(whatsappPageWithMessage("Hola, prueba")).toBe(
-      `${WHATSAPP_PAGE}?text=${encodeURIComponent("Hola, prueba")}`,
-    );
+    expect(WHATSAPP_NUTRITION_PAGE).toBe(WHATSAPP_PAGE);
+    expect(whatsappPageWithMessage("Hola, prueba")).toBe(WHATSAPP_PAGE);
     expect(DENTISTRY_FEATURED_TREATMENT.image).toBe("/implante-odonto.webp");
     expect(DENTISTRY_ADVANCED_TREATMENTS.map((item) => item.image)).toEqual([
       "/ROG-odonto.webp",

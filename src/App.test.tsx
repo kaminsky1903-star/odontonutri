@@ -16,7 +16,6 @@ import {
     NUTRITION_SERVICES,
     SITE_NAME,
     STREET_ADDRESS,
-    WHATSAPP_NUTRITION_MESSAGE,
     WHATSAPP_NUTRITION_PAGE,
     WHATSAPP_PAGE,
     WHATSAPP_URL,
@@ -96,6 +95,52 @@ describe("App", () => {
     );
     expect(css).toMatch(/\.process-steps::before \{[^}]*width:\s*1px/);
     expect(css).not.toMatch(/\.process-steps::before \{[^}]*display:\s*none/);
+  });
+
+  it("shows and cycles through the combined patient reviews after the home process", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    const process = screen.getByRole("heading", { name: /Una atención clara/ });
+    const reviewsTitle = screen.getByRole("heading", { name: "Tu confianza nos impulsa" });
+    const professionalsTitle = screen.getByRole("heading", { name: "Dos profesionales, una atención pensada para vos." });
+    const wellnessTitle = screen.getByRole("heading", { name: /Salud y bienestar,.*en un mismo lugar\./ });
+    const visit = screen.getByRole("heading", { name: "Visítanos" });
+    const section = reviewsTitle.closest("section")!;
+    const cards = section.querySelectorAll(".review-item");
+
+    expect(process.compareDocumentPosition(reviewsTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(reviewsTitle.compareDocumentPosition(visit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(reviewsTitle.compareDocumentPosition(wellnessTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(reviewsTitle.compareDocumentPosition(professionalsTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(professionalsTitle.compareDocumentPosition(wellnessTitle) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(wellnessTitle.compareDocumentPosition(visit) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText("Lo que dicen nuestros pacientes")).toBeInTheDocument();
+    expect(screen.getByText("Opiniones reales de pacientes que ya vivieron la experiencia.")).toBeInTheDocument();
+    expect(screen.getByAltText("Dr. Kaminsky")).toHaveAttribute("src", "/dr-kaminsky-portfolio-v4.webp");
+    expect(screen.getByAltText("Lic. González")).toHaveAttribute("src", "/lic-gonzalez-portfolio-v3.webp");
+    expect(cards).toHaveLength(10);
+    expect(cards[0]).toHaveTextContent("Elis Di Palma");
+    expect(cards[0]).toHaveClass("home-review-previous");
+    expect(cards[1]).toHaveTextContent("Facundo Francisco Feltrin");
+    expect(cards[1]).toHaveClass("review-item-featured");
+    expect(cards[1]).toHaveClass("home-review-current");
+    expect(cards[2]).toHaveTextContent("Andres Saenz");
+    expect(cards[2]).toHaveClass("home-review-next");
+    expect(cards[3]).toHaveClass("review-item-mobile-extra");
+    expect(screen.getByRole("navigation", { name: "Reseñas de pacientes" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ver reseña anterior" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ver reseña siguiente" })).toBeInTheDocument();
+    expect(screen.getByAltText("Sonrisa saludable junto a una manzana verde")).toHaveAttribute("src", "/salud-bienestar-home-v2.webp");
+
+    await user.click(screen.getByRole("button", { name: "Ver reseña siguiente" }));
+    expect(cards[1]).toHaveClass("home-review-previous");
+    expect(cards[2]).toHaveClass("home-review-current");
+
+    await user.click(screen.getByRole("button", { name: "Ver reseña anterior" }));
+    await user.click(screen.getByRole("button", { name: "Ver reseña anterior" }));
+    await user.click(screen.getByRole("button", { name: "Ver reseña anterior" }));
+    expect(cards[9]).toHaveClass("home-review-current");
   });
 
   it("keeps WhatsApp out of the header and uses a floating control", () => {
@@ -309,9 +354,7 @@ describe("App", () => {
     expect(
       screen.getByRole("link", { name: "Agendá tu consulta" }),
     ).toHaveAttribute("href", WHATSAPP_NUTRITION_PAGE);
-    expect(WHATSAPP_NUTRITION_PAGE).toContain(
-      encodeURIComponent(WHATSAPP_NUTRITION_MESSAGE),
-    );
+    expect(WHATSAPP_NUTRITION_PAGE).toBe(WHATSAPP_PAGE);
     expect(
       screen.getByRole("link", { name: "Ver servicios" }),
     ).toHaveAttribute("href", "#servicios-nutricion");

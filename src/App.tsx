@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { AdminApp } from "./admin/AdminApp";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { applyAnalyticsOptOutFromSearch } from "./analytics/session";
 import { usePublicAnalytics } from "./analytics/usePublicAnalytics";
 import {
@@ -17,12 +16,17 @@ import {
   SITE_NAME,
   STREET_ADDRESS,
   GOOGLE_REVIEWS,
+  HOME_GOOGLE_REVIEWS,
   NUTRITION_SERVICES,
   DENTISTRY_SERVICES_LEAD,
   WHATSAPP_NUTRITION_PAGE,
   WHATSAPP_PAGE,
   whatsappPageWithMessage,
 } from "./site";
+
+const AdminApp = lazy(() =>
+  import("./admin/AdminApp").then((module) => ({ default: module.AdminApp })),
+);
 
 function Icon({ children }: { children: ReactNode }) {
   return (
@@ -666,6 +670,91 @@ function VisitCard() {
   );
 }
 
+function HomeWellnessSection() {
+  return (
+    <section className="home-wellness page-container" aria-labelledby="home-wellness-title">
+      <div className="home-wellness-card">
+        <img
+          src="/salud-bienestar-home-v2.webp"
+          alt="Sonrisa saludable junto a una manzana verde"
+          width={1800}
+          height={675}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className="home-wellness-copy">
+          <h2 id="home-wellness-title">
+            Salud y bienestar,
+            <br />
+            en un mismo lugar.
+          </h2>
+          <p>Elegí el área que necesitás y conocé nuestra propuesta.</p>
+          <span aria-hidden="true" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HomeProfessionals() {
+  const professionals = [
+    {
+      area: "Odontología",
+      name: "Dr. Kaminsky",
+      description: "Odontología integral, implantes y estética dental.",
+      education: ["Egresado UBA", "Especialidad de Implantología UBA"],
+      image: "/dr-kaminsky-portfolio-v4.webp",
+      tone: "dentistry",
+    },
+    {
+      area: "Nutricionista",
+      name: "Lic. González",
+      description: "Nutrición clínica, control del peso y alimentación saludable.",
+      education: [
+        "Egresada UBA",
+        "Posgrado en Nutrición Deportiva",
+        "Especialista en Sobrepeso y Obesidad",
+      ],
+      image: "/lic-gonzalez-portfolio-v3.webp",
+      tone: "nutrition",
+    },
+  ] as const;
+
+  return (
+    <section className="home-professionals page-container" aria-labelledby="home-professionals-title">
+      <div className="home-professionals-header">
+        <h2 id="home-professionals-title">Dos profesionales, una atención pensada para vos.</h2>
+        <p><span aria-hidden="true" /> Experiencia, calidez y compromiso</p>
+      </div>
+      <div className="home-professionals-grid">
+        {professionals.map((professional) => (
+          <article className={`home-professional-card home-professional-card-${professional.tone}`} key={professional.area}>
+            <img
+              src={professional.image}
+              alt={professional.name}
+              width={640}
+              height={640}
+              loading="lazy"
+              decoding="async"
+            />
+            <div>
+              <p>{professional.area}</p>
+              <h3>{professional.name}</h3>
+              <span>{professional.description}</span>
+              <div className="home-professional-education">
+                <strong>Formación</strong>
+                <ul>
+                  {professional.education.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function HomePage() {
   return (
     <main>
@@ -775,6 +864,21 @@ function HomePage() {
           </ol>
         </div>
       </section>
+
+      <GoogleReviews
+        reviews={HOME_GOOGLE_REVIEWS}
+        titleId="resenas-inicio-title"
+        enhancedAvatars
+        homeVariant
+        kicker="Lo que dicen nuestros pacientes"
+        title="Tu confianza nos impulsa"
+        titleAccent=""
+        subtitle="Opiniones reales de pacientes que ya vivieron la experiencia."
+      />
+
+      <HomeProfessionals />
+
+      <HomeWellnessSection />
 
       <VisitCard />
       <ClinicMap />
@@ -1115,13 +1219,23 @@ function GoogleReviews({
   reviews = GOOGLE_REVIEWS,
   titleId = "resenas-title",
   enhancedAvatars = false,
+  homeVariant = false,
+  kicker = "Experiencias de pacientes",
+  title = "Historias reales.",
+  titleAccent = "Confianza real.",
+  subtitle,
 }: {
   reviews?: readonly Review[];
   titleId?: string;
   enhancedAvatars?: boolean;
+  homeVariant?: boolean;
+  kicker?: string;
+  title?: string;
+  titleAccent?: string;
+  subtitle?: string;
 }) {
   const cardsRef = useRef<HTMLUListElement>(null);
-  const [activeReview, setActiveReview] = useState(0);
+  const [activeReview, setActiveReview] = useState(homeVariant ? 1 : 0);
 
   useEffect(() => {
     if (!enhancedAvatars) return;
@@ -1134,6 +1248,7 @@ function GoogleReviews({
         .sort((left, right) => left.offsetLeft - right.offsetLeft);
 
     const updateActiveReview = () => {
+      if (homeVariant && window.innerWidth > 768) return;
       const viewportCenter = cards.scrollLeft + cards.clientWidth / 2;
       const items = orderedCards();
       let closest = 0;
@@ -1156,9 +1271,10 @@ function GoogleReviews({
       cards.removeEventListener("scroll", updateActiveReview);
       window.removeEventListener("resize", updateActiveReview);
     };
-  }, [enhancedAvatars, reviews]);
+  }, [enhancedAvatars, homeVariant, reviews]);
 
   const goToReview = (index: number) => {
+    setActiveReview(index);
     const cards = cardsRef.current;
     if (!cards) return;
     const items = Array.from(cards.children)
@@ -1169,11 +1285,17 @@ function GoogleReviews({
     cards.scrollTo({ left: item.offsetLeft - 4, behavior: "smooth" });
   };
 
+  const stepReview = (direction: -1 | 1) => {
+    setActiveReview((current) => (current + direction + reviews.length) % reviews.length);
+  };
+
   return (
     <section
       className={
-        enhancedAvatars
-          ? "google-reviews google-reviews-dentistry"
+        homeVariant
+          ? "google-reviews google-reviews-dentistry google-reviews-home"
+          : enhancedAvatars
+            ? "google-reviews google-reviews-dentistry"
           : "google-reviews"
       }
       aria-labelledby={titleId}
@@ -1183,20 +1305,34 @@ function GoogleReviews({
       </p>
       <div className="reviews-container">
         <div className="reviews-header">
-          <p className="reviews-kicker">Experiencias de pacientes</p>
+          <p className="reviews-kicker">{kicker}</p>
           <h2 id={titleId} className="reviews-title">
-            <span>Historias reales.</span>
-            <span className="reviews-title-accent">Confianza real.</span>
+            <span>{title}</span>
+            {titleAccent && <span className="reviews-title-accent">{titleAccent}</span>}
           </h2>
+          {subtitle && <p className="reviews-subtitle">{subtitle}</p>}
         </div>
         <ul className="reviews-cards" ref={cardsRef}>
           {reviews.map((review, reviewIndex) => (
+            (() => {
+              const previous = (activeReview - 1 + reviews.length) % reviews.length;
+              const next = (activeReview + 1) % reviews.length;
+              const homePosition = homeVariant
+                ? reviewIndex === activeReview
+                  ? " home-review-current"
+                  : reviewIndex === previous
+                    ? " home-review-previous"
+                    : reviewIndex === next
+                      ? " home-review-next"
+                      : " home-review-hidden"
+                : "";
+              return (
             <li
               key={review.name}
               className={
                 `${review.featured
                   ? "review-item review-item-featured"
-                  : "review-item"}${enhancedAvatars && reviewIndex >= 3 ? " review-item-mobile-extra" : ""}`
+                  : "review-item"}${enhancedAvatars && reviewIndex >= 3 ? " review-item-mobile-extra" : ""}${homePosition}`
               }
             >
               <article
@@ -1236,6 +1372,8 @@ function GoogleReviews({
                           src="/local-guide-badge-v3.webp"
                           alt=""
                           aria-hidden="true"
+                          loading="lazy"
+                          decoding="async"
                         />
                       )}
                     </span>
@@ -1260,20 +1398,34 @@ function GoogleReviews({
                 </div>
               </article>
             </li>
+              );
+            })()
           ))}
         </ul>
         {enhancedAvatars && reviews.length > 1 && (
-          <nav className="reviews-pagination" aria-label="Reseñas odontológicas">
-            {reviews.map((review, index) => (
-              <button
-                key={review.name}
-                type="button"
-                className={index === activeReview ? "is-active" : undefined}
-                aria-label={`Ver reseña ${index + 1} de ${reviews.length}`}
-                aria-current={index === activeReview ? "true" : undefined}
-                onClick={() => goToReview(index)}
-              />
-            ))}
+          <nav className="reviews-pagination" aria-label={homeVariant ? "Reseñas de pacientes" : "Reseñas odontológicas"}>
+            {homeVariant && (
+              <button className="reviews-arrow reviews-arrow-previous" type="button" aria-label="Ver reseña anterior" onClick={() => stepReview(-1)}>
+                <ArrowLineIcon />
+              </button>
+            )}
+            <span className="reviews-dots">
+              {reviews.map((review, index) => (
+                <button
+                  key={review.name}
+                  type="button"
+                  className={index === activeReview ? "is-active" : undefined}
+                  aria-label={`Ver reseña ${index + 1} de ${reviews.length}`}
+                  aria-current={index === activeReview ? "true" : undefined}
+                  onClick={() => goToReview(index)}
+                />
+              ))}
+            </span>
+            {homeVariant && (
+              <button className="reviews-arrow reviews-arrow-next" type="button" aria-label="Ver reseña siguiente" onClick={() => stepReview(1)}>
+                <ArrowLineIcon />
+              </button>
+            )}
           </nav>
         )}
       </div>
@@ -1652,7 +1804,11 @@ export default function App() {
   usePublicAnalytics(!isAdmin);
 
   if (isAdmin) {
-    return <AdminApp />;
+    return (
+      <Suspense fallback={<main className="admin-shell" aria-busy="true" />}>
+        <AdminApp />
+      </Suspense>
+    );
   }
 
   return (
