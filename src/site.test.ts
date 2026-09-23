@@ -42,7 +42,7 @@ describe("site constants", () => {
     );
     expect(WHATSAPP_PAGE).toBe("/whatsapp.html");
     expect(ADMIN_PATH).toBe("/admin");
-    expect(WHATSAPP_URL).toMatch(/^https:\/\/wa\.link\//);
+    expect(WHATSAPP_URL).toBe("https://wa.me/541161370040");
     expect(WHATSAPP_NUTRITION_MESSAGE).toBe(
       "Hola, quisiera agendar una consulta de nutrición.",
     );
