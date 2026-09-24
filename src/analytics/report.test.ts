@@ -31,12 +31,13 @@ describe("period metrics", () => {
     expect(result.daily).toHaveLength(1);
   });
 
-  it("shows WhatsApp activity only from 8 through 22", () => {
+  it("shows site entries only from 8 through 22", () => {
     const result = buildReport([
-      event({ created_at: "2026-09-08T10:59:00Z", event_type: "whatsapp_click" }),
-      event({ created_at: "2026-09-08T11:00:00Z", event_type: "whatsapp_click" }),
-      event({ created_at: "2026-09-09T01:59:00Z", event_type: "whatsapp_click" }),
-      event({ created_at: "2026-09-09T02:00:00Z", event_type: "whatsapp_click" }),
+      event({ created_at: "2026-09-08T10:59:00Z" }),
+      event({ created_at: "2026-09-08T11:00:00Z" }),
+      event({ created_at: "2026-09-09T01:59:00Z" }),
+      event({ created_at: "2026-09-09T02:00:00Z" }),
+      event({ created_at: "2026-09-08T15:00:00Z", event_type: "whatsapp_click" }),
     ], { ...period, preset: "today" }, new Date("2026-09-09T02:30:00Z"))!;
     expect(result.hours).toHaveLength(15);
     expect(result.hours[0]).toEqual({ hour: 8, value: 1 });

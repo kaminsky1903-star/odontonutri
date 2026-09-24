@@ -206,7 +206,7 @@ describe("analytics summary", () => {
     });
   });
 
-  it("splits WhatsApp clicks into today, last 7 days and last calendar month", () => {
+  it("splits entries and WhatsApp clicks into today, last 7 days and last calendar month", () => {
     const lastMonth = new Date(now);
     lastMonth.setDate(1);
     lastMonth.setHours(12, 0, 0, 0);
@@ -233,6 +233,21 @@ describe("analytics summary", () => {
         event_type: "whatsapp_click",
         session_id: "w-last-month",
       }),
+      event({
+        created_at: now.toISOString(),
+        event_type: "visit",
+        session_id: "entry-today",
+      }),
+      event({
+        created_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        event_type: "visit",
+        session_id: "entry-week",
+      }),
+      event({
+        created_at: lastMonth.toISOString(),
+        event_type: "visit",
+        session_id: "entry-last-month",
+      }),
     ];
 
     const snapshot = summarizeAnalyticsEvents(events, now);
@@ -240,6 +255,9 @@ describe("analytics summary", () => {
     expect(snapshot.whatsappClicksToday).toBe(1);
     expect(snapshot.whatsappClicksLast7Days).toBe(2);
     expect(snapshot.whatsappClicksLastMonth).toBe(1);
+    expect(snapshot.entriesToday).toBe(1);
+    expect(snapshot.entriesLast7Days).toBe(2);
+    expect(snapshot.entriesLastMonth).toBe(1);
   });
 
   it("only counts WhatsApp hours from 8 to 22", () => {

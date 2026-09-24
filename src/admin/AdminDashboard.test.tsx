@@ -58,8 +58,8 @@ describe("admin dashboard session", () => {
     expect(screen.getByText("Visitantes únicos")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Ir al inicio" })).toHaveAttribute("href", "/");
     expect(await screen.findByText("0 visitantes · 0 sesiones · 0 contactos únicos")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "WhatsApp" })).toBeInTheDocument();
-    for (const name of ["Fuentes de tráfico", "Páginas de entrada", "Clics de contacto por página", "Tipo de dispositivo", "Localidades", "Horario de WhatsApp", "Visitantes"]) {
+    expect(screen.getByRole("heading", { name: "Entradas en general" })).toBeInTheDocument();
+    for (const name of ["Fuentes de tráfico", "Páginas de entrada", "Clics de contacto por página", "Tipo de dispositivo", "Localidades", "Horario de entradas", "Visitantes"]) {
       expect(screen.getByRole("heading", { name })).toBeInTheDocument();
     }
     const user = userEvent.setup();

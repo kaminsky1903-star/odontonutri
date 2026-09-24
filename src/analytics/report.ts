@@ -66,7 +66,7 @@ export function buildReport(events: AnalyticsEvent[], period: Period, now = new 
   const hourFormat = new Intl.DateTimeFormat("en-US", { timeZone: CLINIC_TIME_ZONE, hour: "numeric", hourCycle: "h23" });
   const hours = Array.from({ length: 15 }, (_, index) => {
     const hour = index + 8;
-    return { hour, value: scoped.filter(event => event.event_type === "whatsapp_click" && Number(hourFormat.format(new Date(event.created_at))) === hour).length };
+    return { hour, value: scoped.filter(event => event.event_type === "visit" && Number(hourFormat.format(new Date(event.created_at))) === hour).length };
   });
   return { bounds, events: scoped, visitors: visitors.size, sessions: sessions.size, contacts: converted.size,
     whatsapp: count("whatsapp_click"), phone: count("phone_click"), location: count("location_click"), conversion: scoped.some(row => !visitor(row)) ? null : rate(converted.size, visitors.size), daily, hours,

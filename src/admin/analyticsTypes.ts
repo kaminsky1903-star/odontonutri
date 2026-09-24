@@ -57,6 +57,9 @@ export type AnalyticsSnapshot = {
   visitorsLast7Days: number | null;
   visitorsLast30Days: number | null;
   activeNow: number | null;
+  entriesToday: number | null;
+  entriesLast7Days: number | null;
+  entriesLastMonth: number | null;
   whatsappClicksToday: number | null;
   whatsappClicksLast7Days: number | null;
   whatsappClicksLastMonth: number | null;
@@ -80,6 +83,9 @@ export const EMPTY_ANALYTICS: AnalyticsSnapshot = {
   visitorsLast7Days: null,
   visitorsLast30Days: null,
   activeNow: null,
+  entriesToday: null,
+  entriesLast7Days: null,
+  entriesLastMonth: null,
   whatsappClicksToday: null,
   whatsappClicksLast7Days: null,
   whatsappClicksLastMonth: null,

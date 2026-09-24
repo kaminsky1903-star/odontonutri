@@ -193,7 +193,7 @@ function HourChart({ hours }: { hours: HourStat[] }) {
     <div
       className="admin-hours"
       role="img"
-      aria-label="Clics de WhatsApp de 8 a 22, horario de Argentina"
+      aria-label="Entradas al sitio de 8 a 22, horario de Argentina"
     >
       <div className="admin-hours-bars">
         {hours.map((item) => (
@@ -216,16 +216,16 @@ function HourChart({ hours }: { hours: HourStat[] }) {
   );
 }
 
-function peakWhatsAppCopy(hours: HourStat[]) {
+function peakEntriesCopy(hours: HourStat[]) {
   const max = Math.max(0, ...hours.map((item) => item.value));
   if (max <= 0) {
     return null;
   }
   const peaks = hours.filter((item) => item.value === max);
   if (peaks.length !== 1) {
-    return "Hay varios horarios con la misma cantidad de clics.";
+    return "Hay varios horarios con la misma cantidad de entradas.";
   }
-  return `Más WhatsApp a las ${String(peaks[0].hour).padStart(2, "0")}:00.`;
+  return `Más entradas a las ${String(peaks[0].hour).padStart(2, "0")}:00.`;
 }
 
 function formatWhen(iso: string) {
@@ -437,7 +437,7 @@ export function AdminDashboard() {
   const pending = loading || analytics.status !== "ready";
   const activityReport = reportFor("activity");
   const visibleActivity = useMemo(() => recentActivity(activityReport?.events ?? [], new Date()), [activityReport]);
-  const whatsappPeak = peakWhatsAppCopy(reportFor("hours")?.hours ?? []);
+  const entriesPeak = peakEntriesCopy(reportFor("hours")?.hours ?? []);
   const periodControls = (panel: PanelId) => <PeriodShortcuts active={panelPeriods[panel]} onSelect={preset => setPanelPeriods(value => ({ ...value, [panel]: preset }))}/>;
 
   useEffect(() => {
@@ -492,13 +492,13 @@ export function AdminDashboard() {
     </div>
     <div className="admin-insight-grid">
       <StatList title="Páginas y tratamientos más visitados" pending={pending} empty={!reportFor("pageViews")?.pageViews.length} periodControls={periodControls("pageViews")}><ul className="admin-page-counts">{reportFor("pageViews")?.pageViews.map(page => <li key={page.path}><span>{page.title}</span><strong>{page.views} vistas</strong></li>)}</ul></StatList>
-      <StatList title="Horario de WhatsApp" pending={pending} empty={!reportFor("hours")?.hours.some(hour => hour.value > 0)} periodControls={periodControls("hours")}>{whatsappPeak && <p className="admin-hours-peak">{whatsappPeak}</p>}<HourChart hours={reportFor("hours")?.hours ?? []}/></StatList>
+      <StatList title="Horario de entradas" pending={pending} empty={!reportFor("hours")?.hours.some(hour => hour.value > 0)} periodControls={periodControls("hours")}>{entriesPeak && <p className="admin-hours-peak">{entriesPeak}</p>}<HourChart hours={reportFor("hours")?.hours ?? []}/></StatList>
     </div>
 
-    <section className="admin-whatsapp" aria-labelledby="admin-whatsapp-title"><h2 id="admin-whatsapp-title">WhatsApp</h2><p className="admin-empty">Referencia histórica fija, independiente del período seleccionado.</p><div className="admin-metrics admin-whatsapp-metrics">
-      <MetricCard label="Hoy" value={metric(analytics.whatsappClicksToday)} pending={false} icon={<WhatsAppIcon/>}/>
-      <MetricCard label="Últimos 7 días" value={metric(analytics.whatsappClicksLast7Days)} pending={false} icon={<WhatsAppIcon/>}/>
-      <MetricCard label="Mes pasado" value={metric(analytics.whatsappClicksLastMonth)} pending={false} icon={<WhatsAppIcon/>}/>
+    <section className="admin-whatsapp" aria-labelledby="admin-entries-title"><h2 id="admin-entries-title">Entradas en general</h2><p className="admin-empty">Visitas que ingresaron al sitio. “Mes pasado” corresponde al mes calendario anterior completo.</p><div className="admin-metrics admin-whatsapp-metrics">
+      <MetricCard label="Hoy" value={metric(analytics.entriesToday)} pending={false} icon={<VisitIcon/>}/>
+      <MetricCard label="Últimos 7 días" value={metric(analytics.entriesLast7Days)} pending={false} icon={<VisitIcon/>}/>
+      <MetricCard label="Mes pasado" value={metric(analytics.entriesLastMonth)} pending={false} icon={<VisitIcon/>}/>
     </div></section>
     <p className="admin-live-note"><PersonIcon/>Actividad en los últimos 5 minutos: {metric(analytics.activeNow)} sesiones. No confirma que sigan conectadas. Se actualiza al pulsar Actualizar.</p>
 
